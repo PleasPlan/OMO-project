@@ -1,11 +1,14 @@
 package com.OmObe.OmO.Board.entity;
 
+import com.OmObe.OmO.Comment.entity.Comment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -35,5 +38,10 @@ public class Board {
 
     // private Integer likeCount;  // 좋아요 수(후에 like 연관관계 맺으면 빼도 될 지도?)
 
-    //TODO : member랑 comment 연관관계 맺기
+    // TODO : member랑 comment 연관관계 맺기
+    @OneToMany(mappedBy = "board")
+    private List<Comment> comments = new ArrayList<>();
+
+//    @OneToOne(mappedBy = "board")
+//    private Member member;
 }
