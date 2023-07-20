@@ -1,6 +1,7 @@
 package com.OmObe.OmO.Comment.entity;
 
 import com.OmObe.OmO.Board.entity.Board;
+import com.OmObe.OmO.member.entity.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,7 +24,7 @@ public class Comment {
     @JoinColumn(name = "BOARD_ID")
     private Board board;
 
-//    @ManyToOne
-//    @JoinColumn(name = "MEMBER_ID")
-//    private Member member; // 댓글 작성자
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member; // 댓글 작성자
 }
