@@ -48,6 +48,46 @@ public class Member {
     @Column(nullable = false)
     private Role role; // 회원 권한(일반 회원 / 관리자)
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setBirth(LocalDateTime birth) {
+        this.birth = birth;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setMbit(int mbit) {
+        this.mbit = mbit;
+    }
+
+    public void setGender(int gender) {
+        this.gender = gender;
+    }
+
+    public void setClause(Boolean clause) {
+        this.clause = clause;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public void setMemberStatus(MemberStatus memberStatus) {
+        this.memberStatus = memberStatus;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     // 회원 권한(일반 / 관리자)
     public enum Role{
         MEMBER("일반 회원"),
