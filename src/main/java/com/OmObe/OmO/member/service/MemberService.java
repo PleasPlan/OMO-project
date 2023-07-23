@@ -49,6 +49,23 @@ public class MemberService {
         return savedMember;
     }
 
+    /**
+     * <회원 탈퇴>
+     * 1. 탈퇴하려는 회원이 존재하는 회원인지 검증
+     * 2. 회원의 상태를 MEMBER_ACTIVE에서 MEMBER_QUIT로 변경
+     * 3. 변경사항 저장
+     */
+    public Member quitMember(Long memberId) throws Exception {
+        // 1. 탈퇴하려는 회원이 존재하는 회원인지 검증
+        Member findMember = findVerifiedMember(memberId);
+
+        // 2. 회원의 상태를 MEMBER_ACTIVE에서 MEMBER_QUIT로 변경
+        findMember.setMemberStatus(Member.MemberStatus.MEMBER_QUIT);
+
+        // 3. 변경사항 저장
+        return memberRepository.save(findMember);
+    }
+
     // 이메일 중복 검증 메서드
     public void verifyExistsEmail(String email) throws Exception { // 예외 처리 객체를 생성해 예외처리 (변경 예정)
         Optional<Member> member = memberRepository.findByEmail(email);
@@ -66,4 +83,15 @@ public class MemberService {
             throw new Exception("이미 존재하는 닉네임");
         }
     }
+
+    // 회원 존재 여부 검증 메서드
+    public Member findVerifiedMember(Long memberId) throws Exception {
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+        Member findMember = optionalMember.orElseThrow(() ->
+                new Exception());
+
+        return findMember;
+    }
+
+
 }
