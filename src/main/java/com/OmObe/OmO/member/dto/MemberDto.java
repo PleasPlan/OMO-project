@@ -34,9 +34,6 @@ public class MemberDto {
         @NotNull
         private int birthDay; // 생년월일 - 일
 
-        // @NotBlank(message = "생년월일을 입력하세요.")
-//        private LocalDate birth = LocalDate.of(year, month, day); // 생년월일
-
         @NotNull(message = "mbti 유형을 입력하세요.")
         private int mbti; // mbti 유형
 
