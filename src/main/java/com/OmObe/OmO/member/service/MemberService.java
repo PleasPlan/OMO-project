@@ -1,5 +1,7 @@
 package com.OmObe.OmO.member.service;
 
+import com.OmObe.OmO.exception.BusinessLogicException;
+import com.OmObe.OmO.exception.ExceptionCode;
 import com.OmObe.OmO.member.entity.Member;
 import com.OmObe.OmO.member.mapper.MemberMapper;
 import com.OmObe.OmO.member.repository.MemberRepository;
@@ -29,7 +31,7 @@ public class MemberService {
      * 4. 입력받은 생년월일 저장
      * 5. 1~4번의 절차가 모두 완료되면 회원 데이터 저장
      */
-    public Member createMember(Member member) throws Exception { // 예외 처리 객체를 생성해 예외처리 (변경 예정)
+    public Member createMember(Member member){ // 예외 처리 객체를 생성해 예외처리 (변경 예정)
         // 1. 이메일 중복 확인
         verifyExistsEmail(member.getEmail());
 
@@ -55,7 +57,7 @@ public class MemberService {
      * 2. 회원의 상태를 MEMBER_ACTIVE에서 MEMBER_QUIT로 변경
      * 3. 변경사항 저장
      */
-    public Member quitMember(Long memberId) throws Exception {
+    public Member quitMember(Long memberId){
         // 1. 탈퇴하려는 회원이 존재하는 회원인지 검증
         Member findMember = findVerifiedMember(memberId);
 
@@ -67,28 +69,28 @@ public class MemberService {
     }
 
     // 이메일 중복 검증 메서드
-    public void verifyExistsEmail(String email) throws Exception { // 예외 처리 객체를 생성해 예외처리 (변경 예정)
+    public void verifyExistsEmail(String email){
         Optional<Member> member = memberRepository.findByEmail(email);
 
         if (member.isPresent()) {
-            throw new Exception("이미 존재하는 이메일");
+            throw new BusinessLogicException(ExceptionCode.EMAIL_ALREADY_EXIST);
         }
     }
 
     // 닉네임 중복 검증 메서드
-    public void verifyExistsNickname(String nickname) throws Exception { // 예외 처리 객체를 생성해 예외처리 (변경 예정)
+    public void verifyExistsNickname(String nickname){
         Optional<Member> member = memberRepository.findByNickname(nickname);
 
         if (member.isPresent()) {
-            throw new Exception("이미 존재하는 닉네임");
+            throw new BusinessLogicException(ExceptionCode.NICKNAME_ALREADY_EXIST);
         }
     }
 
     // 회원 존재 여부 검증 메서드
-    public Member findVerifiedMember(Long memberId) throws Exception {
+    public Member findVerifiedMember(Long memberId){
         Optional<Member> optionalMember = memberRepository.findById(memberId);
         Member findMember = optionalMember.orElseThrow(() ->
-                new Exception());
+                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
         return findMember;
     }
