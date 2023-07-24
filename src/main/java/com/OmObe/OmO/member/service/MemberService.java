@@ -31,7 +31,7 @@ public class MemberService {
      * 4. 입력받은 생년월일 저장
      * 5. 1~4번의 절차가 모두 완료되면 회원 데이터 저장
      */
-    public Member createMember(Member member){ // 예외 처리 객체를 생성해 예외처리 (변경 예정)
+    public Member createMember(Member member){
         // 1. 이메일 중복 확인
         verifyExistsEmail(member.getEmail());
 
