@@ -1,6 +1,7 @@
 package com.OmObe.OmO.Board.entity;
 
 import com.OmObe.OmO.Comment.entity.Comment;
+import com.OmObe.OmO.Liked.entity.Liked;
 import com.OmObe.OmO.member.entity.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,14 +36,22 @@ public class Board {
     @Column(nullable = false)
     private Integer viewCount = 0;  // 게시글 조회수
 
-    // private Integer commentCount;   // 댓글 수(후에 comment 연관관계 맺으면 빼도 될 지도?)
+    @OneToMany(mappedBy = "board",cascade = CascadeType.PERSIST)
+    private List<Liked> likes = new ArrayList<>();
 
-    // private Integer likeCount;  // 좋아요 수(후에 like 연관관계 맺으면 빼도 될 지도?)
-
-    // TODO : member랑 comment 연관관계 맺기
     @OneToMany(mappedBy = "board",cascade = CascadeType.PERSIST)
     private List<Comment> comments = new ArrayList<>();
 
     @OneToOne(mappedBy = "board")
     private Member member;
+
+    public void addLike(Liked liked){
+        this.likes.add(liked);
+        liked.setBoard(this);
+    }
+
+    public void addComment(Comment comment){
+        this.comments.add(comment);
+        comment.setBoard(this);
+    }
 }
