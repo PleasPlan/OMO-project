@@ -21,6 +21,9 @@ public class Board {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long boardId;   // 게시글 고유ID
 
+    @Column
+    private String type;
+
     @Column(nullable = false)
     private String title;   // 게시글 제목
 
@@ -34,7 +37,7 @@ public class Board {
     private LocalDateTime modifiedAt = LocalDateTime.now();   // 게시글 최종 수정 일자
 
     @Column(nullable = false)
-    private Integer viewCount = 0;  // 게시글 조회수
+    private Integer viewCount = 0;  // 게시글 조회수\
 
     @OneToMany(mappedBy = "board",cascade = CascadeType.PERSIST)
     private List<Liked> likes = new ArrayList<>();
