@@ -46,7 +46,7 @@ public class BoardDto {
         private long BoardId;
         private String title;
         private String content;
-        private String tag;
+        private String type;
         private String writer;
         private String profileURL;
         private LocalDateTime createdDate;
