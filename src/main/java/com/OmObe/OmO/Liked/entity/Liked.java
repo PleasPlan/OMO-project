@@ -17,7 +17,8 @@ public class Liked {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long likedId;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn
     private Member member;
 
     @OneToOne
