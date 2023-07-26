@@ -8,6 +8,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 프로필 이미지, 사용자 권한은 security 적용 후 구현할 예정
@@ -63,13 +65,13 @@ public class Member {
     @Column(length = 20, nullable = false)
     private MemberStatus memberStatus = MemberStatus.MEMBER_ACTIVE; // 회원 상태 -> 기본값은 활동 상태
 
-//    @Enumerated(value = EnumType.STRING)
-//    @Column(nullable = false)
-//    private Role role = Role.MEMBER; // 회원 권한(일반 회원 / 관리자)
+    // 회원의 권한 정보 테이블과 매핑되는 정보
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles = new ArrayList<>();
 
-//    public void setMemberId(Long memberId) {
-//        this.memberId = memberId;
-//    }
+    public void setMemberId(Long memberId) {
+        this.memberId = memberId;
+    }
 
     public void setEmail(String email) {
         this.email = email;
@@ -115,31 +117,25 @@ public class Member {
 //        this.profileImageUrl = profileImageUrl;
 //    }
 
+
     public void setMemberStatus(MemberStatus memberStatus) {
         this.memberStatus = memberStatus;
     }
 
-//    public void setRole(Role role) {
-//        this.role = role;
-//    }
-//
-//    // 회원 권한(일반 / 관리자)
-//    public enum Role{
-//        MEMBER("일반 회원"),
-//        ADMIN("관리자");
-//
-//        @Getter
-//        private String roleStatus;
-//
-//        Role(String roleStatus) {
-//            this.roleStatus = roleStatus;
-//        }
-//    }
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    public enum MemberRole{
+        ROLE_USER,
+        ROLE_ADMIN;
+    }
 
     // 회원 상태(활동 / 탈퇴)
-    public enum MemberStatus{
+    public enum MemberStatus {
         MEMBER_ACTIVE("활동"),
-        MEMBER_QUIT("탈퇴");
+        MEMBER_QUIT("탈퇴"),
+        ;
 
         @Getter
         private String status;
