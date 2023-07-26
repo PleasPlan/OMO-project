@@ -1,25 +1,32 @@
 package com.OmObe.OmO.member.service;
 
+import com.OmObe.OmO.auth.utils.MemberAuthorityUtils;
 import com.OmObe.OmO.exception.BusinessLogicException;
 import com.OmObe.OmO.exception.ExceptionCode;
 import com.OmObe.OmO.member.entity.Member;
-import com.OmObe.OmO.member.mapper.MemberMapper;
 import com.OmObe.OmO.member.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @Slf4j
+@Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final MemberAuthorityUtils authorityUtils;
 
-    @Autowired
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder, MemberAuthorityUtils authorityUtils) {
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authorityUtils = authorityUtils;
     }
 
     /**
@@ -29,7 +36,9 @@ public class MemberService {
      * 2. 닉네임 중복 확인
      * 3. 회원 상태를 활동 중으로 설정
      * 4. 입력받은 생년월일 저장
-     * 5. 1~4번의 절차가 모두 완료되면 회원 데이터 저장
+     * 5. 패스워드 암호화
+     * 6. 권한 db에 저장
+     * 7. 1~6번의 절차가 모두 완료되면 회원 데이터 저장
      */
     public Member createMember(Member member){
         // 1. 이메일 중복 확인
@@ -45,7 +54,15 @@ public class MemberService {
         member.setBirth(LocalDate.of(member.getBirthYear(), member.getBirthMonth(), member.getBirthDay()));
         log.info("birth : {}", member.getBirth());
 
-        // 5. 1~4번의 절차가 모두 완료되면 회원 데이터 저장
+        // 5. 패스워드 암호화
+        String encryptedPassword = passwordEncoder.encode(member.getPassword());
+        member.setPassword(encryptedPassword);
+
+        // 6. 권한 db에 저장
+        List<String> roles = authorityUtils.createRoles(member.getEmail());
+        member.setRoles(roles);
+
+        // 7. 1~6번의 절차가 모두 완료되면 회원 데이터 저장
         Member savedMember = memberRepository.save(member);
 
         return savedMember;
