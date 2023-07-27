@@ -11,8 +11,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,15 +48,20 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response,
                                             FilterChain chain,
-                                            Authentication authResult) {
+                                            Authentication authResult) throws ServletException, IOException {
         Member member = (Member) authResult.getPrincipal(); // Member엔티티 클래스의 객체 획득
 
         String accessToken = delegateAccessToken(member); // access token 생성
         String refreshToken = delegateRefreshToken(member); // refresh token 생성
+        String memberId = String.valueOf(member.getMemberId()); // 로그인 성공 응답으로 memberId 추가
 
-        // response header에 access token, refresh token 추가
+        // response header에 access token, refresh token, memberId 추가
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.setHeader("Refresh", refreshToken);
+        response.setHeader("memberId", memberId);
+
+        // 로그인 인증 성공 후 MemberAuthenticationSuccessHandler의 onAuthenticationSuccess() 호출
+        this.getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
     }
 
     // access Token 생성 로직
