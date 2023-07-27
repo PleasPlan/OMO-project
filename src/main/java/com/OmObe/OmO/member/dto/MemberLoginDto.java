@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class MemberLoginDto { // 클라이언트의 인증 정보를 수신하는 loginDto
     @NotBlank
-    private String username;
+    private String email;
 
     @NotBlank
     private String password;
