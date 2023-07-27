@@ -4,6 +4,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -11,7 +14,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+@Component
 public class JwtTokenizer {
+    @Getter
+    @Value("${jwt.key}")
+    private String secretKey; // jwt 생성 및 검증 시 사용하는 secretKey
+
+    @Getter
+    @Value("${jwt.access-token-expiration-minutes}")
+    private int accessTokenExpirationMinutes; // access token 만료시간
+
+    @Getter
+    @Value("${jwt.refresh-token-expiration-minutes}")
+    private int refreshTokenExpirationMinutes; // refresh token 만료시간
+
     // secretKey를 Base64 형식의 문자열로 인코딩
     public String encodeBase64SecretKey(String secretKey) {
         return Encoders.BASE64.encode(secretKey.getBytes(StandardCharsets.UTF_8));
@@ -64,5 +80,14 @@ public class JwtTokenizer {
         Key key = Keys.hmacShaKeyFor(bytes);
 
         return key;
+    }
+
+    // jwt 만료 일시 설정
+    public Date getTokenExpiration(int expirationMinutes) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, expirationMinutes);
+        Date expiration = calendar.getTime();
+
+        return expiration;
     }
 }
