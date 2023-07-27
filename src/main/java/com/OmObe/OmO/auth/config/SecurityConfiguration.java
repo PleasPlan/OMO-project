@@ -2,10 +2,16 @@ package com.OmObe.OmO.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 public class SecurityConfiguration {
@@ -16,11 +22,12 @@ public class SecurityConfiguration {
                 .headers().frameOptions().sameOrigin() // 동일 출처로부터 들어오는 request만 페이지 렌더링 허용
                 .and()
                 .csrf().disable() // csrf 공격에 대한 보호 비활성화
+                .cors(Customizer.withDefaults()) // cors 설정
                 .formLogin().disable() // 폼 로그인 방식 비활성화
+                .httpBasic().disable() // HTTP 기본 인증 비활성화
                 .authorizeHttpRequests(authorize -> authorize
                         .antMatchers("/signup").permitAll()
                         .antMatchers("/members/{memberId}").permitAll());
-                // 추가 예정
 
         return http.build();
     }
@@ -29,5 +36,17 @@ public class SecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder(){
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    // CORS 정책 설정
+    @Bean
+    CorsConfigurationSource corsConfigurationSource(){
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*")); // 모든 origin에 대해 http 통신 허용
+        configuration.setAllowedMethods(Arrays.asList("GET","POST","PATCH", "DELETE")); // 허용하는 http 메서드
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
