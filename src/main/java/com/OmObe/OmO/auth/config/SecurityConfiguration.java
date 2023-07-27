@@ -1,9 +1,13 @@
 package com.OmObe.OmO.auth.config;
 
+import com.OmObe.OmO.auth.filter.JwtAuthenticationFilter;
+import com.OmObe.OmO.auth.jwt.JwtTokenizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,6 +19,12 @@ import java.util.Arrays;
 
 @Configuration
 public class SecurityConfiguration {
+    private final JwtTokenizer jwtTokenizer;
+
+    public SecurityConfiguration(JwtTokenizer jwtTokenizer) {
+        this.jwtTokenizer = jwtTokenizer;
+    }
+
     // http 요청에 대한 보안 설정 구성
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -25,6 +35,8 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults()) // cors 설정
                 .formLogin().disable() // 폼 로그인 방식 비활성화
                 .httpBasic().disable() // HTTP 기본 인증 비활성화
+                .apply(new CustomFilterConfigurer()) // jwt 로그인 인증
+                .and()
                 .authorizeHttpRequests(authorize -> authorize
                         .antMatchers("/signup").permitAll()
                         .antMatchers("/members/{memberId}").permitAll());
@@ -48,5 +60,18 @@ public class SecurityConfiguration {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    // JwtAuthenticationFilter 등록
+    public class CustomFilterConfigurer extends AbstractHttpConfigurer<CustomFilterConfigurer, HttpSecurity> {
+        @Override
+        public void configure(HttpSecurity builder) throws Exception {
+            AuthenticationManager authentic = builder.getSharedObject(AuthenticationManager.class);
+
+            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authentic, jwtTokenizer);
+            jwtAuthenticationFilter.setFilterProcessesUrl("/login");
+
+            builder.addFilter(jwtAuthenticationFilter);
+        }
     }
 }
