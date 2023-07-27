@@ -1,6 +1,8 @@
 package com.OmObe.OmO.auth.config;
 
 import com.OmObe.OmO.auth.filter.JwtAuthenticationFilter;
+import com.OmObe.OmO.auth.handler.MemberAuthenticationFailureHandler;
+import com.OmObe.OmO.auth.handler.MemberAuthenticationSuccessHandler;
 import com.OmObe.OmO.auth.jwt.JwtTokenizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,6 +72,8 @@ public class SecurityConfiguration {
 
             JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authentic, jwtTokenizer);
             jwtAuthenticationFilter.setFilterProcessesUrl("/login");
+            jwtAuthenticationFilter.setAuthenticationSuccessHandler(new MemberAuthenticationSuccessHandler());
+            jwtAuthenticationFilter.setAuthenticationFailureHandler(new MemberAuthenticationFailureHandler());
 
             builder.addFilter(jwtAuthenticationFilter);
         }
