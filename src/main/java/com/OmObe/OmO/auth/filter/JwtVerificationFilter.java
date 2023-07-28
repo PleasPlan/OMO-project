@@ -36,7 +36,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter { // request 당
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String authorization = request.getHeader("Authorization"); // 6-1
+        String authorization = request.getHeader("Authorization");
 
         return authorization == null || !authorization.startsWith("Bearer"); // Authorization header 값이 "Bearer"로 시작한 경우에 해당 필터 수행
     }

@@ -8,6 +8,7 @@ import com.OmObe.OmO.auth.jwt.JwtTokenizer;
 import com.OmObe.OmO.auth.utils.MemberAuthorityUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -47,8 +48,9 @@ public class SecurityConfiguration {
                 .apply(new CustomFilterConfigurer()) // jwt 로그인 인증
                 .and()
                 .authorizeHttpRequests(authorize -> authorize
-                        .antMatchers("/signup").permitAll()
-                        .antMatchers("/members/{memberId}").permitAll());
+                        .antMatchers(HttpMethod.POST,"/signup").permitAll()
+                        .antMatchers(HttpMethod.PATCH, "/member/**").hasAnyRole("ADMIN", "USER")
+                        .anyRequest().permitAll());
 
         return http.build();
     }
