@@ -2,6 +2,9 @@ package com.OmObe.OmO.auth.filter;
 
 import com.OmObe.OmO.auth.jwt.JwtTokenizer;
 import com.OmObe.OmO.auth.utils.MemberAuthorityUtils;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,10 +16,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.SignatureException;
 import java.util.List;
 import java.util.Map;
 
 // jwt 검증 필터
+@Slf4j
 public class JwtVerificationFilter extends OncePerRequestFilter { // request 당 한 번만 실행되는 Security Filter
     private final JwtTokenizer jwtTokenizer;
     private final MemberAuthorityUtils authorityUtils;
@@ -28,8 +33,26 @@ public class JwtVerificationFilter extends OncePerRequestFilter { // request 당
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        Map<String, Object> claims = verifyJws(request); // jwt 검증
-        setAuthenticationToContext(claims); // Authentication 객체 SecurityContext에 저장
+        try{
+            Map<String, Object> claims = verifyJws(request); // jwt 검증
+            setAuthenticationToContext(claims); // Authentication 객체 SecurityContext에 저장
+        } catch (ExpiredJwtException ee) {
+            // 액세스 토큰이 만료된 경우
+            log.info("catch ExpiredJwtException");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Access-Token expired");
+            request.setAttribute("exception", ee);
+
+        } catch (MalformedJwtException me) {
+            // JWT 토큰이 형식에 맞지 않는 경우
+            log.info("catch MalformedJwtException");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid Access-Token");
+            request.setAttribute("exception", me);
+
+        } catch (Exception e) {
+            request.setAttribute("exception", e);
+        }
 
         filterChain.doFilter(request, response); // 다음 필터 호출
     }
