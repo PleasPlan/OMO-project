@@ -2,6 +2,8 @@ package com.OmObe.OmO.auth.config;
 
 import com.OmObe.OmO.auth.filter.JwtAuthenticationFilter;
 import com.OmObe.OmO.auth.filter.JwtVerificationFilter;
+import com.OmObe.OmO.auth.handler.MemberAccessDeniedHandler;
+import com.OmObe.OmO.auth.handler.MemberAuthenticationEntryPoint;
 import com.OmObe.OmO.auth.handler.MemberAuthenticationFailureHandler;
 import com.OmObe.OmO.auth.handler.MemberAuthenticationSuccessHandler;
 import com.OmObe.OmO.auth.jwt.JwtTokenizer;
@@ -45,6 +47,10 @@ public class SecurityConfiguration {
                 .and()
                 .formLogin().disable() // 폼 로그인 방식 비활성화
                 .httpBasic().disable() // HTTP 기본 인증 비활성화
+                .exceptionHandling()
+                .authenticationEntryPoint(new MemberAuthenticationEntryPoint()) // MemberAuthenticationEntryPoint 추가
+                .accessDeniedHandler(new MemberAccessDeniedHandler()) // MemberAccessDeniedHandler 추가
+                .and()
                 .apply(new CustomFilterConfigurer()) // jwt 로그인 인증
                 .and()
                 .authorizeHttpRequests(authorize -> authorize
