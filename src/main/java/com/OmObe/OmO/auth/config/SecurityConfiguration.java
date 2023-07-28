@@ -1,15 +1,18 @@
 package com.OmObe.OmO.auth.config;
 
 import com.OmObe.OmO.auth.filter.JwtAuthenticationFilter;
+import com.OmObe.OmO.auth.filter.JwtVerificationFilter;
 import com.OmObe.OmO.auth.handler.MemberAuthenticationFailureHandler;
 import com.OmObe.OmO.auth.handler.MemberAuthenticationSuccessHandler;
 import com.OmObe.OmO.auth.jwt.JwtTokenizer;
+import com.OmObe.OmO.auth.utils.MemberAuthorityUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,9 +25,11 @@ import java.util.Arrays;
 @Configuration
 public class SecurityConfiguration {
     private final JwtTokenizer jwtTokenizer;
+    private final MemberAuthorityUtils authorityUtils;
 
-    public SecurityConfiguration(JwtTokenizer jwtTokenizer) {
+    public SecurityConfiguration(JwtTokenizer jwtTokenizer, MemberAuthorityUtils authorityUtils) {
         this.jwtTokenizer = jwtTokenizer;
+        this.authorityUtils = authorityUtils;
     }
 
     // http 요청에 대한 보안 설정 구성
@@ -35,6 +40,8 @@ public class SecurityConfiguration {
                 .and()
                 .csrf().disable() // csrf 공격에 대한 보호 비활성화
                 .cors(Customizer.withDefaults()) // cors 설정
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 생성X
+                .and()
                 .formLogin().disable() // 폼 로그인 방식 비활성화
                 .httpBasic().disable() // HTTP 기본 인증 비활성화
                 .apply(new CustomFilterConfigurer()) // jwt 로그인 인증
@@ -75,7 +82,11 @@ public class SecurityConfiguration {
             jwtAuthenticationFilter.setAuthenticationSuccessHandler(new MemberAuthenticationSuccessHandler());
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new MemberAuthenticationFailureHandler());
 
-            builder.addFilter(jwtAuthenticationFilter);
+            JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenizer, authorityUtils);
+
+            builder
+                    .addFilter(jwtAuthenticationFilter)
+                    .addFilterAfter(jwtVerificationFilter, JwtAuthenticationFilter.class);
         }
     }
 }
