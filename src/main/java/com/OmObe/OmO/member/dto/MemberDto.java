@@ -25,6 +25,9 @@ public class MemberDto {
         @NotBlank(message = "비밀번호를 입력하세요.")
         private String password; // 비밀번호
 
+        @NotBlank(message = "비밀번호를 입력하세요.")
+        private String checkPassword; // 비밀번호 확인
+
         @NotNull
         private int birthYear; // 생년월일 - 년
 
