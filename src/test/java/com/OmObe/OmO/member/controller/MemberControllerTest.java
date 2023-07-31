@@ -7,8 +7,11 @@ import com.OmObe.OmO.member.service.MemberService;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,12 +48,12 @@ class MemberControllerTest {
     public void createMemberTest() throws Exception {
         // given
         MemberDto.Post post = new MemberDto.Post("seung@yahoo.com", "hong"
-                , "a1234", 1999, 7, 11, 111, 1, true);
+                , "a1234", "a12341", 1999, 7, 11, 111, 1, true);
 
         Member member = mapper.memberPostDtoToMember(post);
 //        member.setMemberId(1L);
 
-        BDDMockito.given(memberService.createMember(Mockito.any(Member.class))).willReturn(member);
+        BDDMockito.given(memberService.createMember(Mockito.any(MemberDto.Post.class))).willReturn(member);
 
         String content = gson.toJson(post);
 
@@ -67,6 +70,8 @@ class MemberControllerTest {
         // then
         actions
                 .andExpect(MockMvcResultMatchers.status().isCreated());
+        System.out.println("password : " + post.getPassword());
+        System.out.println("checkPassword : " + post.getCheckPassword());
     }
 
 }
