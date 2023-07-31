@@ -30,6 +30,9 @@ public class Member {
     @Column(length = 300, nullable = false)
     private String password; // 비밀번호
 
+    @Column(length = 300, nullable = false)
+    private String checkPassword; // 비밀번호 확인
+
     @Column(nullable = false)
     private int birthYear; // 생년월일 - 년
 
@@ -117,6 +120,10 @@ public class Member {
 //        this.profileImageUrl = profileImageUrl;
 //    }
 
+
+    public void setCheckPassword(String checkPassword) {
+        this.checkPassword = checkPassword;
+    }
 
     public void setMemberStatus(MemberStatus memberStatus) {
         this.memberStatus = memberStatus;
