@@ -45,7 +45,8 @@ public class Board {
     @OneToMany(mappedBy = "board",cascade = CascadeType.PERSIST)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToOne(mappedBy = "board")
+    @ManyToOne
+    @JoinColumn(name = "WRITER")
     private Member member;
 
     public void addLike(Liked liked){

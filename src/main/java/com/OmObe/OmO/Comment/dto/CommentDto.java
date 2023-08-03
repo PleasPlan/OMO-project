@@ -26,10 +26,13 @@ public class CommentDto {
         private String content;
     }
 
+    @Getter
+    @Setter
     public static class Response{
         private long commentId;
         private String writer;
-        private String profileURL;
+//        TODO : 프로필 url이 주석 해제되면 다시 해제할 것.
+//        private String profileURL;
         private String content;
     }
 }

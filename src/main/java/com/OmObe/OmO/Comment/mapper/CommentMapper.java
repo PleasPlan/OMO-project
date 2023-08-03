@@ -41,4 +41,23 @@ public class CommentMapper {
             return comment;
         }
     }
+
+    public CommentDto.Response commentToCommentResponseDto(Comment comment){
+        if(comment == null){
+            return null;
+        } else {
+            long commentId = comment.getCommentId();
+            String writer = comment.getMember().getNickname();
+//            TODO : 프로필 url이 주석 해제되면 다시 해제할 것.
+//            String profileURL = comment.getMember().getProfileURL();
+            String content = comment.getContent();
+            CommentDto.Response response = new CommentDto.Response();
+            response.setCommentId(commentId);
+            response.setWriter(writer);
+            response.setContent(content);
+//            TODO : 프로필 url이 주석 해제되면 다시 해제할 것.
+//            response.setProfileURL(profileURL);
+            return response;
+        }
+    }
 }
