@@ -1,18 +1,21 @@
-package com.OmObe.OmO.auth.oauth;
+package com.OmObe.OmO.auth.oauth.service;
 
 import com.OmObe.OmO.auth.utils.MemberAuthorityUtils;
 import com.OmObe.OmO.member.entity.Member;
 import com.OmObe.OmO.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,9 +28,6 @@ public class OAuth2MemberService implements OAuth2UserService<OAuth2UserRequest 
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        log.info("{}",userRequest.getClientRegistration());
-        log.info("{}",userRequest.getAccessToken().getTokenValue());
-
         OAuth2UserService delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
