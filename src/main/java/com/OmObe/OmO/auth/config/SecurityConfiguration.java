@@ -5,8 +5,9 @@ import com.OmObe.OmO.auth.filter.JwtVerificationFilter;
 import com.OmObe.OmO.auth.handler.*;
 import com.OmObe.OmO.auth.jwt.JwtTokenizer;
 import com.OmObe.OmO.auth.jwt.TokenService;
-import com.OmObe.OmO.auth.oauth.OAuth2MemberService;
+import com.OmObe.OmO.auth.oauth.service.OAuth2MemberService;
 import com.OmObe.OmO.auth.utils.MemberAuthorityUtils;
+import com.OmObe.OmO.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,7 @@ public class SecurityConfiguration {
     private final MemberAuthorityUtils authorityUtils;
     private final TokenService tokenService;
     private final OAuth2MemberService oAuth2MemberService;
+    private final MemberRepository memberRepository;
 
     // http 요청에 대한 보안 설정 구성
     @Bean
@@ -57,7 +59,7 @@ public class SecurityConfiguration {
                         .antMatchers(HttpMethod.PATCH, "/member/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest().permitAll()
                 ).oauth2Login(oauth2 -> oauth2 // oauth2 인증 활성화
-                        .successHandler(new OAuth2MemberSuccessHandler(tokenService, oAuth2MemberService)));
+                        .successHandler(new OAuth2MemberSuccessHandler(tokenService, oAuth2MemberService, authorityUtils)));
 
         return http.build();
     }

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -114,9 +115,18 @@ public class MemberService {
         }
     }
 
-    // 회원 존재 여부 검증 메서드
+    // 회원 존재 여부 검증 메서드 - memberId로 검증
     public Member findVerifiedMember(Long memberId){
         Optional<Member> optionalMember = memberRepository.findById(memberId);
+        Member findMember = optionalMember.orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+
+        return findMember;
+    }
+
+    // 회원 존재 여부 검증 메서드 - email로 검증
+    public Member findVerifiedMemberByEmail(String email) {
+        Optional<Member> optionalMember = memberRepository.findByEmail(email);
         Member findMember = optionalMember.orElseThrow(() ->
                 new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
@@ -129,5 +139,6 @@ public class MemberService {
             throw new BusinessLogicException(ExceptionCode.PASSWORD_NOT_CORRECT);
         }
     }
+
 
 }
