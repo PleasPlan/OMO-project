@@ -1,5 +1,6 @@
 package com.OmObe.OmO.member.service;
 
+import com.OmObe.OmO.auth.jwt.JwtTokenizer;
 import com.OmObe.OmO.auth.utils.MemberAuthorityUtils;
 import com.OmObe.OmO.exception.BusinessLogicException;
 import com.OmObe.OmO.exception.ExceptionCode;
@@ -7,13 +8,18 @@ import com.OmObe.OmO.member.dto.MemberDto;
 import com.OmObe.OmO.member.entity.Member;
 import com.OmObe.OmO.member.mapper.MemberMapper;
 import com.OmObe.OmO.member.repository.MemberRepository;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -23,14 +29,19 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final MemberAuthorityUtils authorityUtils;
-
     private final MemberMapper mapper;
+    private final JwtTokenizer jwtTokenizer;
 
-    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder, MemberAuthorityUtils authorityUtils, MemberMapper mapper) {
+    public MemberService(MemberRepository memberRepository,
+                         PasswordEncoder passwordEncoder,
+                         MemberAuthorityUtils authorityUtils,
+                         MemberMapper mapper,
+                         JwtTokenizer jwtTokenizer) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityUtils = authorityUtils;
         this.mapper = mapper;
+        this.jwtTokenizer = jwtTokenizer;
     }
 
     /**
@@ -62,8 +73,8 @@ public class MemberService {
         // 5. 패스워드 확인
         String checkPassword = post.getCheckPassword();
         verifyPassword(member.getPassword(), checkPassword);
-        log.info("password : {}", member.getPassword());
-        log.info("checkPassword : {}", post.getCheckPassword());
+//        log.info("password : {}", member.getPassword());
+//        log.info("checkPassword : {}", post.getCheckPassword());
 
         // 6. 패스워드 암호화
         String encryptedPassword = passwordEncoder.encode(member.getPassword());
@@ -83,7 +94,7 @@ public class MemberService {
      * <회원 탈퇴>
      * 1. 탈퇴하려는 회원이 존재하는 회원인지 검증
      * 2. 회원의 상태를 MEMBER_ACTIVE에서 MEMBER_QUIT로 변경
-     * 3. 변경사항 저장
+     * 4. 변경사항 저장
      */
     public Member quitMember(Long memberId){
         // 1. 탈퇴하려는 회원이 존재하는 회원인지 검증
@@ -114,9 +125,18 @@ public class MemberService {
         }
     }
 
-    // 회원 존재 여부 검증 메서드
+    // 회원 존재 여부 검증 메서드 - memberId로 검증
     public Member findVerifiedMember(Long memberId){
         Optional<Member> optionalMember = memberRepository.findById(memberId);
+        Member findMember = optionalMember.orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+
+        return findMember;
+    }
+
+    // 회원 존재 여부 검증 메서드 - email로 검증
+    public Member findVerifiedMemberByEmail(String email) {
+        Optional<Member> optionalMember = memberRepository.findByEmail(email);
         Member findMember = optionalMember.orElseThrow(() ->
                 new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
@@ -129,5 +149,4 @@ public class MemberService {
             throw new BusinessLogicException(ExceptionCode.PASSWORD_NOT_CORRECT);
         }
     }
-
 }

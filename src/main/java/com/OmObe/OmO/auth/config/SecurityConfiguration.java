@@ -2,12 +2,13 @@ package com.OmObe.OmO.auth.config;
 
 import com.OmObe.OmO.auth.filter.JwtAuthenticationFilter;
 import com.OmObe.OmO.auth.filter.JwtVerificationFilter;
-import com.OmObe.OmO.auth.handler.MemberAccessDeniedHandler;
-import com.OmObe.OmO.auth.handler.MemberAuthenticationEntryPoint;
-import com.OmObe.OmO.auth.handler.MemberAuthenticationFailureHandler;
-import com.OmObe.OmO.auth.handler.MemberAuthenticationSuccessHandler;
+import com.OmObe.OmO.auth.handler.*;
 import com.OmObe.OmO.auth.jwt.JwtTokenizer;
+import com.OmObe.OmO.auth.jwt.TokenService;
+import com.OmObe.OmO.auth.oauth.service.OAuth2MemberService;
 import com.OmObe.OmO.auth.utils.MemberAuthorityUtils;
+import com.OmObe.OmO.member.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,6 +19,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -26,14 +28,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfiguration {
     private final JwtTokenizer jwtTokenizer;
     private final MemberAuthorityUtils authorityUtils;
-
-    public SecurityConfiguration(JwtTokenizer jwtTokenizer, MemberAuthorityUtils authorityUtils) {
-        this.jwtTokenizer = jwtTokenizer;
-        this.authorityUtils = authorityUtils;
-    }
+    private final TokenService tokenService;
+    private final OAuth2MemberService oAuth2MemberService;
+    private final MemberRepository memberRepository;
 
     // http 요청에 대한 보안 설정 구성
     @Bean
@@ -56,7 +57,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .antMatchers(HttpMethod.POST,"/signup").permitAll()
                         .antMatchers(HttpMethod.PATCH, "/member/**").hasAnyRole("ADMIN", "USER")
-                        .anyRequest().permitAll());
+                        .anyRequest().permitAll()
+                ).oauth2Login(oauth2 -> oauth2 // oauth2 인증 활성화
+                        .successHandler(new OAuth2MemberSuccessHandler(tokenService, oAuth2MemberService, authorityUtils)));
 
         return http.build();
     }
@@ -94,7 +97,8 @@ public class SecurityConfiguration {
 
             builder
                     .addFilter(jwtAuthenticationFilter)
-                    .addFilterAfter(jwtVerificationFilter, JwtAuthenticationFilter.class);
+                    .addFilterAfter(jwtVerificationFilter, JwtAuthenticationFilter.class)
+                    .addFilterAfter(jwtVerificationFilter, OAuth2LoginAuthenticationFilter.class);
         }
     }
 }

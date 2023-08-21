@@ -61,8 +61,11 @@ public class Member {
     @Column(nullable = false)
     private Boolean clause; // 이용약관 동의 여부
 
-//    @Column
-//    private String profileImageUrl; // 프로필 이미지 url
+    @Column
+    private String profileImageUrl; // 프로필 이미지 url
+
+    @Column
+    private boolean isOAuth; // OAuth2 사용 여부
 
     @Enumerated(value = EnumType.STRING)
     @Column(length = 20, nullable = false)
@@ -116,12 +119,15 @@ public class Member {
         this.clause = clause;
     }
 
-//    public void setProfileImageUrl(String profileImageUrl) {
-//        this.profileImageUrl = profileImageUrl;
-//    }
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
 
+    public void setOAuth(boolean OAuth) {
+        isOAuth = OAuth;
+    }
 
-//    public void setCheckPassword(String checkPassword) {
+    //    public void setCheckPassword(String checkPassword) {
 //        this.checkPassword = checkPassword;
 //    }
 
