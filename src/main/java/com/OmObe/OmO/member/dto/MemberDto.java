@@ -46,6 +46,13 @@ public class MemberDto {
 //        @NotNull(message = "이용약관에 동의하세요.")
         private Boolean clause;
 
+    }
 
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    public static class Response{
+        private Long memberId;
     }
 }

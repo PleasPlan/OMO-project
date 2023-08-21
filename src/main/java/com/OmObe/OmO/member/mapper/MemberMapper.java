@@ -1,5 +1,6 @@
 package com.OmObe.OmO.member.mapper;
 
+import com.OmObe.OmO.auth.oauth.dto.OAuthToken;
 import com.OmObe.OmO.member.dto.MemberDto;
 import com.OmObe.OmO.member.entity.Member;
 import org.mapstruct.Mapper;
@@ -21,4 +22,5 @@ public interface MemberMapper {
         member.setClause(post.getClause());
         return member;
     }
+
 }
