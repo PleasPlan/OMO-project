@@ -93,14 +93,18 @@ public class MemberService {
     /**
      * <회원 탈퇴>
      * 1. 탈퇴하려는 회원이 존재하는 회원인지 검증
-     * 2. 회원의 상태를 MEMBER_ACTIVE에서 MEMBER_QUIT로 변경
+     * 2. 사용자의 로그인 인증 상태 검증
+     * 3. 회원의 상태를 MEMBER_ACTIVE에서 MEMBER_QUIT로 변경
      * 4. 변경사항 저장
      */
     public Member quitMember(Long memberId){
         // 1. 탈퇴하려는 회원이 존재하는 회원인지 검증
         Member findMember = findVerifiedMember(memberId);
 
-        // 2. 회원의 상태를 MEMBER_ACTIVE에서 MEMBER_QUIT로 변경
+        // 2. 사용자의 로그인 인증 상태 검증
+        verifiedAuthenticatedMember(findMember.getMemberId());
+
+        // 3. 회원의 상태를 MEMBER_ACTIVE에서 MEMBER_QUIT로 변경
         findMember.setMemberStatus(Member.MemberStatus.MEMBER_QUIT);
 
         // 3. 변경사항 저장
@@ -148,5 +152,38 @@ public class MemberService {
         if (!password.equals(checkPassword)) { // 기존 입력한 패스워드와 확인용 패스워드가 일치 하지 않을 경우 예외처리
             throw new BusinessLogicException(ExceptionCode.PASSWORD_NOT_CORRECT);
         }
+    }
+
+    // 사용자 로그인 인증 상태 검증 메서드
+    private void verifiedAuthenticatedMember(Long memberId) {
+        if (getHeader("Authorization") == null) { // Authorization의 헤더 값(액세스 토큰)이 없으면 예외처리
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+
+        String jws = getHeader("Authorization").substring(7);
+
+        Long memberIdFromJws = getMemberIdFromJws(jws);
+        Long memberIdFromRequest = memberId;
+
+        if (memberIdFromJws != memberIdFromRequest) { // 토큰을 통해 얻은 memberId의 값이 인증하고자 하는 회원의 memberId와 다른 경우 예외처리
+            throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
+        }
+    }
+
+    // 헤더 값 추출 메서드
+    private String getHeader(String header) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        log.info("request.getHeader(header) : {}", request.getHeader(header));
+
+        return request.getHeader(header);
+    }
+
+    // jws에서 memberId 추출하는 메서드
+    private Long getMemberIdFromJws(String jws) {
+        String base64EncodedSecretKey = jwtTokenizer.encodeBase64SecretKey(jwtTokenizer.getSecretKey());
+        Map<String, Object> claims = jwtTokenizer.getClaims(jws, base64EncodedSecretKey).getBody();
+
+        log.info("memberId : {}", claims.get("memberId"));
+        return Long.parseLong(claims.get("memberId").toString());
     }
 }
