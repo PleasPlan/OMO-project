@@ -11,6 +11,7 @@ import com.OmObe.OmO.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -35,6 +36,7 @@ public class SecurityConfiguration {
     private final TokenService tokenService;
     private final OAuth2MemberService oAuth2MemberService;
     private final MemberRepository memberRepository;
+    private final RedisTemplate redisTemplate;
 
     // http 요청에 대한 보안 설정 구성
     @Bean
@@ -93,7 +95,7 @@ public class SecurityConfiguration {
             jwtAuthenticationFilter.setAuthenticationSuccessHandler(new MemberAuthenticationSuccessHandler());
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new MemberAuthenticationFailureHandler());
 
-            JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenizer, authorityUtils);
+            JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenizer, authorityUtils, redisTemplate);
 
             builder
                     .addFilter(jwtAuthenticationFilter)
