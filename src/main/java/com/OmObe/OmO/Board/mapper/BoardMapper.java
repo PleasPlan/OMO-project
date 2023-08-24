@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Component
@@ -67,6 +68,20 @@ public class BoardMapper {
 
             BoardDto.Response response = new BoardDto.Response(boardId,title,content,type,writer,createdTime,likeCount,viewCount,commentResponseDtos);
             return response;
+        }
+    }
+
+    public List<BoardDto.Response> boardsToBoardResponseDtos(List<Board> boards){
+        if(boards == null){
+            return null;
+        }  else {
+            List<BoardDto.Response> responses = new ArrayList<>();
+            Iterator iterator = boards.iterator();
+            while(iterator.hasNext()){
+                Board board = (Board) iterator.next();
+                responses.add(this.boardToBoardResponseDto(board));
+            }
+            return responses;
         }
     }
 }

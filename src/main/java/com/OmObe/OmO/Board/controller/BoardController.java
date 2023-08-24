@@ -3,6 +3,7 @@ package com.OmObe.OmO.Board.controller;
 import com.OmObe.OmO.Board.dto.BoardDto;
 import com.OmObe.OmO.Board.entity.Board;
 import com.OmObe.OmO.Board.mapper.BoardMapper;
+import com.OmObe.OmO.Board.response.MultiResponseDto;
 import com.OmObe.OmO.Board.service.BoardService;
 import com.OmObe.OmO.exception.BusinessLogicException;
 import com.OmObe.OmO.exception.ExceptionCode;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -45,13 +48,30 @@ public class BoardController {
 *
 * */
 
-    @SneakyThrows
+    /** TODO: JWT 서비스 시에 실행할 것.
+    /*@SneakyThrows
     @PostMapping("/write")
     public ResponseEntity postBoard(@Valid @RequestBody BoardDto.Post postDto,
                                      @RequestHeader("Authorization") String Token){
         Board board = mapper.boardPostDtoToBoard(postDto);
         Member writer = getWriterInJWTToken(Token);
         board.setMember(writer);
+
+        Board response = boardService.createBoard(board);
+        return new ResponseEntity<>(mapper.boardToBoardResponseDto(response),
+                HttpStatus.CREATED);
+    }*/
+
+    // TODO: JWT 서비스 시에 삭제할 것.
+    @SneakyThrows
+    @PostMapping("/write")
+    public ResponseEntity postBoard(@Valid @RequestBody BoardDto.Post postDto,
+                                    @RequestParam Long memberId){
+        Board board = mapper.boardPostDtoToBoard(postDto);
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+        Member findMember = optionalMember.orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        board.setMember(findMember);
 
         Board response = boardService.createBoard(board);
         return new ResponseEntity<>(mapper.boardToBoardResponseDto(response),
@@ -73,10 +93,31 @@ public class BoardController {
 
     @GetMapping("/{board-id}")
     public ResponseEntity getBoard(@PathVariable("board-id") @Positive long boardId){
-        Board board = boardService.findBoard(boardId);
+        Board board = boardService.getBoard(boardId);
 
         return new ResponseEntity<>(mapper.boardToBoardResponseDto(board),
                 HttpStatus.OK);
+    }
+
+    // TODO : size를 고정하고 싶은데 한번 로드할 때 얼마나 할지로 나중에 회의로 정해야겠당.
+
+    // 다음 페이지가 있을 때 다음 페이지 로드 가능
+    @GetMapping("/Trouble")
+    public ResponseEntity getTroubleBoards(@RequestParam(defaultValue = "1") int page,
+                                           @Positive @RequestParam(defaultValue = "10") int size,
+                                           @RequestParam String sorting){
+        Slice<Board> pageBoards = null;
+            switch (sorting){
+                case "createdAt":
+                    pageBoards = boardService.findBoardsByCreatedAt("TROUBLE",page-1, size);
+                    break;
+                case "viewCount":
+                    pageBoards = boardService.findBoardsByViewCount("TROUBLE", page-1, size);
+            }
+        List<Board> boards = pageBoards.getContent();
+        return new ResponseEntity<>(
+                new MultiResponseDto<>(mapper.boardsToBoardResponseDtos(boards),pageBoards),HttpStatus.OK);
+
     }
 
     @DeleteMapping("/{board-id}")

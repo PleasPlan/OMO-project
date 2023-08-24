@@ -38,6 +38,7 @@ public class BoardDto {
         private long BoardId;
         private String title;
         private String content;
+        private String type;
     }
 
     @Getter
