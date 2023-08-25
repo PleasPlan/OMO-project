@@ -53,6 +53,7 @@ public class SecurityConfiguration {
                 .and()
                 .formLogin().disable() // 폼 로그인 방식 비활성화
                 .httpBasic().disable() // HTTP 기본 인증 비활성화
+                .logout().disable()
                 .exceptionHandling()
                 .authenticationEntryPoint(new MemberAuthenticationEntryPoint()) // MemberAuthenticationEntryPoint 추가
                 .accessDeniedHandler(new MemberAccessDeniedHandler()) // MemberAccessDeniedHandler 추가
@@ -61,8 +62,8 @@ public class SecurityConfiguration {
                 .and()
                 .authorizeHttpRequests(authorize -> authorize
                         .antMatchers(HttpMethod.POST,"/signup").permitAll()
-                        .antMatchers(HttpMethod.POST, "/logut").permitAll()
-                        .anyRequest().authenticated()
+                        .antMatchers(HttpMethod.POST, "/logout").permitAll()
+                        .anyRequest().permitAll()
                 ).oauth2Login(oauth2 -> oauth2 // oauth2 인증 활성화
                         .successHandler(new OAuth2MemberSuccessHandler(tokenService, oAuth2MemberService, authorityUtils)));
 
