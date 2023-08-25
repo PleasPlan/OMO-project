@@ -1,14 +1,22 @@
 package com.OmObe.OmO.auth.filter;
 
 import com.OmObe.OmO.auth.jwt.JwtTokenizer;
+import com.OmObe.OmO.auth.utils.ErrorResponder;
 import com.OmObe.OmO.auth.utils.MemberAuthorityUtils;
+import com.OmObe.OmO.exception.BusinessLogicException;
+import com.OmObe.OmO.exception.ExceptionCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -22,17 +30,29 @@ import java.util.Map;
 
 // jwt 검증 필터
 @Slf4j
+@RequiredArgsConstructor
 public class JwtVerificationFilter extends OncePerRequestFilter { // request 당 한 번만 실행되는 Security Filter
     private final JwtTokenizer jwtTokenizer;
     private final MemberAuthorityUtils authorityUtils;
-
-    public JwtVerificationFilter(JwtTokenizer jwtTokenizer, MemberAuthorityUtils authorityUtils) {
-        this.jwtTokenizer = jwtTokenizer;
-        this.authorityUtils = authorityUtils;
-    }
+    private final RedisTemplate redisTemplate;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        log.info("# JwtVerificationFilter");
+
+//        if (checkResponseMethodURI(request)) { // 토큰이 필요없는 요청인지 확인
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+
+        String accessToken = request.getHeader("Authorization").replace("Bearer ", "");
+        String isLogout = (String) redisTemplate.opsForValue().get(accessToken);
+
+        if (!StringUtils.isEmpty(isLogout)) { // redis에 AccessToken이 있다면 로그아웃된 토큰이므로 예외처리
+            log.info("# Invalid Token");
+            throw new UnsupportedJwtException("Invalid Token!");
+        }
+
         try{
             Map<String, Object> claims = verifyJws(request); // jwt 검증
             setAuthenticationToContext(claims); // Authentication 객체 SecurityContext에 저장

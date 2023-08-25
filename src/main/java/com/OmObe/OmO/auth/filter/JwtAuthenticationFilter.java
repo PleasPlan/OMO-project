@@ -4,8 +4,11 @@ import com.OmObe.OmO.auth.jwt.JwtTokenizer;
 import com.OmObe.OmO.auth.jwt.TokenService;
 import com.OmObe.OmO.member.dto.MemberLoginDto;
 import com.OmObe.OmO.member.entity.Member;
+import com.OmObe.OmO.redis.RedisService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,16 +23,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter { // username/password 기반 인증 처리
     private final AuthenticationManager authenticationManager;
     private final JwtTokenizer jwtTokenizer;
     private final TokenService tokenService;
-
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenizer jwtTokenizer, TokenService tokenService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenizer = jwtTokenizer;
-        this.tokenService = tokenService;
-    }
+    private final RedisService redisService;
 
     // 인증 시도 로직
     @SneakyThrows
@@ -62,6 +62,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.setHeader("Refresh", refreshToken);
         response.setHeader("memberId", memberId);
+
+        // redis에 로그인 한 사용자의 refresh token이 없으면 해당 토큰을 redis에 저장
+        if (redisService.getRefreshToken(refreshToken) == null) {
+            redisService.setRefreshToken(refreshToken, member.getEmail(), jwtTokenizer.getRefreshTokenExpirationMinutes());
+            log.info("Refresh Token Saved in Redis");
+        }
 
         // 로그인 인증 성공 후 MemberAuthenticationSuccessHandler의 onAuthenticationSuccess() 호출
         this.getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
