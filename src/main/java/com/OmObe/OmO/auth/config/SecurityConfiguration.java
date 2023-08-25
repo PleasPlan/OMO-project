@@ -1,6 +1,7 @@
 package com.OmObe.OmO.auth.config;
 
 import com.OmObe.OmO.auth.filter.JwtAuthenticationFilter;
+import com.OmObe.OmO.auth.filter.JwtLogoutFilter;
 import com.OmObe.OmO.auth.filter.JwtVerificationFilter;
 import com.OmObe.OmO.auth.handler.*;
 import com.OmObe.OmO.auth.jwt.JwtTokenizer;
@@ -61,7 +62,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .antMatchers(HttpMethod.POST,"/signup").permitAll()
                         .antMatchers(HttpMethod.POST, "/logut").permitAll()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 ).oauth2Login(oauth2 -> oauth2 // oauth2 인증 활성화
                         .successHandler(new OAuth2MemberSuccessHandler(tokenService, oAuth2MemberService, authorityUtils)));
 
@@ -99,10 +100,14 @@ public class SecurityConfiguration {
 
             JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenizer, authorityUtils, redisTemplate);
 
+            JwtLogoutFilter jwtLogoutFilter = new JwtLogoutFilter(jwtTokenizer, redisService);
+
             builder
-                    .addFilter(jwtAuthenticationFilter)
-                    .addFilterAfter(jwtVerificationFilter, JwtAuthenticationFilter.class)
-                    .addFilterAfter(jwtVerificationFilter, OAuth2LoginAuthenticationFilter.class);
+                    .addFilter(jwtAuthenticationFilter) // spring security filter chain에 JwtAuthenticationFilter 추가
+                    .addFilterAfter(jwtVerificationFilter, JwtAuthenticationFilter.class) // JwtAuthenticationFilter jwtVerificationFilter 추가
+                    .addFilterAfter(jwtVerificationFilter, OAuth2LoginAuthenticationFilter.class) // OAuth2LoginAuthenticationFilter 이후 JwtVerificationFilter 추가
+                    .addFilterAfter(jwtLogoutFilter, JwtVerificationFilter.class); // JwtVerificationFilter 이후 jwtLogoutFilter 추가
+
         }
     }
 }

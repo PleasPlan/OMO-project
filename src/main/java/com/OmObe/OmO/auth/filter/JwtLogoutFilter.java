@@ -31,7 +31,7 @@ public class JwtLogoutFilter extends OncePerRequestFilter {
         String refreshToken = request.getHeader("Refresh");
 
         // 요청 url이 POST /logout 이 아닌 경우 필터를 적용하지 않음 || 리프레시 토큰이 없으면 필터 적용하지 않음
-        return !request.getMethod().equals("DELETE")
+        return !request.getMethod().equals("POST")
                 || !uri.equals("/logout")
                 || !StringUtils.hasText(refreshToken);
     }
