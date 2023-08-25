@@ -7,6 +7,7 @@ import com.OmObe.OmO.exception.BusinessLogicException;
 import com.OmObe.OmO.exception.ExceptionCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -49,7 +50,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter { // request 당
 
         if (!StringUtils.isEmpty(isLogout)) { // redis에 AccessToken이 있다면 로그아웃된 토큰이므로 예외처리
             log.info("# Invalid Token");
-            ErrorResponder.sendErrorResponse(response, HttpStatus.UNAUTHORIZED);
+            throw new UnsupportedJwtException("Invalid Token!");
         }
 
         try{
