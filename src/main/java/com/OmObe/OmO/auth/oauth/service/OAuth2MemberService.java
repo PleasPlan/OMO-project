@@ -67,40 +67,12 @@ public class OAuth2MemberService implements OAuth2UserService<OAuth2UserRequest 
             String tmpPassword = UUID.randomUUID().toString().replace("-", "").substring(0,20);
             log.info("tmpPassword : {}", tmpPassword);
 
-            // db 저장용 닉네임 생성
-            String tmpNickname = UUID.randomUUID().toString().replace("-", "").substring(0, 7);
-            log.info("tmpNickname : {}", tmpNickname);
-
-            // db 저장용  mbti 설정
-            int tmpMbti = 0;
-            log.info("tmpMbti : {}", tmpMbti);
-
-            // db 저장용 생년월일
-            int tmpBirthYear = 1999;
-            int tmpBirthMonth = 7;
-            int tmpBirthDay = 11;
-            // member.setBirth(LocalDate.of(member.getBirthYear(), member.getBirthMonth(), member.getBirthDay()));
-//            LocalDate tmpBirth = LocalDate.now(); // 임시로 현재 시간으로 설정
-//            log.info("tmpBirth : {}", tmpBirth);
-
-            // 성별
-            int tmpGender = 0;
-            // <임시 저장 - 회원 정보 수정에서 수정해야 함>
-
             member = new Member();
             member.setEmail(email);
             member.setPassword(tmpPassword);
             member.setOAuth(true);
-            member.setMbit(tmpMbti);
             member.setProfileImageUrl(profileImageUrl);
             member.setRoles(authorities);
-            member.setNickname(tmpNickname);
-//            member.setBirth(tmpBirth);
-            member.setGender(tmpGender);
-            member.setBirthYear(tmpBirthYear);
-            member.setBirthMonth(tmpBirthMonth);
-            member.setBirthDay(tmpBirthDay);
-            member.setBirth(LocalDate.of(member.getBirthYear(), member.getBirthMonth(), member.getBirthDay()));
             member.setClause(true);
             member.setMemberStatus(Member.MemberStatus.MEMBER_ACTIVE);
 
