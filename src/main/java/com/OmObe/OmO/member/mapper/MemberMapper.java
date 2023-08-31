@@ -11,8 +11,8 @@ public interface MemberMapper {
     // 자동 매핑하면 mbti만 저장되지 않아서 수동으로 매핑
     default Member memberPostDtoToMember(MemberDto.Post post){
         Member member = new Member();
-        member.setEmail(post.getEmail());
-        member.setPassword(post.getPassword());
+//        member.setEmail(post.getEmail());
+//        member.setPassword(post.getPassword());
         member.setBirthYear(post.getBirthYear());
         member.setBirthMonth(post.getBirthMonth());
         member.setBirthDay(post.getBirthDay());

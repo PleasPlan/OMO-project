@@ -62,7 +62,7 @@ public class SecurityConfiguration {
                 .and()
                 .authorizeHttpRequests(authorize -> authorize
                         .antMatchers(HttpMethod.POST,"/signup").permitAll()
-                        .antMatchers(HttpMethod.POST, "/logout").permitAll()
+//                        .antMatchers(HttpMethod.POST, "/logout").permitAll()
                         .anyRequest().permitAll()
                 ).oauth2Login(oauth2 -> oauth2 // oauth2 인증 활성화
                         .successHandler(new OAuth2MemberSuccessHandler(tokenService, oAuth2MemberService, authorityUtils)));
@@ -95,7 +95,7 @@ public class SecurityConfiguration {
             AuthenticationManager authentic = builder.getSharedObject(AuthenticationManager.class);
 
             JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authentic, jwtTokenizer, tokenService, redisService);
-            jwtAuthenticationFilter.setFilterProcessesUrl("/login");
+//            jwtAuthenticationFilter.setFilterProcessesUrl("/login");
             jwtAuthenticationFilter.setAuthenticationSuccessHandler(new MemberAuthenticationSuccessHandler());
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new MemberAuthenticationFailureHandler());
 

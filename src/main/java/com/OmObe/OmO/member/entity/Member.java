@@ -34,29 +34,25 @@ public class Member {
 //    @Column(length = 300, nullable = false)
 //    private String checkPassword; // 비밀번호 확인
 
-    @Column(nullable = false)
+    @Column
     private int birthYear; // 생년월일 - 년
 
-    @Column(nullable = false)
-    @Max(12)
-    @Min(1)
+    @Column
     private int birthMonth; // 생년월일 - 월
 
-    @Column(nullable = false)
-    @Max(31)
-    @Min(1)
+    @Column
     private int birthDay; // 생년월일 - 일
 
     @Column//(nullable = false)
     private LocalDate birth; // 생년월일
 
-    @Column(length = 30, nullable = false, unique = true)
+    @Column(length = 30, unique = true)
     private String nickname; // 닉네임
 
-    @Column(nullable = false)
+    @Column
     private int mbit; // mbti 유형
 
-    @Column(nullable = false)
+    @Column
     private int gender; // 성별
 
     @Column(nullable = false)
@@ -76,6 +72,9 @@ public class Member {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
     public void setMemberId(Long memberId) {
         this.memberId = memberId;
     }
@@ -93,10 +92,6 @@ public class Member {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public void setBirth(LocalDate birth) {
@@ -138,10 +133,6 @@ public class Member {
     public void setOAuth(boolean OAuth) {
         isOAuth = OAuth;
     }
-
-    //    public void setCheckPassword(String checkPassword) {
-//        this.checkPassword = checkPassword;
-//    }
 
     public void setMemberStatus(MemberStatus memberStatus) {
         this.memberStatus = memberStatus;
