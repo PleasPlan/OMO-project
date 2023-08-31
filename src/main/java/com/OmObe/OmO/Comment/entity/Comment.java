@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Getter
@@ -20,6 +21,12 @@ public class Comment {
     @Column()
     private String content; // 댓글 내용
 
+    @Column(nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();    // 게시글 생성 일자
+
+    @Column(nullable = false)
+    private LocalDateTime modifiedAt = LocalDateTime.now();   // 게시글 최종 수정 일자
+
     @ManyToOne
     @JoinColumn(name = "BOARD_ID")
     private Board board;
@@ -27,4 +34,6 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member; // 댓글 작성자
+
+
 }

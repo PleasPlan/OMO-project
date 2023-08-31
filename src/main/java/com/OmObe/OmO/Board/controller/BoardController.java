@@ -5,6 +5,8 @@ import com.OmObe.OmO.Board.entity.Board;
 import com.OmObe.OmO.Board.mapper.BoardMapper;
 import com.OmObe.OmO.Board.response.MultiResponseDto;
 import com.OmObe.OmO.Board.service.BoardService;
+import com.OmObe.OmO.Liked.entity.Liked;
+import com.OmObe.OmO.Liked.repository.LikedRepository;
 import com.OmObe.OmO.exception.BusinessLogicException;
 import com.OmObe.OmO.exception.ExceptionCode;
 import com.OmObe.OmO.member.entity.Member;
@@ -34,11 +36,13 @@ public class BoardController {
     private final BoardService boardService;
     private final BoardMapper mapper;
     private final MemberRepository memberRepository;
+    private final LikedRepository likedRepository;
 
-    public BoardController(BoardService boardService, BoardMapper mapper, MemberRepository memberRepository) {
+    public BoardController(BoardService boardService, BoardMapper mapper, MemberRepository memberRepository, LikedRepository likedRepository) {
         this.boardService = boardService;
         this.mapper = mapper;
         this.memberRepository = memberRepository;
+        this.likedRepository = likedRepository;
     }
 
     /*
@@ -48,7 +52,7 @@ public class BoardController {
 *
 * */
 
-    /** TODO: JWT 서비스 시에 실행할 것.
+    /** TODO : JWT 서비스 시에 실행할 것.
     /*@SneakyThrows
     @PostMapping("/write")
     public ResponseEntity postBoard(@Valid @RequestBody BoardDto.Post postDto,
@@ -102,6 +106,7 @@ public class BoardController {
     // TODO : size를 고정하고 싶은데 한번 로드할 때 얼마나 할지로 나중에 회의로 정해야겠당.
 
     // 다음 페이지가 있을 때 다음 페이지 로드 가능
+    // 좋아요 순, 최신 순, 댓글 많은 순, 조회수 많은 순
     @GetMapping("/Trouble")
     public ResponseEntity getTroubleBoards(@RequestParam(defaultValue = "1") int page,
                                            @Positive @RequestParam(defaultValue = "10") int size,
@@ -113,6 +118,13 @@ public class BoardController {
                     break;
                 case "viewCount":
                     pageBoards = boardService.findBoardsByViewCount("TROUBLE", page-1, size);
+                    break;
+                case "likes":
+                    pageBoards = boardService.findBoardsByLikes("TROUBLE", page-1, size);
+                    break;
+                case "comments":
+                    pageBoards = boardService.findBoardsByComments("TROUBLE", page-1, size);
+                    break;
             }
         List<Board> boards = pageBoards.getContent();
         return new ResponseEntity<>(
@@ -127,6 +139,31 @@ public class BoardController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    /** TODO : JWT 서비스 시에 실행할 것.
+    /*@PutMapping("/like")
+    public ResponseEntity likeBoard(@RequestHeader("boardId") long boardId,
+                                    @RequestHeader("Authorization") String Token) throws JsonProcessingException {
+        Member writer = getWriterInJWTToken(Token);
+
+
+        boardService.likesBoard(boardId, writer);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }*/
+
+    // TODO: JWT 서비스 시에 삭제할 것.
+    @PutMapping("/like")
+    public ResponseEntity likeBoard(@RequestHeader("boardId") long boardId,
+                                    @RequestHeader("memberId") long memberId){
+
+
+
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
+        Member findMember = optionalMember.orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+
+        boardService.likesBoard(boardId, findMember);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     
 
     // JWT 토큰을 해석하여 토큰 사용자를 알아내는 함수
