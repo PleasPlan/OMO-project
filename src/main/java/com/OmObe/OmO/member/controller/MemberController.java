@@ -30,10 +30,20 @@ public class MemberController {
     }
 
     // 회원 가입
-    @PostMapping("/signup")
-    public ResponseEntity postMember(@Valid @RequestBody MemberDto.Post post){
-//        Member member = mapper.memberPostDtoToMember(post);
-        memberService.createMember(post);
+//    @PostMapping("/signup")
+//    public ResponseEntity postMember(@Valid @RequestBody MemberDto.Post post){
+////        Member member = mapper.memberPostDtoToMember(post);
+//        memberService.createMember(post);
+//
+//        return new ResponseEntity<>(HttpStatus.CREATED);
+//    }
+
+    // 회원 추가 정보 입력
+    @PostMapping("/memberInfo/{memberId}")
+    public ResponseEntity addMemberInfo(@Valid @PathVariable("memberId") @Positive Long memberId,
+                                        @Valid @RequestBody MemberDto.Post post,
+                                        @RequestHeader(value = "Authorization") String token) {
+        memberService.addInfo(memberId, post);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
