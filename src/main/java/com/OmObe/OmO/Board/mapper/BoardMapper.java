@@ -76,9 +76,12 @@ public class BoardMapper {
             return null;
         }  else {
             List<BoardDto.Response> responses = new ArrayList<>();
-            Iterator iterator = boards.iterator();
+            /*Iterator iterator = boards.iterator();
             while(iterator.hasNext()){
                 Board board = (Board) iterator.next();
+                responses.add(this.boardToBoardResponseDto(board));
+            }*/
+            for(Board board:boards){
                 responses.add(this.boardToBoardResponseDto(board));
             }
             return responses;

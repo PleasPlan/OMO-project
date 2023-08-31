@@ -1,5 +1,6 @@
 package com.OmObe.OmO.member.entity;
 
+import com.OmObe.OmO.Liked.entity.Liked;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 프로필 이미지, 사용자 권한은 security 적용 후 구현할 예정
@@ -70,6 +73,17 @@ public class Member {
 //    public void setMemberId(Long memberId) {
 //        this.memberId = memberId;
 //    }
+
+    // TODO : Merge후 주석 해제할 것.
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
+    private List<Liked> likedList = new ArrayList<>();
+
+    public void addLikes(Liked liked){
+        this.likedList.add(liked);
+        liked.setMember(this);
+    }
+
 
     public void setEmail(String email) {
         this.email = email;

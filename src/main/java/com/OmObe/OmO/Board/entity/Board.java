@@ -45,10 +45,14 @@ public class Board {
     @OneToMany(mappedBy = "board",cascade = CascadeType.PERSIST)
     private List<Comment> comments = new ArrayList<>();
 
+    private Integer commentsCount = comments.size();
+    private Integer likesCount = likes.size();
+
     @ManyToOne
     @JoinColumn(name = "WRITER")
     private Member member;
 
+    // TODO : Member에 addLike를 추가해야한다.
     public void addLike(Liked liked){
         this.likes.add(liked);
         liked.setBoard(this);

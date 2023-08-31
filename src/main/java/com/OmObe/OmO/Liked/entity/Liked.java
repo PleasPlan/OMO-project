@@ -17,10 +17,19 @@ public class Liked {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long likedId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn
     private Member member;
 
-    @OneToOne
+    public void addMember(Member member){
+        this.member = member;
+    }
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn
     private Board board;
+
+    public void addBoard(Board board){
+        this.board = board;
+    }
 }
