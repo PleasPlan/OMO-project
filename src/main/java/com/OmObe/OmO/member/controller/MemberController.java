@@ -31,16 +31,17 @@ public class MemberController {
 
     // 회원 가입
     @PostMapping("/signup")
-    public ResponseEntity postMember(@Valid @RequestBody MemberDto.Post post) throws Exception {
-        Member member = mapper.memberPostDtoToMember(post);
-        memberService.createMember(member);
+    public ResponseEntity postMember(@Valid @RequestBody MemberDto.Post post){
+//        Member member = mapper.memberPostDtoToMember(post);
+        memberService.createMember(post);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     // 회원 탈퇴
     @PatchMapping("/member/{memberId}")
-    public ResponseEntity deleteMember(@Valid @PathVariable("memberId") @Positive Long memberId) throws Exception {
+    public ResponseEntity deleteMember(@Valid @PathVariable("memberId") @Positive Long memberId,
+                                       @RequestHeader(value = "Authorization") String token){
         memberService.quitMember(memberId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

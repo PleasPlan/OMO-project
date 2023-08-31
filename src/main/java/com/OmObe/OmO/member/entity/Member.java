@@ -31,6 +31,9 @@ public class Member {
     @Column(length = 300, nullable = false)
     private String password; // 비밀번호
 
+//    @Column(length = 300, nullable = false)
+//    private String checkPassword; // 비밀번호 확인
+
     @Column(nullable = false)
     private int birthYear; // 생년월일 - 년
 
@@ -59,20 +62,23 @@ public class Member {
     @Column(nullable = false)
     private Boolean clause; // 이용약관 동의 여부
 
-//    @Column
-//    private String profileImageUrl; // 프로필 이미지 url
+    @Column
+    private String profileImageUrl; // 프로필 이미지 url
+
+    @Column
+    private boolean isOAuth; // OAuth2 사용 여부
 
     @Enumerated(value = EnumType.STRING)
     @Column(length = 20, nullable = false)
     private MemberStatus memberStatus = MemberStatus.MEMBER_ACTIVE; // 회원 상태 -> 기본값은 활동 상태
 
-//    @Enumerated(value = EnumType.STRING)
-//    @Column(nullable = false)
-//    private Role role = Role.MEMBER; // 회원 권한(일반 회원 / 관리자)
+    // 회원의 권한 정보 테이블과 매핑되는 정보
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles = new ArrayList<>();
 
-//    public void setMemberId(Long memberId) {
-//        this.memberId = memberId;
-//    }
+    public void setMemberId(Long memberId) {
+        this.memberId = memberId;
+    }
 
     // TODO : Merge후 주석 해제할 것.
 
@@ -125,35 +131,36 @@ public class Member {
         this.clause = clause;
     }
 
-//    public void setProfileImageUrl(String profileImageUrl) {
-//        this.profileImageUrl = profileImageUrl;
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public void setOAuth(boolean OAuth) {
+        isOAuth = OAuth;
+    }
+
+    //    public void setCheckPassword(String checkPassword) {
+//        this.checkPassword = checkPassword;
 //    }
 
     public void setMemberStatus(MemberStatus memberStatus) {
         this.memberStatus = memberStatus;
     }
 
-//    public void setRole(Role role) {
-//        this.role = role;
-//    }
-//
-//    // 회원 권한(일반 / 관리자)
-//    public enum Role{
-//        MEMBER("일반 회원"),
-//        ADMIN("관리자");
-//
-//        @Getter
-//        private String roleStatus;
-//
-//        Role(String roleStatus) {
-//            this.roleStatus = roleStatus;
-//        }
-//    }
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    public enum MemberRole{
+        ROLE_USER,
+        ROLE_ADMIN;
+    }
 
     // 회원 상태(활동 / 탈퇴)
-    public enum MemberStatus{
+    public enum MemberStatus {
         MEMBER_ACTIVE("활동"),
-        MEMBER_QUIT("탈퇴");
+        MEMBER_QUIT("탈퇴"),
+        ;
 
         @Getter
         private String status;
