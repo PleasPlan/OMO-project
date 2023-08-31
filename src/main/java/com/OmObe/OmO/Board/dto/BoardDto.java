@@ -26,9 +26,10 @@ public class BoardDto {
         QNA : QnA 게시판
         FREE : 자유 게시판
         TROUBLE : 고민 게시판
+        FAQ : QnA 게시판 - 자주하는 질문
         */
 
-        @Pattern(regexp = "^QNA|FREE|TROUBLE$")
+        @Pattern(regexp = "^QNA|FREE|TROUBLE|FAQ$")
         private String type;
     }
 

@@ -132,6 +132,78 @@ public class BoardController {
 
     }
 
+    @GetMapping("/Free")
+    public ResponseEntity getFreeBoards(@RequestParam(defaultValue = "1") int page,
+                                           @Positive @RequestParam(defaultValue = "10") int size,
+                                           @RequestParam String sorting){
+        Slice<Board> pageBoards = null;
+        switch (sorting){
+            case "createdAt":
+                pageBoards = boardService.findBoardsByCreatedAt("FREE",page-1, size);
+                break;
+            case "viewCount":
+                pageBoards = boardService.findBoardsByViewCount("FREE", page-1, size);
+                break;
+            case "likes":
+                pageBoards = boardService.findBoardsByLikes("FREE", page-1, size);
+                break;
+            case "comments":
+                pageBoards = boardService.findBoardsByComments("FREE", page-1, size);
+                break;
+        }
+        List<Board> boards = pageBoards.getContent();
+        return new ResponseEntity<>(
+                new MultiResponseDto<>(mapper.boardsToBoardResponseDtos(boards),pageBoards),HttpStatus.OK);
+    }
+
+    @GetMapping("/Qna")
+    public ResponseEntity getQnaBoards(@RequestParam(defaultValue = "1") int page,
+                                        @Positive @RequestParam(defaultValue = "10") int size,
+                                        @RequestParam String sorting){
+        Slice<Board> pageBoards = null;
+        switch (sorting){
+            case "createdAt":
+                pageBoards = boardService.findBoardsByCreatedAt("QNA",page-1, size);
+                break;
+            case "viewCount":
+                pageBoards = boardService.findBoardsByViewCount("QNA", page-1, size);
+                break;
+            case "likes":
+                pageBoards = boardService.findBoardsByLikes("QNA", page-1, size);
+                break;
+            case "comments":
+                pageBoards = boardService.findBoardsByComments("QNA", page-1, size);
+                break;
+        }
+        List<Board> boards = pageBoards.getContent();
+        return new ResponseEntity<>(
+                new MultiResponseDto<>(mapper.boardsToBoardResponseDtos(boards),pageBoards),HttpStatus.OK);
+    }
+
+    @GetMapping("/Qna/FAQ")
+    public ResponseEntity getFaqBoards(@RequestParam(defaultValue = "1") int page,
+                                        @Positive @RequestParam(defaultValue = "10") int size,
+                                        @RequestParam String sorting){
+        Slice<Board> pageBoards = null;
+        switch (sorting){
+            case "createdAt":
+                pageBoards = boardService.findBoardsByCreatedAt("FAQ",page-1, size);
+                break;
+            case "viewCount":
+                pageBoards = boardService.findBoardsByViewCount("FAQ", page-1, size);
+                break;
+            case "likes":
+                pageBoards = boardService.findBoardsByLikes("FAQ", page-1, size);
+                break;
+            case "comments":
+                pageBoards = boardService.findBoardsByComments("FAQ", page-1, size);
+                break;
+        }
+        List<Board> boards = pageBoards.getContent();
+        return new ResponseEntity<>(
+                new MultiResponseDto<>(mapper.boardsToBoardResponseDtos(boards),pageBoards),HttpStatus.OK);
+    }
+
     @DeleteMapping("/{board-id}")
     public ResponseEntity deleteBoard(@PathVariable("board-id") @Positive long boardId){
         boardService.deleteBoard(boardId);

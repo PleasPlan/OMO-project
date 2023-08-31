@@ -14,8 +14,5 @@ import java.util.Optional;
 
 @Repository
 public interface BoardRepository extends JpaRepository<Board,Long>, JpaSpecificationExecutor<Board> {
-//    @Query(value = "select board from Board board where board.type = :type")
-//    Slice<Board> findByType(@Param("type") String type, Pageable pageable);
-
     Optional<Board> findById(long boardId);
 }

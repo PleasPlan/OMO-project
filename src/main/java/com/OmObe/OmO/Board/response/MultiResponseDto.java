@@ -1,8 +1,6 @@
 package com.OmObe.OmO.Board.response;
 
-import com.OmObe.OmO.Board.entity.Board;
 import lombok.Getter;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 
 import java.util.List;
