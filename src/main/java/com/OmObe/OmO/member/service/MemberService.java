@@ -1,25 +1,47 @@
 package com.OmObe.OmO.member.service;
 
+import com.OmObe.OmO.auth.jwt.JwtTokenizer;
+import com.OmObe.OmO.auth.utils.MemberAuthorityUtils;
 import com.OmObe.OmO.exception.BusinessLogicException;
 import com.OmObe.OmO.exception.ExceptionCode;
+import com.OmObe.OmO.member.dto.MemberDto;
 import com.OmObe.OmO.member.entity.Member;
 import com.OmObe.OmO.member.mapper.MemberMapper;
 import com.OmObe.OmO.member.repository.MemberRepository;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @Slf4j
+@Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final MemberAuthorityUtils authorityUtils;
+    private final MemberMapper mapper;
+    private final JwtTokenizer jwtTokenizer;
 
-    @Autowired
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository,
+                         PasswordEncoder passwordEncoder,
+                         MemberAuthorityUtils authorityUtils,
+                         MemberMapper mapper,
+                         JwtTokenizer jwtTokenizer) {
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authorityUtils = authorityUtils;
+        this.mapper = mapper;
+        this.jwtTokenizer = jwtTokenizer;
     }
 
     /**
@@ -29,9 +51,13 @@ public class MemberService {
      * 2. 닉네임 중복 확인
      * 3. 회원 상태를 활동 중으로 설정
      * 4. 입력받은 생년월일 저장
-     * 5. 1~4번의 절차가 모두 완료되면 회원 데이터 저장
+     * 5. 패스워드 확인
+     * 6. 패스워드 암호화
+     * 7. 권한 db에 저장
+     * 8. 1~7번의 절차가 모두 완료되면 회원 데이터 저장
      */
-    public Member createMember(Member member){
+    public Member createMember(MemberDto.Post post){
+        Member member = mapper.memberPostDtoToMember(post);
         // 1. 이메일 중복 확인
         verifyExistsEmail(member.getEmail());
 
@@ -43,9 +69,22 @@ public class MemberService {
 
         // 4. 입력받은 생년월일 저장
         member.setBirth(LocalDate.of(member.getBirthYear(), member.getBirthMonth(), member.getBirthDay()));
-        log.info("birth : {}", member.getBirth());
 
-        // 5. 1~4번의 절차가 모두 완료되면 회원 데이터 저장
+        // 5. 패스워드 확인
+        String checkPassword = post.getCheckPassword();
+        verifyPassword(member.getPassword(), checkPassword);
+//        log.info("password : {}", member.getPassword());
+//        log.info("checkPassword : {}", post.getCheckPassword());
+
+        // 6. 패스워드 암호화
+        String encryptedPassword = passwordEncoder.encode(member.getPassword());
+        member.setPassword(encryptedPassword);
+
+        // 7. 권한 db에 저장
+        List<String> roles = authorityUtils.createRoles(member.getEmail());
+        member.setRoles(roles);
+
+        // 8. 1~7번의 절차가 모두 완료되면 회원 데이터 저장
         Member savedMember = memberRepository.save(member);
 
         return savedMember;
@@ -54,14 +93,18 @@ public class MemberService {
     /**
      * <회원 탈퇴>
      * 1. 탈퇴하려는 회원이 존재하는 회원인지 검증
-     * 2. 회원의 상태를 MEMBER_ACTIVE에서 MEMBER_QUIT로 변경
-     * 3. 변경사항 저장
+     * 2. 사용자의 로그인 인증 상태 검증
+     * 3. 회원의 상태를 MEMBER_ACTIVE에서 MEMBER_QUIT로 변경
+     * 4. 변경사항 저장
      */
     public Member quitMember(Long memberId){
         // 1. 탈퇴하려는 회원이 존재하는 회원인지 검증
         Member findMember = findVerifiedMember(memberId);
 
-        // 2. 회원의 상태를 MEMBER_ACTIVE에서 MEMBER_QUIT로 변경
+        // 2. 사용자의 로그인 인증 상태 검증
+        verifiedAuthenticatedMember(findMember.getMemberId());
+
+        // 3. 회원의 상태를 MEMBER_ACTIVE에서 MEMBER_QUIT로 변경
         findMember.setMemberStatus(Member.MemberStatus.MEMBER_QUIT);
 
         // 3. 변경사항 저장
@@ -86,7 +129,7 @@ public class MemberService {
         }
     }
 
-    // 회원 존재 여부 검증 메서드
+    // 회원 존재 여부 검증 메서드 - memberId로 검증
     public Member findVerifiedMember(Long memberId){
         Optional<Member> optionalMember = memberRepository.findById(memberId);
         Member findMember = optionalMember.orElseThrow(() ->
@@ -95,5 +138,52 @@ public class MemberService {
         return findMember;
     }
 
+    // 회원 존재 여부 검증 메서드 - email로 검증
+    public Member findVerifiedMemberByEmail(String email) {
+        Optional<Member> optionalMember = memberRepository.findByEmail(email);
+        Member findMember = optionalMember.orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
+        return findMember;
+    }
+
+    // 패스워드 확인 메서드
+    public void verifyPassword(String password, String checkPassword) {
+        if (!password.equals(checkPassword)) { // 기존 입력한 패스워드와 확인용 패스워드가 일치 하지 않을 경우 예외처리
+            throw new BusinessLogicException(ExceptionCode.PASSWORD_NOT_CORRECT);
+        }
+    }
+
+    // 사용자 로그인 인증 상태 검증 메서드
+    private void verifiedAuthenticatedMember(Long memberId) {
+        if (getHeader("Authorization") == null) { // Authorization의 헤더 값(액세스 토큰)이 없으면 예외처리
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+
+        String jws = getHeader("Authorization").substring(7);
+
+        Long memberIdFromJws = getMemberIdFromJws(jws);
+        Long memberIdFromRequest = memberId;
+
+        if (memberIdFromJws != memberIdFromRequest) { // 토큰을 통해 얻은 memberId의 값이 인증하고자 하는 회원의 memberId와 다른 경우 예외처리
+            throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
+        }
+    }
+
+    // 헤더 값 추출 메서드
+    private String getHeader(String header) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        log.info("request.getHeader(header) : {}", request.getHeader(header));
+
+        return request.getHeader(header);
+    }
+
+    // jws에서 memberId 추출하는 메서드
+    private Long getMemberIdFromJws(String jws) {
+        String base64EncodedSecretKey = jwtTokenizer.encodeBase64SecretKey(jwtTokenizer.getSecretKey());
+        Map<String, Object> claims = jwtTokenizer.getClaims(jws, base64EncodedSecretKey).getBody();
+
+        log.info("memberId : {}", claims.get("memberId"));
+        return Long.parseLong(claims.get("memberId").toString());
+    }
 }
