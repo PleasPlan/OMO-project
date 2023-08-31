@@ -56,38 +56,76 @@ public class MemberService {
      * 7. 권한 db에 저장
      * 8. 1~7번의 절차가 모두 완료되면 회원 데이터 저장
      */
-    public Member createMember(MemberDto.Post post){
-        Member member = mapper.memberPostDtoToMember(post);
-        // 1. 이메일 중복 확인
-        verifyExistsEmail(member.getEmail());
+//    public Member createMember(MemberDto.Post post){
+//        Member member = mapper.memberPostDtoToMember(post);
+//        // 1. 이메일 중복 확인
+//        verifyExistsEmail(member.getEmail());
+//
+//        // 2. 닉네임 중복 확인
+//        verifyExistsNickname(member.getNickname());
+//
+//        // 3. 회원 상태를 활동 중으로 설정
+//        member.setMemberStatus(Member.MemberStatus.MEMBER_ACTIVE);
+//
+//        // 4. 입력받은 생년월일 저장
+//        member.setBirth(LocalDate.of(member.getBirthYear(), member.getBirthMonth(), member.getBirthDay()));
+//
+//        // 5. 패스워드 확인
+//        String checkPassword = post.getCheckPassword();
+//        verifyPassword(member.getPassword(), checkPassword);
+////        log.info("password : {}", member.getPassword());
+////        log.info("checkPassword : {}", post.getCheckPassword());
+//
+//        // 6. 패스워드 암호화
+//        String encryptedPassword = passwordEncoder.encode(member.getPassword());
+//        member.setPassword(encryptedPassword);
+//
+//        // 7. 권한 db에 저장
+//        List<String> roles = authorityUtils.createRoles(member.getEmail());
+//        member.setRoles(roles);
+//
+//        // 8. 1~7번의 절차가 모두 완료되면 회원 데이터 저장
+//        Member savedMember = memberRepository.save(member);
+//
+//        return savedMember;
+//    }
 
-        // 2. 닉네임 중복 확인
+    /**
+     * <소셜 로그인 후 추가 정보 입력>
+     * 1. 존재하는 회원인지 확인
+     * 2. 사용자의 로그인 인증 상태 검증
+     * 3. 닉네임 중복 확인
+     * 4. 사용자 생년월일, 닉네임, mbti, 성별 저장
+     */
+    public Member addInfo(Long memberId, MemberDto.Post post) {
+        Member member = mapper.memberPostDtoToMember(post);
+
+        // 1. 존재하는 회원인지 확인
+        Member findMember = findVerifiedMember(memberId);
+
+        // 2. 사용자의 로그인 인증 상태 검증
+        verifiedAuthenticatedMember(memberId);
+
+        // 3. 닉네임 중복 확인
         verifyExistsNickname(member.getNickname());
 
-        // 3. 회원 상태를 활동 중으로 설정
-        member.setMemberStatus(Member.MemberStatus.MEMBER_ACTIVE);
+        // 4. 사용자 생년월일, 닉네임, mbti, 성별 저장
+        // 4-1. 생년월일 저장
+        findMember.setBirthYear(member.getBirthYear());
+        findMember.setBirthMonth(member.getBirthMonth());
+        findMember.setBirthDay(member.getBirthDay());
+        findMember.setBirth(LocalDate.of(findMember.getBirthYear(), findMember.getBirthMonth(), findMember.getBirthDay()));
 
-        // 4. 입력받은 생년월일 저장
-        member.setBirth(LocalDate.of(member.getBirthYear(), member.getBirthMonth(), member.getBirthDay()));
+        // 4-2. 닉네임 저장
+        findMember.setNickname(member.getNickname());
 
-        // 5. 패스워드 확인
-        String checkPassword = post.getCheckPassword();
-        verifyPassword(member.getPassword(), checkPassword);
-//        log.info("password : {}", member.getPassword());
-//        log.info("checkPassword : {}", post.getCheckPassword());
+        // 3-3 mbti 저장
+        findMember.setMbit(member.getMbit());
 
-        // 6. 패스워드 암호화
-        String encryptedPassword = passwordEncoder.encode(member.getPassword());
-        member.setPassword(encryptedPassword);
+        // 3-4 성별 저장
+        findMember.setGender(member.getGender());
 
-        // 7. 권한 db에 저장
-        List<String> roles = authorityUtils.createRoles(member.getEmail());
-        member.setRoles(roles);
-
-        // 8. 1~7번의 절차가 모두 완료되면 회원 데이터 저장
-        Member savedMember = memberRepository.save(member);
-
-        return savedMember;
+        return memberRepository.save(findMember);
     }
 
     /**
