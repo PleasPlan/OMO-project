@@ -52,8 +52,8 @@ public class BoardController {
 *
 * */
 
-    /** TODO : JWT 서비스 시에 실행할 것.
-    /*@SneakyThrows
+    // TODO : JWT 서비스 시에 실행할 것.(완)
+    @SneakyThrows
     @PostMapping("/write")
     public ResponseEntity postBoard(@Valid @RequestBody BoardDto.Post postDto,
                                      @RequestHeader("Authorization") String Token){
@@ -64,10 +64,10 @@ public class BoardController {
         Board response = boardService.createBoard(board);
         return new ResponseEntity<>(mapper.boardToBoardResponseDto(response),
                 HttpStatus.CREATED);
-    }*/
+    }
 
-    // TODO: JWT 서비스 시에 삭제할 것.
-    @SneakyThrows
+    // TODO: JWT 서비스 시에 삭제할 것.(완)
+    /*@SneakyThrows
     @PostMapping("/write")
     public ResponseEntity postBoard(@Valid @RequestBody BoardDto.Post postDto,
                                     @RequestParam Long memberId){
@@ -80,8 +80,9 @@ public class BoardController {
         Board response = boardService.createBoard(board);
         return new ResponseEntity<>(mapper.boardToBoardResponseDto(response),
                 HttpStatus.CREATED);
-    }
+    }*/
 
+    // TODO : Patch Authorization에서 받아올 수 있도록 하기
     @SneakyThrows
     @PatchMapping("/modification/{board-id}")
     public ResponseEntity patchBoard(@Valid @RequestBody BoardDto.Patch patchDto,
@@ -211,8 +212,8 @@ public class BoardController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    /** TODO : JWT 서비스 시에 실행할 것.
-    /*@PutMapping("/like")
+    // TODO : JWT 서비스 시에 실행할 것.(완)
+    @PutMapping("/like")
     public ResponseEntity likeBoard(@RequestHeader("boardId") long boardId,
                                     @RequestHeader("Authorization") String Token) throws JsonProcessingException {
         Member writer = getWriterInJWTToken(Token);
@@ -220,10 +221,10 @@ public class BoardController {
 
         boardService.likesBoard(boardId, writer);
         return new ResponseEntity<>(HttpStatus.OK);
-    }*/
+    }
 
-    // TODO: JWT 서비스 시에 삭제할 것.
-    @PutMapping("/like")
+    // TODO: JWT 서비스 시에 삭제할 것.(완)
+    /*@PutMapping("/like")
     public ResponseEntity likeBoard(@RequestHeader("boardId") long boardId,
                                     @RequestHeader("memberId") long memberId){
 
@@ -235,7 +236,7 @@ public class BoardController {
 
         boardService.likesBoard(boardId, findMember);
         return new ResponseEntity<>(HttpStatus.OK);
-    }
+    }*/
     
 
     // JWT 토큰을 해석하여 토큰 사용자를 알아내는 함수
