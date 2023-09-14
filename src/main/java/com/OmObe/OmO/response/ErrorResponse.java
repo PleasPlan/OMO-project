@@ -12,11 +12,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
-public class ErrorResponse {
-    private int status;
-    private String message;
-    private List<FieldError> fieldErrors;
-    private List<ConstraintViolationError> violationErrors;
+public class ErrorResponse { // 에러 정보를 담는 클래스
+    private int status; // 에러 상태
+    private String message; // 에러 메시지
+    private List<FieldError> fieldErrors; // 필드 에러 정보를 담는 클래스
+    private List<ConstraintViolationError> violationErrors; // URI 변수 값 유효성 검증 실패로 발생한 에러 정보를 담는 변수
     private ErrorResponse(int status, String message) {
         this.status = status;
         this.message = message;
@@ -28,6 +28,7 @@ public class ErrorResponse {
         this.violationErrors = violationErrors;
     }
 
+     // ******** <각 에러에 대한 ErrorResponse 객체 생성하는 메서드> *******
     public static ErrorResponse of(BindingResult bindingResult) {
         return new ErrorResponse(FieldError.of(bindingResult), null);
     }
@@ -47,7 +48,10 @@ public class ErrorResponse {
     public static ErrorResponse of(HttpStatus httpStatus, String message) {
         return new ErrorResponse(httpStatus.value(), message);
     }
+    // ****************************************************************
 
+
+    // 필드의 유효성 검증에서 발생하는 에러 정보를 생성하는 메서드
     @Getter
     public static class FieldError {
         private String field;
@@ -73,6 +77,7 @@ public class ErrorResponse {
         }
     }
 
+    // URI 변수 값에 대한 에러 정보 생성
     @Getter
     public static class ConstraintViolationError {
         private String propertyPath; // 속성 경로
