@@ -1,5 +1,6 @@
 package com.OmObe.OmO.member.entity;
 
+import com.OmObe.OmO.Liked.entity.Liked;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -77,6 +78,17 @@ public class Member {
     public void setMemberId(Long memberId) {
         this.memberId = memberId;
     }
+
+    // TODO : Merge후 주석 해제할 것.
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
+    private List<Liked> likedList = new ArrayList<>();
+
+    public void addLikes(Liked liked){
+        this.likedList.add(liked);
+        liked.setMember(this);
+    }
+
 
     public void setEmail(String email) {
         this.email = email;
