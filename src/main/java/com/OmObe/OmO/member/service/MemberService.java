@@ -132,21 +132,17 @@ public class MemberService {
      * <회원 탈퇴>
      * 1. 탈퇴하려는 회원이 존재하는 회원인지 검증
      * 2. 사용자의 로그인 인증 상태 검증
-     * 3. 회원의 상태를 MEMBER_ACTIVE에서 MEMBER_QUIT로 변경
-     * 4. 변경사항 저장
+     * 3. 회원 정보 삭제
      */
-    public Member quitMember(Long memberId){
+    public void quitMember(Long memberId){
         // 1. 탈퇴하려는 회원이 존재하는 회원인지 검증
         Member findMember = findVerifiedMember(memberId);
 
         // 2. 사용자의 로그인 인증 상태 검증
         verifiedAuthenticatedMember(findMember.getMemberId());
 
-        // 3. 회원의 상태를 MEMBER_ACTIVE에서 MEMBER_QUIT로 변경
-        findMember.setMemberStatus(Member.MemberStatus.MEMBER_QUIT);
-
-        // 3. 변경사항 저장
-        return memberRepository.save(findMember);
+        // 3. 회원 정보 삭제
+        memberRepository.delete(findMember);
     }
 
     // 이메일 중복 검증 메서드

@@ -49,7 +49,7 @@ public class MemberController {
     }
 
     // 회원 탈퇴
-    @PatchMapping("/member/{memberId}")
+    @DeleteMapping("/member/{memberId}")
     public ResponseEntity deleteMember(@Valid @PathVariable("memberId") @Positive Long memberId,
                                        @RequestHeader(value = "Authorization") String token){
         memberService.quitMember(memberId);
