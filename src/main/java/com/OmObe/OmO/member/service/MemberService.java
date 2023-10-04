@@ -189,17 +189,22 @@ public class MemberService {
     }
 
     // 사용자 로그인 인증 상태 검증 메서드
-    private void verifiedAuthenticatedMember(Long memberId) {
+    public void verifiedAuthenticatedMember(Long memberId) {
+        log.info("# Verified member's token");
         if (getHeader("Authorization") == null) { // Authorization의 헤더 값(액세스 토큰)이 없으면 예외처리
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
         }
 
         String jws = getHeader("Authorization").substring(7);
+        log.info("jws : {}", jws);
 
         Long memberIdFromJws = getMemberIdFromJws(jws);
+        log.info("memberIdFromJWs : {}", memberIdFromJws);
         Long memberIdFromRequest = memberId;
+        log.info("memberIdFromRequest : {}", memberIdFromRequest);
 
         if (memberIdFromJws != memberIdFromRequest) { // 토큰을 통해 얻은 memberId의 값이 인증하고자 하는 회원의 memberId와 다른 경우 예외처리
+            log.info("# INVALID TOKEN");
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
     }
