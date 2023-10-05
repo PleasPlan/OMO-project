@@ -1,0 +1,59 @@
+package com.OmObe.OmO.member.controller;
+
+import com.OmObe.OmO.member.dto.MemberDto;
+import com.OmObe.OmO.member.entity.Member;
+import com.OmObe.OmO.member.mapper.MemberMapper;
+import com.OmObe.OmO.member.repository.MemberRepository;
+import com.OmObe.OmO.member.service.MemberService;
+import org.apache.coyote.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+
+@RestController
+@Validated
+public class MemberController {
+    private final MemberMapper mapper;
+    private final MemberService memberService;
+    private final MemberRepository memberRepository;
+
+    @Autowired
+    public MemberController(MemberMapper mapper, MemberService memberService, MemberRepository memberRepository) {
+        this.mapper = mapper;
+        this.memberService = memberService;
+        this.memberRepository = memberRepository;
+    }
+
+    // 회원 가입
+//    @PostMapping("/signup")
+//    public ResponseEntity postMember(@Valid @RequestBody MemberDto.Post post){
+////        Member member = mapper.memberPostDtoToMember(post);
+//        memberService.createMember(post);
+//
+//        return new ResponseEntity<>(HttpStatus.CREATED);
+//    }
+
+    // 회원 추가 정보 입력
+    @PostMapping("/memberInfo/{memberId}")
+    public ResponseEntity addMemberInfo(@Valid @PathVariable("memberId") @Positive Long memberId,
+                                        @Valid @RequestBody MemberDto.Post post,
+                                        @RequestHeader(value = "Authorization") String token) {
+        memberService.addInfo(memberId, post);
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    // 회원 탈퇴
+    @DeleteMapping("/member/{memberId}")
+    public ResponseEntity deleteMember(@Valid @PathVariable("memberId") @Positive Long memberId,
+                                       @RequestHeader(value = "Authorization") String token){
+        memberService.quitMember(memberId);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+}
