@@ -70,22 +70,6 @@ public class BoardController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-//    // TODO: JWT 서비스 시에 삭제할 것.
-//    @SneakyThrows
-//    @PostMapping("/write")
-//    public ResponseEntity postBoard(@Valid @RequestBody BoardDto.Post postDto,
-//                                    @RequestParam Long memberId){
-//        Board board = mapper.boardPostDtoToBoard(postDto);
-//        Optional<Member> optionalMember = memberRepository.findById(memberId);
-//        Member findMember = optionalMember.orElseThrow(() ->
-//                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-//        board.setMember(findMember);
-//
-//        Board response = boardService.createBoard(board);
-//        return new ResponseEntity<>(mapper.boardToBoardResponseDto(response),
-//                HttpStatus.CREATED);
-//    }
-
     @SneakyThrows
     @PatchMapping("/modification/{board-id}")
     public ResponseEntity patchBoard(@Valid @RequestBody BoardDto.Patch patchDto,
@@ -218,11 +202,12 @@ public class BoardController {
 
     @PutMapping("/like")
     public ResponseEntity likeBoard(@RequestHeader("boardId") long boardId,
-                                    @RequestHeader("Authorization") String Token) throws JsonProcessingException {
-        Member writer = getWriterInJWTToken(Token);
+                                    @RequestHeader("Authorization") String token) throws JsonProcessingException {
+        // 이미 jwt 검증 코드가 있기 때문에 기존 검증 코드를 사용하기 위해 이전 코드는 제거
+//        Member writer = getWriterInJWTToken(Token);
 
 
-        boardService.likesBoard(boardId, writer);
+        boardService.likesBoard(boardId, token);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
