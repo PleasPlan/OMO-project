@@ -225,4 +225,13 @@ public class MemberService {
         log.info("memberId : {}", claims.get("memberId"));
         return Long.parseLong(claims.get("memberId").toString());
     }
+
+    // 현재 로그인 중인 사용자 객체를 리턴하는 메서드
+    public Member findLoggedInMember(String authorizationToken) {
+        String accessToken = authorizationToken.substring(7);
+
+        Long loggedInMemberId = getMemberIdFromJws(accessToken);
+
+        return findVerifiedMember(loggedInMemberId);
+    }
 }
