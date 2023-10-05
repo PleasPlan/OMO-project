@@ -52,34 +52,22 @@ public class BoardController {
 *
 * */
 
-    /** TODO : JWT 서비스 시에 실행할 것.
-    /*@SneakyThrows
-    @PostMapping("/write")
-    public ResponseEntity postBoard(@Valid @RequestBody BoardDto.Post postDto,
-                                     @RequestHeader("Authorization") String Token){
-        Board board = mapper.boardPostDtoToBoard(postDto);
-        Member writer = getWriterInJWTToken(Token);
-        board.setMember(writer);
 
-        Board response = boardService.createBoard(board);
-        return new ResponseEntity<>(mapper.boardToBoardResponseDto(response),
-                HttpStatus.CREATED);
-    }*/
-
-    // TODO: JWT 서비스 시에 삭제할 것.
     @SneakyThrows
     @PostMapping("/write")
     public ResponseEntity postBoard(@Valid @RequestBody BoardDto.Post postDto,
-                                    @RequestParam Long memberId){
-        Board board = mapper.boardPostDtoToBoard(postDto);
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
-        Member findMember = optionalMember.orElseThrow(() ->
-                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        board.setMember(findMember);
+                                     @RequestHeader("Authorization") String Token,
+                                    @RequestHeader("memberId") Long memberId){ // 글 작성 시 토큰 검증을 위해 memberId가 필요
 
-        Board response = boardService.createBoard(board);
-        return new ResponseEntity<>(mapper.boardToBoardResponseDto(response),
-                HttpStatus.CREATED);
+        Board board = boardService.createBoard(postDto, memberId);
+        BoardDto.Response response = mapper.boardToBoardResponseDto(board);
+        // 이미 jwt 검증 코드가 있기 때문에 기존 검증 코드를 사용하기 위해 이전 코드는 제거
+//        Board board = mapper.boardPostDtoToBoard(postDto);
+//        Member writer = getWriterInJWTToken(Token);
+//        board.setMember(writer);
+//
+//        Board response = boardService.createBoard(board);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @SneakyThrows
@@ -211,32 +199,33 @@ public class BoardController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    /** TODO : JWT 서비스 시에 실행할 것.
-    /*@PutMapping("/like")
-    public ResponseEntity likeBoard(@RequestHeader("boardId") long boardId,
-                                    @RequestHeader("Authorization") String Token) throws JsonProcessingException {
-        Member writer = getWriterInJWTToken(Token);
 
-
-        boardService.likesBoard(boardId, writer);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }*/
-
-    // TODO: JWT 서비스 시에 삭제할 것.
     @PutMapping("/like")
     public ResponseEntity likeBoard(@RequestHeader("boardId") long boardId,
-                                    @RequestHeader("memberId") long memberId){
+                                    @RequestHeader("Authorization") String token) throws JsonProcessingException {
+        // 이미 jwt 검증 코드가 있기 때문에 기존 검증 코드를 사용하기 위해 이전 코드는 제거
+//        Member writer = getWriterInJWTToken(Token);
 
 
-
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
-        Member findMember = optionalMember.orElseThrow(() ->
-                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-
-        boardService.likesBoard(boardId, findMember);
+        boardService.likesBoard(boardId, token);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    
+
+//    // TODO: JWT 서비스 시에 삭제할 것.
+//    @PutMapping("/like")
+//    public ResponseEntity likeBoard(@RequestHeader("boardId") long boardId,
+//                                    @RequestHeader("memberId") long memberId){
+//
+//
+//
+//        Optional<Member> optionalMember = memberRepository.findById(memberId);
+//        Member findMember = optionalMember.orElseThrow(() ->
+//                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+//
+//        boardService.likesBoard(boardId, findMember);
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
+//
 
     // JWT 토큰을 해석하여 토큰 사용자를 알아내는 함수
     private Member getWriterInJWTToken(String token) throws JsonProcessingException {
