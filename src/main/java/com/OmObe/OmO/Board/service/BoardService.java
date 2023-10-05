@@ -108,7 +108,10 @@ public class BoardService {
         boardRepository.delete(findBoard);
     }
 
-    public void likesBoard(long boardId,Member member){
+    public void likesBoard(long boardId, String token){
+        // 로그인한 유저인지 검증
+        memberService.verifiedAuthenticatedMember(boardId);
+        Member member = memberService.findLoggedInMember(token);
         List<Liked> likedList = likedRepository.findByBoardAndMember(findBoard(boardId), member);
         Liked liked = null;
         if(likedList.size() == 0){
