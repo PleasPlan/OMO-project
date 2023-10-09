@@ -67,7 +67,8 @@ public class JwtVerificationFilter extends OncePerRequestFilter { // request 당
             // JWT 토큰이 형식에 맞지 않는 경우
             log.info("catch MalformedJwtException");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Invalid Access-Token");
+        //  TODO : "java.lang.IllegalStateException: getWriter() has already been called for this response"의 오류 원인
+            //response.getWriter().write("Invalid Access-Token");
             request.setAttribute("exception", me);
 
         } catch (Exception e) {
