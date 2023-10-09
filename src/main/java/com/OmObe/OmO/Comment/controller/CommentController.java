@@ -49,8 +49,8 @@ public class CommentController {
         this.boardRepository = boardRepository;
         this.memberRepository = memberRepository;
     }
-    /** TODO : JWT 서비스 시에 실행할 것
-    /*
+    // TODO : JWT 서비스 시에 실행할 것(완)
+
     @SneakyThrows
     @PostMapping("/write")
     public ResponseEntity postBoard(@Valid @RequestBody CommentDto.Post postDto,
@@ -62,10 +62,10 @@ public class CommentController {
         Comment response = commentService.createComment(comment);
         return new ResponseEntity<>(mapper.commentToCommentResponseDto(response),
                 HttpStatus.CREATED);
-    }*/
+    }
 
-    // TODO : JWt 서비스 시에 삭제할 것
-    @PostMapping("/write")
+    // TODO : JWt 서비스 시에 삭제할 것(완)
+    /*@PostMapping("/write")
     public ResponseEntity postComment(@Valid @RequestBody CommentDto.Post postDto,
                                       @RequestParam Long memberId){
         Comment comment = mapper.commentPostToComment(postDto);
@@ -76,11 +76,11 @@ public class CommentController {
         Comment response = commentService.createComment(comment);
         return new ResponseEntity<>(mapper.commentToCommentResponseDto(response),
                 HttpStatus.CREATED);
-    }
+    }*/
 
     @PatchMapping("/modification/{comment-id}")
     public ResponseEntity patchComment(@Valid @RequestBody CommentDto.Patch patchDto,
-                                       @PathVariable("comment_id") @Positive long commentId){
+                                       @PathVariable("comment-id") @Positive long commentId){
         patchDto.setCommentId(commentId);
 
         Comment comment = mapper.commentPatchDtoToComment(patchDto);
@@ -100,7 +100,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{comment-Id}")
-    public ResponseEntity deleteComment(@PathVariable("comment-id") @Positive long commentId){
+    public ResponseEntity deleteComment(@PathVariable("comment-Id") @Positive long commentId){
         commentService.deleteComment(commentId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
