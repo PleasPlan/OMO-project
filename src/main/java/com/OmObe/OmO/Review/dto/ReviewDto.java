@@ -21,7 +21,7 @@ public class ReviewDto {
     @Getter
     @Setter
     public static class Patch{
-        private long ReviewId;
+        private long reviewId;
         private String content;
     }
 

@@ -5,6 +5,8 @@ import com.OmObe.OmO.Review.entity.Review;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class ReviewMapper {
@@ -44,6 +46,18 @@ public class ReviewMapper {
 
             ReviewDto.Response response = new ReviewDto.Response(reviewId,content,writer,createdTime,placeId);
             return response;
+        }
+    }
+
+    public List<ReviewDto.Response> reviewsToReviewResponseDtos(List<Review> reviews){
+        if(reviews == null){
+            return null;
+        } else {
+            List<ReviewDto.Response> responses = new ArrayList<>();
+            for(Review review:reviews){
+                responses.add(this.reviewToReviewResponseDto(review));
+            }
+            return responses;
         }
     }
 }

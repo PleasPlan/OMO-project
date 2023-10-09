@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -24,11 +25,12 @@ public class ReviewService {
         return reviewRepository.save(review);
     }
 
-    public Review updateReview(Review review){
-        Review findReview = findReview(review.getReviewId());
+    public Review updateReview(Review review,long reviewId){
+        Review findReview = findReview(reviewId);
 
         Optional.ofNullable(review.getContent())
                 .ifPresent(content -> findReview.setContent(content));
+        findReview.setModifiedAt(LocalDateTime.now());
         return reviewRepository.save(findReview);
     }
 
