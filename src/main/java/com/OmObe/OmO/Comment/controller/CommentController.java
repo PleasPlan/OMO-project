@@ -80,7 +80,7 @@ public class CommentController {
 
     @PatchMapping("/modification/{comment-id}")
     public ResponseEntity patchComment(@Valid @RequestBody CommentDto.Patch patchDto,
-                                       @PathVariable("comment_id") @Positive long commentId){
+                                       @PathVariable("comment-id") @Positive long commentId){
         patchDto.setCommentId(commentId);
 
         Comment comment = mapper.commentPatchDtoToComment(patchDto);
@@ -100,7 +100,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{comment-Id}")
-    public ResponseEntity deleteComment(@PathVariable("comment-id") @Positive long commentId){
+    public ResponseEntity deleteComment(@PathVariable("comment-Id") @Positive long commentId){
         commentService.deleteComment(commentId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
