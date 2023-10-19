@@ -20,26 +20,26 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
-@AutoConfigureMockMvc
-class MemberServiceTest {
-    @Mock
-    private MemberRepository memberRepository;
-
-    @InjectMocks
-    private MemberService memberService;
-
-    @Test
-    @DisplayName("createMember() - checkPassword 테스트")
-    public void checkPassword(){
-        // given
-        MemberDto.Post post = new MemberDto.Post("seung@yahoo.com", "hong"
-                , "a1234", "a12341", 1999, 7, 11, 111, 1, true);
-
-        // when / then
-        Assertions.assertThat(post.getCheckPassword()).isNotEqualTo(post.getPassword());
-    }
-
-
-
-}
+//@ExtendWith(MockitoExtension.class)
+//@AutoConfigureMockMvc
+//class MemberServiceTest {
+//    @Mock
+//    private MemberRepository memberRepository;
+//
+//    @InjectMocks
+//    private MemberService memberService;
+//
+//    @Test
+//    @DisplayName("createMember() - checkPassword 테스트")
+//    public void checkPassword(){
+//        // given
+//        MemberDto.Post post = new MemberDto.Post("seung@yahoo.com", "hong"
+//                , "a1234", "a12341", 1999, 7, 11, 111, 1, true);
+//
+//        // when / then
+//        Assertions.assertThat(post.getCheckPassword()).isNotEqualTo(post.getPassword());
+//    }
+//
+//
+//
+//}

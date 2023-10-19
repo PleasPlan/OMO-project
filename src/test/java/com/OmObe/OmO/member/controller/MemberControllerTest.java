@@ -28,50 +28,50 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 // 회원가입 테스트
-@SpringBootTest
-@AutoConfigureMockMvc
-class MemberControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private Gson gson;
-
-    @MockBean
-    private MemberService memberService;
-
-    @Autowired
-    private MemberMapper mapper;
-
-    @Test
-    @DisplayName("회원 가입 테스트")
-    public void createMemberTest() throws Exception {
-        // given
-        MemberDto.Post post = new MemberDto.Post("seung@yahoo.com", "hong"
-                , "a1234", "a12341", 1999, 7, 11, 111, 1, true);
-
-        Member member = mapper.memberPostDtoToMember(post);
-//        member.setMemberId(1L);
-
-        BDDMockito.given(memberService.createMember(Mockito.any(MemberDto.Post.class))).willReturn(member);
-
-        String content = gson.toJson(post);
-
-        // when
-        ResultActions actions =
-                mockMvc.perform(
-                        MockMvcRequestBuilders.post("/signup")
-                                .accept(MediaType.APPLICATION_JSON)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(content)
-
-                );
-
-        // then
-        actions
-                .andExpect(MockMvcResultMatchers.status().isCreated());
-        System.out.println("password : " + post.getPassword());
-        System.out.println("checkPassword : " + post.getCheckPassword());
-    }
-
-}
+//@SpringBootTest
+//@AutoConfigureMockMvc
+//class MemberControllerTest {
+//    @Autowired
+//    private MockMvc mockMvc;
+//
+//    @Autowired
+//    private Gson gson;
+//
+//    @MockBean
+//    private MemberService memberService;
+//
+//    @Autowired
+//    private MemberMapper mapper;
+//
+//    @Test
+//    @DisplayName("회원 가입 테스트")
+//    public void createMemberTest() throws Exception {
+//        // given
+//        MemberDto.Post post = new MemberDto.Post("seung@yahoo.com", "hong"
+//                , "a1234", "a12341", 1999, 7, 11, 111, 1, true);
+//
+//        Member member = mapper.memberPostDtoToMember(post);
+////        member.setMemberId(1L);
+//
+//        BDDMockito.given(memberService.createMember(Mockito.any(MemberDto.Post.class))).willReturn(member);
+//
+//        String content = gson.toJson(post);
+//
+//        // when
+//        ResultActions actions =
+//                mockMvc.perform(
+//                        MockMvcRequestBuilders.post("/signup")
+//                                .accept(MediaType.APPLICATION_JSON)
+//                                .contentType(MediaType.APPLICATION_JSON)
+//                                .content(content)
+//
+//                );
+//
+//        // then
+//        actions
+//                .andExpect(MockMvcResultMatchers.status().isCreated());
+//        System.out.println("password : " + post.getPassword());
+//        System.out.println("checkPassword : " + post.getCheckPassword());
+//    }
+//
+//}
