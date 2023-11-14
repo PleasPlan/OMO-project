@@ -54,6 +54,9 @@ dependencies {
 
 	// spring webflux
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// httpclient
+	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
 }
 
 tasks.named('test') {

@@ -72,3 +72,7 @@ jwt:
   key: OmOSecretKey20230607be3fe220230607be3fe220230607be3fe220230607be3fe2
   access-token-expiration-minutes: 40
   refresh-token-expiration-minutes: 420
+
+naver-map:
+  id: Y57FZ_gSeUBmakLsyxyQ
+  pw: pEeOAiJ7ve
