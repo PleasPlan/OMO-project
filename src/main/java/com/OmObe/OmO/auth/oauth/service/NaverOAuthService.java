@@ -36,7 +36,7 @@ public class NaverOAuthService {
         body.add("grant_type", "authorization_code");
         body.add("client_id", clientId);
         body.add("client_secret", clientSecret);
-        body.add("redirect_uri", "http://localhost:8080/auth/naver/callback");
+        body.add("redirect_uri", "https://api.oneulmohae.co.kr/auth/naver/callback");
         body.add("code", code);
 
         // HttpHeader와 HttpBody로 액세스 토큰 요청하는 객체 생성
