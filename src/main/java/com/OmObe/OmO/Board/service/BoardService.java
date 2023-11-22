@@ -1,16 +1,12 @@
 package com.OmObe.OmO.Board.service;
 
-import com.OmObe.OmO.Board.dto.BoardDto;
 import com.OmObe.OmO.Board.entity.Board;
-import com.OmObe.OmO.Board.mapper.BoardMapper;
 import com.OmObe.OmO.Board.repository.BoardRepository;
 import com.OmObe.OmO.Liked.entity.Liked;
 import com.OmObe.OmO.Liked.repository.LikedRepository;
 import com.OmObe.OmO.exception.BusinessLogicException;
 import com.OmObe.OmO.exception.ExceptionCode;
 import com.OmObe.OmO.member.entity.Member;
-import com.OmObe.OmO.member.repository.MemberRepository;
-import com.OmObe.OmO.member.service.MemberService;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -25,36 +21,13 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final LikedRepository likedRepository;
-    private final MemberService memberService;
-    private final MemberRepository memberRepository;
-    private final BoardMapper mapper;
 
-    public BoardService(BoardRepository boardRepository, LikedRepository likedRepository, MemberService memberService, MemberRepository memberRepository, BoardMapper mapper) {
+    public BoardService(BoardRepository boardRepository, LikedRepository likedRepository) {
         this.boardRepository = boardRepository;
         this.likedRepository = likedRepository;
-        this.memberService = memberService;
-        this.memberRepository = memberRepository;
-        this.mapper = mapper;
     }
 
-    /**
-     * <게시글 작성>
-     * 1. 토큰 검증(글을 작성하려는 사용자가 로그인이 된 사용자인지 검증-> 헤더에 올바른 토큰이 담겼는지 검증)
-     * 2. 회원 매핑
-     * 3. 게시글 등록
-     */
-    public Board createBoard(BoardDto.Post postDto, Long memberId){
-        Board board = mapper.boardPostDtoToBoard(postDto);
-
-        // 1. 토큰 검증(글을 작성하려는 사용자가 로그인이 된 사용자인지 검증-> 헤더에 올바른 토큰이 담겼는지 검증)
-        memberService.verifiedAuthenticatedMember(memberId);
-
-        // 2. 회원 매핑
-        Optional<Member> member = memberRepository.findById(memberId);
-        board.setMember(member.orElseThrow(() ->
-        new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND)));
-
-        // 3. 개시글 등록
+    public Board createBoard(Board board){
         return boardRepository.save(board);
     }
 
@@ -108,10 +81,7 @@ public class BoardService {
         boardRepository.delete(findBoard);
     }
 
-    public void likesBoard(long boardId, String token){
-        // 로그인한 유저인지 검증
-        memberService.verifiedAuthenticatedMember(boardId);
-        Member member = memberService.findLoggedInMember(token);
+    public void likesBoard(long boardId,Member member){
         List<Liked> likedList = likedRepository.findByBoardAndMember(findBoard(boardId), member);
         Liked liked = null;
         if(likedList.size() == 0){
