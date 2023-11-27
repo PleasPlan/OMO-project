@@ -73,8 +73,8 @@ public class PlaceService {
         }
     }
 
-    private static String readBody(InputStream body) {
-        InputStreamReader streamReader = new InputStreamReader(body);
+    private static String readBody(InputStream body) throws UnsupportedEncodingException {
+        InputStreamReader streamReader = new InputStreamReader(body, "UTF-8");
 
         try (BufferedReader lineReader = new BufferedReader(streamReader)) {
             StringBuilder responseBody = new StringBuilder();
@@ -82,7 +82,10 @@ public class PlaceService {
             String line;
             while ((line = lineReader.readLine()) != null) {
                 responseBody.append(line);
+                log.debug(line);
             }
+
+
 
             return responseBody.toString();
         } catch (IOException e) {
