@@ -76,3 +76,6 @@ jwt:
 naver-map:
   id: Y57FZ_gSeUBmakLsyxyQ
   pw: pEeOAiJ7ve
+
+kakao-map:
+  key: 15c344c802b499b0058401f0cd25c3c5
