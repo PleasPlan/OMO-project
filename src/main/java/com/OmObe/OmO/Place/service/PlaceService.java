@@ -47,7 +47,29 @@ public class PlaceService {
         String y = middle.getFirst().toString();
         String x = middle.getSecond().toString();
 
-        String webAddress = "https://dapi.kakao.com/v2/local/search/keyword.json?y="+y+"&x="+x+"&page=45&radius=20000&sort=distance&query="+keyword;
+        String webAddress = "https://dapi.kakao.com/v2/local/search/keyword.json?y="+y+"&x="+x+"&radius=20000&sort=distance&query="+keyword;
+
+        Map<String, String> requestHeader = new HashMap<>();
+//        requestHeader.put("X-Naver-Client-Id", id);
+//        requestHeader.put("X-Naver-Client-Secret", pw);
+        requestHeader.put("Authorization", "KakaoAK "+key);
+        String responseBody = get(webAddress, requestHeader);
+
+        responseBody = idTracker(responseBody);
+
+        return responseBody;
+    }
+
+    public String getPlace(String placeName) {
+
+        String keyword;
+        try{
+            keyword = URLEncoder.encode(placeName, "UTF-8");
+        }catch (UnsupportedEncodingException e){
+            throw new RuntimeException("Encoding Failed",e);
+        }
+
+        String webAddress = "https://dapi.kakao.com/v2/local/search/keyword.json?page=1&query="+keyword;
 
         Map<String, String> requestHeader = new HashMap<>();
 //        requestHeader.put("X-Naver-Client-Id", id);
@@ -186,4 +208,6 @@ public class PlaceService {
             return place;
         }
     }
+
+
 }
