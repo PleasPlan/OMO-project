@@ -30,9 +30,9 @@ jobs:
         distribution: 'temurin'
 
     # yml 파일 설정
-    - run: touch ./OMO-project/src/main/resources/application.yml
-    - run: echo "${{ secrets.APPLICATION }}" > ./OMO-project/src/main/resources/application.yml
-    - run: cat ./OMO-project/src/main/resources/application.yml
+    - run: touch ./src/main/resources/application.yml
+    - run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
+    - run: cat ./src/main/resources/application.yml
     
     - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
