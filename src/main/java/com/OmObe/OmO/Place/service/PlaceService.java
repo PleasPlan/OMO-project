@@ -1,13 +1,19 @@
 package com.OmObe.OmO.Place.service;
 
+import com.OmObe.OmO.Comment.entity.Comment;
+import com.OmObe.OmO.Comment.repository.CommentRepository;
+import com.OmObe.OmO.Comment.service.CommentService;
 import com.OmObe.OmO.Place.entity.Place;
 import com.OmObe.OmO.Place.repository.PlaceRepository;
 import com.OmObe.OmO.util.PairJ;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -16,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,9 +38,13 @@ public class PlaceService {
     private String key;
 
     private final PlaceRepository placeRepository;
+    private final CommentRepository commentRepository;
+    private final CommentService commentService;
 
-    public PlaceService(PlaceRepository placeRepository) {
+    public PlaceService(PlaceRepository placeRepository, CommentRepository commentRepository, CommentService commentService) {
         this.placeRepository = placeRepository;
+        this.commentRepository = commentRepository;
+        this.commentService = commentService;
     }
 
     public String getPlaces(String category, PairJ<Double, Double> middle) {
@@ -77,8 +88,8 @@ public class PlaceService {
         requestHeader.put("Authorization", "KakaoAK "+key);
         String responseBody = get(webAddress, requestHeader);
 
-        responseBody = idTracker(responseBody);
-
+        responseBody = getPlaceComments(responseBody);
+        // TODO: MBTI 통계 내야됨. 장소 찜 및 따봉은 구현 전
         return responseBody;
     }
 
@@ -178,6 +189,57 @@ public class PlaceService {
             }
             else {
                 log.warn("No 'places' array found in the JSON data.");
+            }
+
+            return objectMapper.writeValueAsString(jsonNode);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String getPlaceComments(String jsonData) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(jsonData);
+
+            JsonNode placesNode = jsonNode.get("documents");
+
+            if(placesNode.isArray()){
+                for(JsonNode placeNode : placesNode){
+                    long id = placeNode.get("id").asLong();
+
+                    log.info("id : "+id);
+
+                    PairJ<Place, Boolean> place = findPlaceWithBoolean(id);
+
+                    ObjectNode objectNode = (ObjectNode) placeNode;
+                    if(place.getSecond()){
+                        objectNode.put("mine", place.getFirst().getMine());
+                        objectNode.put("recommend", place.getFirst().getRecommend());
+                    } else {
+                        objectNode.put("mine",0);
+                        objectNode.put("recommend", 0);
+                    }
+
+                    ArrayNode comments = JsonNodeFactory.instance.arrayNode();
+                    Optional<List<Comment>> optionalCommentList = commentRepository.findByPlaceId(id);
+                    if(optionalCommentList.isPresent()){
+                        List<Comment> commentList = optionalCommentList.get();
+                        for(Comment comment: commentList){
+                            ObjectNode commentNode = objectMapper.createObjectNode();
+                            commentNode.put("writer", comment.getMember().getNickname());
+                            commentNode.put("content", comment.getContent());
+                            comments.add(commentNode);
+                        }
+                    }
+                    objectNode.set("comments", comments);
+                    JsonNode changedNode = objectNode;
+                    placeNode = changedNode;
+                }
+            }
+            else {
+                log.warn("No 'place' array found in the JSON data.");
             }
 
             return objectMapper.writeValueAsString(jsonNode);
