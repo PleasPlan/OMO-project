@@ -1,6 +1,5 @@
 package com.OmObe.OmO.Comment.service;
 
-import com.OmObe.OmO.Board.entity.Board;
 import com.OmObe.OmO.Comment.entity.Comment;
 import com.OmObe.OmO.Comment.repository.CommentRepository;
 import com.OmObe.OmO.exception.BusinessLogicException;
@@ -45,7 +44,7 @@ public class CommentService {
 //    }
 
     public Slice<Comment> findComments(int page, int size, long boardId){
-        return convertToSlice(commentRepository.findByBoardId(boardId,PageRequest.of(page, size,
+        return convertToSlice(commentRepository.findByBoard(boardId,PageRequest.of(page, size,
                 Sort.by("createdAt").descending())));
     }
 

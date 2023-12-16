@@ -1,6 +1,8 @@
 package com.OmObe.OmO.Place.controller;
 
 import com.OmObe.OmO.Place.service.PlaceService;
+import com.OmObe.OmO.member.entity.Member;
+import com.OmObe.OmO.member.service.MemberService;
 import com.OmObe.OmO.util.PairJ;
 import com.nimbusds.jose.util.Pair;
 import lombok.extern.slf4j.Slf4j;
@@ -16,11 +18,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/place")
 public class PlaceController {
     private final PlaceService placeService;
+    private final MemberService memberService;
 
-    public PlaceController(PlaceService placeService) {
+    public PlaceController(PlaceService placeService, MemberService memberService) {
         this.placeService = placeService;
+        this.memberService = memberService;
     }
-
 
     @GetMapping("/list/{category}")
     public ResponseEntity getPlaces(@PathVariable("category") String category,
@@ -37,9 +40,12 @@ public class PlaceController {
 
     @PutMapping("/{placeId}")
     public ResponseEntity MineOrRecommend(@PathVariable("placeId") long placeId,
-                                          @RequestParam @Range(min = -1L,max = 1L) long mine,
-                                          @RequestParam @Range(min = -1L,max = 1L) long recommend){
-        String response = placeService.putMineOrRecommend(placeId,mine, recommend);
+                                          @RequestHeader String memberToken,
+                                          @RequestHeader boolean LR){
+                                        // Like = true, Recommend = false
+
+        Member member = memberService.findLoggedInMember(memberToken);
+        String response = placeService.putMineOrRecommend(placeId, member.getMemberId(), LR);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

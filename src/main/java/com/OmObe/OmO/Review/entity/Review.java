@@ -1,5 +1,6 @@
 package com.OmObe.OmO.Review.entity;
 
+import com.OmObe.OmO.Place.entity.Place;
 import com.OmObe.OmO.member.entity.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,10 @@ public class Review {
     private String content;
 
     @Column(nullable = false)
-    private Long placeId;
+    private String placeName;
+
+    @Column
+    private String imageAddress;
 
     @Column
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -32,4 +36,8 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "WRITER")
     private Member member;
+
+    @ManyToOne
+    @JoinColumn(name = "PLACE")
+    private Place place;
 }

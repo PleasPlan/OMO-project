@@ -1,10 +1,16 @@
 package com.OmObe.OmO.Place.service;
 
-import com.OmObe.OmO.Comment.entity.Comment;
-import com.OmObe.OmO.Comment.repository.CommentRepository;
 import com.OmObe.OmO.Comment.service.CommentService;
 import com.OmObe.OmO.Place.entity.Place;
+import com.OmObe.OmO.Place.entity.PlaceLike;
+import com.OmObe.OmO.Place.entity.PlaceRecommend;
+import com.OmObe.OmO.Place.repository.PlaceLikeRepository;
+import com.OmObe.OmO.Place.repository.PlaceRecommendRepository;
 import com.OmObe.OmO.Place.repository.PlaceRepository;
+import com.OmObe.OmO.Review.entity.Review;
+import com.OmObe.OmO.Review.repository.ReviewRepository;
+import com.OmObe.OmO.member.entity.Member;
+import com.OmObe.OmO.member.service.MemberService;
 import com.OmObe.OmO.util.PairJ;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +19,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -38,13 +43,24 @@ public class PlaceService {
     private String key;
 
     private final PlaceRepository placeRepository;
-    private final CommentRepository commentRepository;
+    private final ReviewRepository reviewRepository;
+    private final PlaceLikeRepository placeLikeRepository;
+    private final PlaceRecommendRepository placeRecommendRepository;
     private final CommentService commentService;
+    private final MemberService memberService;
 
-    public PlaceService(PlaceRepository placeRepository, CommentRepository commentRepository, CommentService commentService) {
+    public PlaceService(PlaceRepository placeRepository,
+                        ReviewRepository reviewRepository,
+                        PlaceLikeRepository placeLikeRepository,
+                        PlaceRecommendRepository placeRecommendRepository,
+                        CommentService commentService,
+                        MemberService memberService) {
         this.placeRepository = placeRepository;
-        this.commentRepository = commentRepository;
+        this.reviewRepository = reviewRepository;
+        this.placeLikeRepository = placeLikeRepository;
+        this.placeRecommendRepository = placeRecommendRepository;
         this.commentService = commentService;
+        this.memberService = memberService;
     }
 
     public String getPlaces(String category, PairJ<Double, Double> middle) {
@@ -93,21 +109,51 @@ public class PlaceService {
         return responseBody;
     }
 
-    public String putMineOrRecommend(long placeId,long mine, long recommend){
+    public String putMineOrRecommend(long placeId,long memberId,boolean LR){
         Place place = findPlace(placeId);
+        Member member = memberService.findVerifiedMember(memberId);
+
+        PlaceLike like = new PlaceLike();
+        like.setPlace(place);
+        like.setMember(member);
+
+        PlaceRecommend recommend = new PlaceRecommend();
+        recommend.setPlace(place);
+        recommend.setMember(member);
+
+        // Like = true, Recommend = false
 
         if(place != null){
-            place.setMine(place.getMine()+mine);
-            place.setRecommend(place.getRecommend()+recommend);
+            if(LR){
+                Optional<PlaceLike> optionalPlaceLike = placeLikeRepository.findByMemberAndPlace(memberId,placeId);
+                if(optionalPlaceLike.isPresent()){
+                    PlaceLike existPlaceLike = optionalPlaceLike.orElseThrow();
+                    place.deleteLikes(existPlaceLike);
+                } else {
+                    place.addLikes(like);
+                }
+                placeLikeRepository.save(like);
+            }
+            else{
+                Optional<PlaceRecommend> optionalPlaceRecommend = placeRecommendRepository.findByMemberAndPlace(memberId,placeId);
+                if(optionalPlaceRecommend.isPresent()){
+                    PlaceRecommend existPlaceRecommend = optionalPlaceRecommend.orElseThrow();
+                    place.deleteRecommends(existPlaceRecommend);
+                } else {
+                    place.addRecommends(recommend);
+                }
+                placeRecommendRepository.save(recommend);
+            }
             placeRepository.save(place);
-            return "placeId : "+placeId+"\nmine : "+place.getMine()+"\nrecommend : "+place.getRecommend();
+
+            return "placeId : "+placeId+"\nmine : "+place.getPlaceLikeList().size()+"\nrecommend : "+place.getPlaceRecommendList().size();
         } else {
             Place newPlace = new Place();
             newPlace.setPlaceId(placeId);
-            newPlace.setMine(mine);
-            newPlace.setRecommend(recommend);
+            newPlace.addLikes(like);
+            newPlace.addRecommends(recommend);
             placeRepository.save(newPlace);
-            return "placeId : "+newPlace.getPlaceId()+"\nmine : "+newPlace.getMine()+"\nrecommend : "+newPlace.getRecommend();
+            return "placeId : "+newPlace.getPlaceId()+"\nmine : "+newPlace.getPlaceLikeList().size()+"\nrecommend : "+newPlace.getPlaceRecommendList().size();
         }
     }
 
@@ -177,8 +223,8 @@ public class PlaceService {
 
                     ObjectNode objectNode = (ObjectNode) placeNode;
                     if(place.getSecond()){
-                        objectNode.put("mine", place.getFirst().getMine());
-                        objectNode.put("recommend", place.getFirst().getRecommend());
+                        objectNode.put("mine", place.getFirst().getPlaceLikeList().size());
+                        objectNode.put("recommend", place.getFirst().getPlaceRecommendList().size());
                     } else {
                         objectNode.put("mine",0);
                         objectNode.put("recommend", 0);
@@ -215,25 +261,26 @@ public class PlaceService {
 
                     ObjectNode objectNode = (ObjectNode) placeNode;
                     if(place.getSecond()){
-                        objectNode.put("mine", place.getFirst().getMine());
-                        objectNode.put("recommend", place.getFirst().getRecommend());
+                        objectNode.put("mine", place.getFirst().getPlaceLikeList().size());
+                        objectNode.put("recommend", place.getFirst().getPlaceRecommendList().size());
                     } else {
                         objectNode.put("mine",0);
                         objectNode.put("recommend", 0);
                     }
 
-                    ArrayNode comments = JsonNodeFactory.instance.arrayNode();
-                    Optional<List<Comment>> optionalCommentList = commentRepository.findByPlaceId(id);
-                    if(optionalCommentList.isPresent()){
-                        List<Comment> commentList = optionalCommentList.get();
-                        for(Comment comment: commentList){
-                            ObjectNode commentNode = objectMapper.createObjectNode();
-                            commentNode.put("writer", comment.getMember().getNickname());
-                            commentNode.put("content", comment.getContent());
-                            comments.add(commentNode);
+                    ArrayNode reviews = JsonNodeFactory.instance.arrayNode();
+                    Optional<List<Review>> optionalReviewList = reviewRepository.findByPlaceName(place.getFirst().getPlaceName());
+                    if(optionalReviewList.isPresent()){
+                        List<Review> reviewList = optionalReviewList.get();
+                        for(Review review: reviewList){
+                            ObjectNode reviewNode = objectMapper.createObjectNode();
+                            reviewNode.put("writer", review.getMember().getNickname());
+                            reviewNode.put("content", review.getContent());
+                            // TODO: 이미지 넣어야 됨.
+                            reviews.add(reviewNode);
                         }
                     }
-                    objectNode.set("comments", comments);
+                    objectNode.set("reviews", reviews);
                     JsonNode changedNode = objectNode;
                     placeNode = changedNode;
                 }
