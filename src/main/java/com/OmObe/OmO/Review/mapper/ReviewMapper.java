@@ -17,7 +17,7 @@ public class ReviewMapper {
         else{
             Review review = new Review();
             review.setContent(postDto.getContent());
-            review.setPlaceId(postDto.getPlaceId());
+            review.setPlaceName(postDto.getPlaceName());
             return review;
         }
     }
@@ -42,9 +42,9 @@ public class ReviewMapper {
             String content = review.getContent();
             LocalDateTime createdTime = review.getCreatedAt();
             String writer = review.getMember().getNickname();
-            Long placeId = review.getPlaceId();
+            String placeName = review.getPlaceName();
 
-            ReviewDto.Response response = new ReviewDto.Response(reviewId,content,writer,createdTime,placeId);
+            ReviewDto.Response response = new ReviewDto.Response(reviewId,content,writer,createdTime,placeName);
             return response;
         }
     }

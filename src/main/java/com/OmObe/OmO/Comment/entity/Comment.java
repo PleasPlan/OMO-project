@@ -29,14 +29,11 @@ public class Comment {
     private LocalDateTime modifiedAt = LocalDateTime.now();   // 게시글 최종 수정 일자
 
     @ManyToOne
-    @JoinColumn(name = "BOARD_ID")
+    @JoinColumn(name = "BOARD")
     private Board board;
 
     @ManyToOne
-    @JoinColumn(name = "MEMBER_ID")
+    @JoinColumn(name = "MEMBER")
     private Member member; // 댓글 작성자
 
-    @ManyToOne
-    @JoinColumn(name = "PLACE_ID")
-    private Place place;
 }

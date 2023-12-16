@@ -1,6 +1,6 @@
 package com.OmObe.OmO.Place.entity;
 
-import com.OmObe.OmO.Comment.entity.Comment;
+import com.OmObe.OmO.Review.entity.Review;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,16 +18,44 @@ public class Place {
     private long placeId;
 
     @Column
-    private Long mine;
-
-    @Column
-    private Long recommend;
+    private String placeName;
 
     @OneToMany(mappedBy = "place",cascade = CascadeType.PERSIST)
-    private List<Comment> comments = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>();
 
-    public void addComment(Comment comment){
-        this.comments.add(comment);;
-        comment.setPlace(this);
+    @OneToMany(mappedBy = "place",cascade = CascadeType.PERSIST)
+    private List<PlaceLike> placeLikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "place",cascade = CascadeType.PERSIST)
+    private List<PlaceRecommend> placeRecommendList = new ArrayList<>();
+
+    public void addLikes(PlaceLike placeLike){
+        this.placeLikeList.add(placeLike);
+        placeLike.setPlace(this);
+    }
+
+    public void deleteLikes(PlaceLike placeLike){
+        this.placeLikeList.remove(placeLike);
+    }
+
+    public void addRecommends(PlaceRecommend placeRecommend){
+        this.placeRecommendList.add(placeRecommend);
+        placeRecommend.setPlace(this);
+    }
+
+    public void deleteRecommends(PlaceRecommend placeRecommend){
+        this.placeRecommendList.remove(placeRecommend);
+    }
+
+    // 추천을 누른 사람만 댓글을 달 수 있다.
+
+    public boolean addReview(Review review){
+        if(placeRecommendList.size() > 0) {
+            this.reviews.add(review);
+            review.setPlace(this);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
