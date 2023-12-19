@@ -69,8 +69,13 @@ public class Member {
     private MemberStatus memberStatus = MemberStatus.MEMBER_ACTIVE; // 회원 상태 -> 기본값은 활동 상태
 
     // 회원의 권한 정보 테이블과 매핑되는 정보
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles = new ArrayList<>();
+//    @ElementCollection(fetch = FetchType.EAGER)
+//    private List<String> roles = new ArrayList<>();
+
+    // 회원 권한 정보
+    @Enumerated(EnumType.STRING)
+    private MemberRole memberRole;
+
 
     public void setPassword(String password) {
         this.password = password;
@@ -138,13 +143,24 @@ public class Member {
         this.memberStatus = memberStatus;
     }
 
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
+    public void setMemberRole(MemberRole memberRole) {
+        this.memberRole = memberRole;
     }
+    //    public void setRoles(List<String> roles) {
+//        this.roles = roles;
+//    }
 
-    public enum MemberRole{
-        ROLE_USER,
-        ROLE_ADMIN;
+    public enum MemberRole{ // 사용자 권한 등급
+        GUEST("ROLE_GUEST"), // 최초 로그인 시 부여되는 권한
+        USER("ROLE_USER"), // 일반 유저 권한
+        ADMIN("ROLE_ADMIN"); // 관리자 권한
+
+        @Getter
+        private final String role;
+
+        MemberRole(String role) {
+            this.role = role;
+        }
     }
 
     // 회원 상태(활동 / 탈퇴)
