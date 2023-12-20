@@ -5,6 +5,7 @@ import com.OmObe.OmO.member.entity.Member;
 import com.OmObe.OmO.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -17,12 +18,16 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class OAuth2MemberService implements OAuth2UserService<OAuth2UserRequest , OAuth2User> {
+    @Value("${mail.address.admin}")
+    private String adminMail; // 관리자 이메일
+
     private final MemberRepository memberRepository;
     private final MemberAuthorityUtils authorityUtils;
 
@@ -69,10 +74,22 @@ public class OAuth2MemberService implements OAuth2UserService<OAuth2UserRequest 
 
             member = new Member();
             member.setEmail(email);
+
+            // 회원 권한 설정
+            log.info("adminMail : {}", adminMail);
+            if (member.getEmail().equals(adminMail)) {
+                member.setMemberRole(Member.MemberRole.ADMIN); // 관리자 이메일이면 회원의 권한은 ADMIN
+            }else{
+                member.setMemberRole(Member.MemberRole.GUEST); // 관리자 이메일이 아니면 최초 로그인 시 회원의 권한은 GUEST
+            }
+
+            // 최초 로그인 시 회원 닉네임 임의 지정
+            String tmpNickname = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
+            member.setNickname(tmpNickname);
+
             member.setPassword(tmpPassword);
             member.setOAuth(true);
             member.setProfileImageUrl(profileImageUrl);
-            member.setRoles(authorities);
             member.setClause(true);
             member.setMemberStatus(Member.MemberStatus.MEMBER_ACTIVE);
 
