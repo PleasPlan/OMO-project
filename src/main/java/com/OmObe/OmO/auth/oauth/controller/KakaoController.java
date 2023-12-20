@@ -51,7 +51,7 @@ public class KakaoController {
         attributes.put("profileImage", kakaoProfile.getProperties().getProfile_image());
 
         OAuth2User oAuth2User = new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_MEMBER")),
                 attributes,
                 "id"
         );
