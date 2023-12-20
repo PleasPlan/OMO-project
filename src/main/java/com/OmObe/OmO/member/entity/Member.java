@@ -146,9 +146,6 @@ public class Member {
     public void setMemberRole(MemberRole memberRole) {
         this.memberRole = memberRole;
     }
-    //    public void setRoles(List<String> roles) {
-//        this.roles = roles;
-//    }
 
     public enum MemberRole{ // 사용자 권한 등급
         GUEST("ROLE_GUEST"), // 최초 로그인 시 부여되는 권한
