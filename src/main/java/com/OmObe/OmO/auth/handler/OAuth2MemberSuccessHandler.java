@@ -33,6 +33,7 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         var oAuth2User = (OAuth2User)authentication.getPrincipal(); // authentication 객체에서 OAuth2 사용자 정보를 추출
+//        CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         String email = String.valueOf(oAuth2User.getAttributes().get("email"));
         List<String> authorities = authorityUtils.createRoles(email);
 
@@ -46,15 +47,35 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
     private void redirect(HttpServletRequest request, HttpServletResponse response, Member member) throws IOException {
         String accessToken = tokenService.delegateAccessToken(member);
         String refreshToken = tokenService.delegateRefreshToken(member);
+        // Response Header에 Access Token, Refresh Token을 설정
+        response.addHeader("Authorization", "Bearer " + accessToken);
+        response.addHeader("Refresh", refreshToken);
 
-        String uri = createURI(accessToken, refreshToken).toString(); // 리다이렉트할 url
+        // 최초 로그인한 멤버인지 판별하여 리다이렉트 될 경로 설정
+        String path = distinctionPath(member);
+        log.info("path : {}", path);
+
+        String uri = createURI(path).toString(); // 리다이렉트할 url
         getRedirectStrategy().sendRedirect(request, response, uri);
     }
 
-    private URI createURI(String accessToken, String refreshToken) {
+    /*
+    <최초 로그인 한 멤버인지 판별하는 메서드>
+    - 회원의 권한이 "GUEST"면 최초 로그인한 사용자로 판단하여 회원 추가 정보 입력 기능으로 redirect
+    - 회원의 권한이 "GUEST"가 아니면 메인화면으로 redirect
+     */
+    private String distinctionPath(Member member) {
+        log.info("member Role : {}", member.getMemberRole().getRole());
+        // 회원의 권한이 "GUEST"면 최초 로그인한 사용자로 판단하여 회원 추가 정보 입력 기능으로 redirect
+        if (member.getMemberRole().getRole().equals("ROLE_GUEST")) {
+            return "/memberInfo/" + member.getMemberId(); // todo: 프론트엔드 배포 후 추가 정보 입력 화면으로 redirect하도록 변경
+        }else { // 회원의 권한이 "GUEST"가 아니면 메인화면으로 redirect
+            return "";
+        }
+    }
+
+    private URI createURI(String path) {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-        queryParams.add("accessToken", "Bearer " + accessToken);
-        queryParams.add("refreshToken", refreshToken);
 
         return UriComponentsBuilder
                 .newInstance()
@@ -64,8 +85,8 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .host("api.oneulmohae.co.kr") // todo : 프론트엔드 배포 후 변경 예정
 //                .port(8080)
 //                .port(3000)
-                .path("/login/oauth")
-                .queryParams(queryParams)
+                .path(path)
+//                .queryParams(queryParams)
                 .build()
                 .toUri();
     }
