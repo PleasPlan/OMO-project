@@ -96,6 +96,7 @@ public class MemberService {
      * 2. 사용자의 로그인 인증 상태 검증
      * 3. 닉네임 중복 확인
      * 4. 사용자 생년월일, 닉네임, mbti, 성별 저장
+     * 5. 사용자의 권한을 USER로 변경
      */
     public Member addInfo(Long memberId, MemberDto.Post post) {
         Member member = mapper.memberPostDtoToMember(post);
@@ -119,11 +120,14 @@ public class MemberService {
         // 4-2. 닉네임 저장
         findMember.setNickname(member.getNickname());
 
-        // 3-3 mbti 저장
+        // 4-3 mbti 저장
         findMember.setMbit(member.getMbit());
 
-        // 3-4 성별 저장
+        // 4-4 성별 저장
         findMember.setGender(member.getGender());
+
+        // 5. 사용자의 권한을 USER로 변경
+        findMember.setMemberRole(Member.MemberRole.USER);
 
         return memberRepository.save(findMember);
     }
@@ -200,6 +204,7 @@ public class MemberService {
         Long memberIdFromRequest = memberId;
 
         if (memberIdFromJws != memberIdFromRequest) { // 토큰을 통해 얻은 memberId의 값이 인증하고자 하는 회원의 memberId와 다른 경우 예외처리
+            log.info("memberIdFromJws != memberIdFromRequest");
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
     }
