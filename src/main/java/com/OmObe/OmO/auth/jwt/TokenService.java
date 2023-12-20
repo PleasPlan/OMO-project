@@ -17,7 +17,7 @@ public class TokenService { // 토큰 생성 클래스
         Map<String, Object> claims = new HashMap<>();
         claims.put("memberId", member.getMemberId());
         claims.put("username", member.getEmail());
-        claims.put("role", member.getRoles());
+        claims.put("role", member.getMemberRole());
 
         String subject = member.getEmail();
         Date expiration = jwtTokenizer.getTokenExpiration(jwtTokenizer.getAccessTokenExpirationMinutes());
