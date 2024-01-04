@@ -41,8 +41,7 @@ public class MemberController {
     // 회원 추가 정보 입력
     @PostMapping("/memberInfo/{memberId}")
     public ResponseEntity addMemberInfo(@Valid @PathVariable("memberId") @Positive Long memberId,
-                                        @Valid @RequestBody MemberDto.Post post,
-                                        @RequestHeader(value = "Authorization") String token) {
+                                        @Valid @RequestBody MemberDto.Post post) {
         memberService.addInfo(memberId, post);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -50,8 +49,7 @@ public class MemberController {
 
     // 회원 탈퇴
     @DeleteMapping("/member/{memberId}")
-    public ResponseEntity deleteMember(@Valid @PathVariable("memberId") @Positive Long memberId,
-                                       @RequestHeader(value = "Authorization") String token){
+    public ResponseEntity deleteMember(@Valid @PathVariable("memberId") @Positive Long memberId){
         memberService.quitMember(memberId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
