@@ -61,9 +61,12 @@ public class SecurityConfiguration {
                 .apply(new CustomFilterConfigurer()) // jwt 로그인 인증
                 .and()
                 .authorizeHttpRequests(authorize -> authorize
+                        .antMatchers(HttpMethod.GET, "/**").permitAll()
+                        .antMatchers(HttpMethod.POST, "/h2/**").permitAll() // todo: 테스트용 db 조회 -> 관리자 권한만 접근하도록 수정할 것
                         .antMatchers(HttpMethod.POST,"/signup").permitAll()
-//                        .antMatchers(HttpMethod.POST, "/logout").permitAll()
-                        .anyRequest().permitAll()
+                        .antMatchers(HttpMethod.GET, "/board/**").permitAll()
+                        .antMatchers(HttpMethod.POST, "/notice/write/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 ).oauth2Login(oauth2 -> oauth2 // oauth2 인증 활성화
                         .successHandler(new OAuth2MemberSuccessHandler(tokenService, oAuth2MemberService, authorityUtils)));
 
@@ -99,7 +102,7 @@ public class SecurityConfiguration {
             jwtAuthenticationFilter.setAuthenticationSuccessHandler(new MemberAuthenticationSuccessHandler());
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new MemberAuthenticationFailureHandler());
 
-            JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenizer, authorityUtils, redisTemplate);
+            JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenizer, authorityUtils, redisTemplate, memberRepository);
 
             JwtLogoutFilter jwtLogoutFilter = new JwtLogoutFilter(jwtTokenizer, redisService);
 
