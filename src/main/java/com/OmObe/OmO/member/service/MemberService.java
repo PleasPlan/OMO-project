@@ -200,11 +200,17 @@ public class MemberService {
 
         String jws = getHeader("Authorization").substring(7);
 
+        // jws를 통해 memberId 추출
         Long memberIdFromJws = getMemberIdFromJws(jws);
-        Long memberIdFromRequest = memberId;
+        Member loginMember = memberRepository.findByMemberId(memberIdFromJws).orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
-        if (memberIdFromJws != memberIdFromRequest) { // 토큰을 통해 얻은 memberId의 값이 인증하고자 하는 회원의 memberId와 다른 경우 예외처리
-            log.info("memberIdFromJws != memberIdFromRequest");
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+
+        // 토큰이 사용자의 토큰이 아니라면 예외 처리
+        if (!loginMember.getEmail().equals(member.getEmail())) {
+            log.info("!loginMember.getEmail().equals(member.getEmail");
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
     }
