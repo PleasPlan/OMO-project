@@ -94,6 +94,9 @@ public class BoardService {
     public void deleteBoard(long boardId){
         Board findBoard = findBoard(boardId);
 
+        // 사용자 인증 상태 검증
+        memberService.verifiedAuthenticatedMember(findBoard.getMember().getMemberId());
+
         boardRepository.delete(findBoard);
     }
 

@@ -200,8 +200,7 @@ public class BoardController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    /** TODO : JWT 서비스 시에 실행할 것.
-    /*@PutMapping("/like")
+    @PutMapping("/like")
     public ResponseEntity likeBoard(@RequestHeader("boardId") long boardId,
                                     @RequestHeader("Authorization") String Token) throws JsonProcessingException {
         Member writer = getWriterInJWTToken(Token);
@@ -209,23 +208,7 @@ public class BoardController {
 
         boardService.likesBoard(boardId, writer);
         return new ResponseEntity<>(HttpStatus.OK);
-    }*/
-
-    // TODO: JWT 서비스 시에 삭제할 것.
-    @PutMapping("/like")
-    public ResponseEntity likeBoard(@RequestHeader("boardId") long boardId,
-                                    @RequestHeader("memberId") long memberId){
-
-
-
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
-        Member findMember = optionalMember.orElseThrow(() ->
-                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-
-        boardService.likesBoard(boardId, findMember);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
-    
 
     // JWT 토큰을 해석하여 토큰 사용자를 알아내는 함수
     private Member getWriterInJWTToken(String token) throws JsonProcessingException {
