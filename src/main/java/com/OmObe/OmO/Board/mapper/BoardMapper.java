@@ -56,7 +56,7 @@ public class BoardMapper {
             String content = board.getContent();
             String writer = board.getMember().getNickname();
 //            TODO : 프로필 url이 주석 해제되면 다시 해제할 것.
-//            String profileURL = board.getMember().getprofileURL;
+            String profileURL = board.getMember().getProfileImageUrl();
             LocalDateTime createdTime = board.getCreatedAt();
             int likeCount = board.getLikes().size();
             int viewCount = board.getViewCount();
@@ -66,7 +66,7 @@ public class BoardMapper {
                 commentResponseDtos.add(commentDto);
             }
 
-            BoardDto.Response response = new BoardDto.Response(boardId,title,content,type,writer,createdTime,likeCount,viewCount,commentResponseDtos);
+            BoardDto.Response response = new BoardDto.Response(boardId,title,content,type,writer,profileURL,createdTime,likeCount,viewCount,commentResponseDtos);
             return response;
         }
     }
