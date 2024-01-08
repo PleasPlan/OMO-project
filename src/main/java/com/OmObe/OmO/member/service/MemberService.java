@@ -193,7 +193,7 @@ public class MemberService {
     }
 
     // 사용자 로그인 인증 상태 검증 메서드
-    private void verifiedAuthenticatedMember(Long memberId) {
+    public void verifiedAuthenticatedMember(Long memberId) {
         if (getHeader("Authorization") == null) { // Authorization의 헤더 값(액세스 토큰)이 없으면 예외처리
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
         }

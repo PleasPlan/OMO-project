@@ -52,44 +52,33 @@ public class BoardController {
 *
 * */
 
-    /** TODO : JWT 서비스 시에 실행할 것.
-    /*@SneakyThrows
-    @PostMapping("/write")
-    public ResponseEntity postBoard(@Valid @RequestBody BoardDto.Post postDto,
-                                     @RequestHeader("Authorization") String Token){
-        Board board = mapper.boardPostDtoToBoard(postDto);
-        Member writer = getWriterInJWTToken(Token);
-        board.setMember(writer);
-
-        Board response = boardService.createBoard(board);
-        return new ResponseEntity<>(mapper.boardToBoardResponseDto(response),
-                HttpStatus.CREATED);
-    }*/
-
-    // TODO: JWT 서비스 시에 삭제할 것.
+    // TODO : JWT 서비스 시에 실행할 것.
     @SneakyThrows
     @PostMapping("/write")
     public ResponseEntity postBoard(@Valid @RequestBody BoardDto.Post postDto,
-                                    @RequestParam Long memberId){
+                                    @RequestHeader("Authorization") String token){
         Board board = mapper.boardPostDtoToBoard(postDto);
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
-        Member findMember = optionalMember.orElseThrow(() ->
-                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        board.setMember(findMember);
+        Member writer = getWriterInJWTToken(token);
+        board.setMember(writer);
 
-        Board response = boardService.createBoard(board);
-        return new ResponseEntity<>(mapper.boardToBoardResponseDto(response),
+        Board createdBoard = boardService.createBoard(board);
+        BoardDto.Response response = mapper.boardToBoardResponseDto(createdBoard);
+
+        // 게시판 글 작성 시 사용자의 프로필 이미지 설정
+        response.setProfileURL(writer.getProfileImageUrl());
+        return new ResponseEntity<>(response,
                 HttpStatus.CREATED);
     }
 
     @SneakyThrows
     @PatchMapping("/modification/{board-id}")
     public ResponseEntity patchBoard(@Valid @RequestBody BoardDto.Patch patchDto,
-                                     @PathVariable("board-id") @Positive long boardId){
+                                     @PathVariable("board-id") @Positive long boardId,
+                                     @RequestHeader("Authorization") String token){
         patchDto.setBoardId(boardId);
 
         Board board = mapper.boardPatchDtoToBoard(patchDto);
-        Board response = boardService.updateBoard(board);;
+        Board response = boardService.updateBoard(patchDto);
 
         return new ResponseEntity<>(mapper.boardToBoardResponseDto(response),
                 HttpStatus.OK);
