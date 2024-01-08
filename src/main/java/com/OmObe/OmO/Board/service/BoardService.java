@@ -1,12 +1,17 @@
 package com.OmObe.OmO.Board.service;
 
+import com.OmObe.OmO.Board.dto.BoardDto;
 import com.OmObe.OmO.Board.entity.Board;
+import com.OmObe.OmO.Board.mapper.BoardMapper;
 import com.OmObe.OmO.Board.repository.BoardRepository;
 import com.OmObe.OmO.Liked.entity.Liked;
 import com.OmObe.OmO.Liked.repository.LikedRepository;
 import com.OmObe.OmO.exception.BusinessLogicException;
 import com.OmObe.OmO.exception.ExceptionCode;
 import com.OmObe.OmO.member.entity.Member;
+import com.OmObe.OmO.member.repository.MemberRepository;
+import com.OmObe.OmO.member.service.MemberService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -17,22 +22,33 @@ import java.util.Optional;
 
 
 @Service
+@Slf4j
 public class BoardService {
 
     private final BoardRepository boardRepository;
     private final LikedRepository likedRepository;
+    private final MemberService memberService;
+    private final MemberRepository memberRepository;
+    private final BoardMapper mapper;
 
-    public BoardService(BoardRepository boardRepository, LikedRepository likedRepository) {
+    public BoardService(BoardRepository boardRepository, LikedRepository likedRepository, MemberService memberService, MemberRepository memberRepository, BoardMapper mapper) {
         this.boardRepository = boardRepository;
         this.likedRepository = likedRepository;
+        this.memberService = memberService;
+        this.memberRepository = memberRepository;
+        this.mapper = mapper;
     }
 
     public Board createBoard(Board board){
         return boardRepository.save(board);
     }
 
-    public Board updateBoard(Board board){
+    public Board updateBoard(BoardDto.Patch patch){
+        Board board = mapper.boardPatchDtoToBoard(patch);
         Board findBoard = findBoard(board.getBoardId());
+
+        // 사용자의 로그인 인증 상태 검증
+        memberService.verifiedAuthenticatedMember(findBoard.getMember().getMemberId());
 
         Optional.ofNullable(board.getTitle())
                 .ifPresent(title -> findBoard.setTitle(title));
@@ -111,6 +127,4 @@ public class BoardService {
     public static Slice<Board> convertToSlice(Page<Board> page){
         return new SliceImpl<>(page.getContent(), page.getPageable(), page.hasNext());
     }
-
-
 }
