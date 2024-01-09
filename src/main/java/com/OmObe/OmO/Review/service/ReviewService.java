@@ -4,6 +4,7 @@ import com.OmObe.OmO.Review.entity.Review;
 import com.OmObe.OmO.Review.repository.ReviewRepository;
 import com.OmObe.OmO.exception.BusinessLogicException;
 import com.OmObe.OmO.exception.ExceptionCode;
+import com.OmObe.OmO.member.service.MemberService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -16,9 +17,11 @@ import java.util.Optional;
 @Service
 public class ReviewService {
     private final ReviewRepository reviewRepository;
+    private final MemberService memberService;
 
-    public ReviewService(ReviewRepository reviewRepository) {
+    public ReviewService(ReviewRepository reviewRepository, MemberService memberService) {
         this.reviewRepository = reviewRepository;
+        this.memberService = memberService;
     }
 
     public Review createReview(Review review){
@@ -27,6 +30,9 @@ public class ReviewService {
 
     public Review updateReview(Review review,long reviewId){
         Review findReview = findReview(reviewId);
+
+        // 사용자 인증 상태 검증
+        memberService.verifiedAuthenticatedMember(findReview.getMember().getMemberId());
 
         Optional.ofNullable(review.getContent())
                 .ifPresent(content -> findReview.setContent(content));
@@ -46,6 +52,9 @@ public class ReviewService {
 
     public void deleteReview(long reviewId){
         Review findReview = findReview(reviewId);
+
+        // 사용자 로그인 인증 상태 검증
+        memberService.verifiedAuthenticatedMember(findReview.getMember().getMemberId());
 
         reviewRepository.delete(findReview);
     }
