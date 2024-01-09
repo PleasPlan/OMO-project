@@ -53,6 +53,9 @@ public class ReviewService {
     public void deleteReview(long reviewId){
         Review findReview = findReview(reviewId);
 
+        // 사용자 로그인 인증 상태 검증
+        memberService.verifiedAuthenticatedMember(findReview.getMember().getMemberId());
+
         reviewRepository.delete(findReview);
     }
 
