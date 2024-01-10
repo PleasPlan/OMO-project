@@ -11,11 +11,10 @@ import java.time.LocalDateTime;
 
 // Notice Dto 클래스
 public class NoticeDto {
-
     @AllArgsConstructor
-    @NoArgsConstructor
     @Getter
     @Setter
+    @NoArgsConstructor
     public static class Post{ // 공지 사항 작성 DTO
         @NotBlank(message = "제목을 입력하세요.")
         private String title; // 제목
@@ -35,6 +34,8 @@ public class NoticeDto {
 
     @Getter
     @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Patch{ // 공지 사항 수정 DTO
         private Long noticeId;
 
@@ -48,10 +49,13 @@ public class NoticeDto {
 
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
+    @Setter
     public static class Response{ // 공지 사항 응답 DTO
         private Long noticeId;
         private String title;
         private String content;
+        private String type;
         private LocalDateTime createdAt;
     }
 }
