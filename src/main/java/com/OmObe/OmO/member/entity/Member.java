@@ -1,6 +1,7 @@
 package com.OmObe.OmO.member.entity;
 
 import com.OmObe.OmO.Liked.entity.Liked;
+import com.OmObe.OmO.notice.entity.Notice;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -88,6 +89,10 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
     private List<Liked> likedList = new ArrayList<>();
+
+    // Member - Notice 일대다 매핑
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Notice> notices = new ArrayList<>();
 
     public void addLikes(Liked liked){
         this.likedList.add(liked);
