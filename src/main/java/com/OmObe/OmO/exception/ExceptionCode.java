@@ -10,7 +10,9 @@ public enum ExceptionCode {
     COMMENT_NOT_FOUND(404,"Missing Comment"),
     PASSWORD_NOT_CORRECT(404, "Password is not correct. Pleas check the password"),
     INVALID_TOKEN(403, "This Token is invalid token. Please check the token"),
-    REVIEW_NOT_FOUND(404, "Missing Review");
+    REVIEW_NOT_FOUND(404, "Missing Review"),
+    NOTICE_NOT_FOUND(404, "Notice not found, Please check the Notice Id and try again"),
+    NOTICE_TYPE_ERROR(404, "Notice type is not invalid. Please check the Notice Type.(default/NOR/CHK");
 
     @Getter
     private int status;
