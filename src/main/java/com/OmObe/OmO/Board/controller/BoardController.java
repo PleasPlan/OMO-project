@@ -5,14 +5,12 @@ import com.OmObe.OmO.Board.entity.Board;
 import com.OmObe.OmO.Board.mapper.BoardMapper;
 import com.OmObe.OmO.Board.response.MultiResponseDto;
 import com.OmObe.OmO.Board.service.BoardService;
-import com.OmObe.OmO.Liked.entity.Liked;
 import com.OmObe.OmO.Liked.repository.LikedRepository;
-import com.OmObe.OmO.exception.BusinessLogicException;
-import com.OmObe.OmO.exception.ExceptionCode;
+import com.OmObe.OmO.auth.jwt.TokenDecryption;
 import com.OmObe.OmO.member.entity.Member;
 import com.OmObe.OmO.member.repository.MemberRepository;
+import com.OmObe.OmO.member.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Slice;
@@ -23,10 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
-import java.util.Base64;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -37,12 +32,14 @@ public class BoardController {
     private final BoardMapper mapper;
     private final MemberRepository memberRepository;
     private final LikedRepository likedRepository;
+    private final TokenDecryption tokenDecryption;
 
-    public BoardController(BoardService boardService, BoardMapper mapper, MemberRepository memberRepository, LikedRepository likedRepository) {
+    public BoardController(BoardService boardService, BoardMapper mapper, MemberRepository memberRepository, LikedRepository likedRepository, TokenDecryption tokenDecryption) {
         this.boardService = boardService;
         this.mapper = mapper;
         this.memberRepository = memberRepository;
         this.likedRepository = likedRepository;
+        this.tokenDecryption = tokenDecryption;
     }
 
     /*
@@ -58,7 +55,7 @@ public class BoardController {
     public ResponseEntity postBoard(@Valid @RequestBody BoardDto.Post postDto,
                                     @RequestHeader("Authorization") String token){
         Board board = mapper.boardPostDtoToBoard(postDto);
-        Member writer = getWriterInJWTToken(token);
+        Member writer = tokenDecryption.getWriterInJWTToken(token);
         board.setMember(writer);
 
         Board createdBoard = boardService.createBoard(board);
@@ -203,29 +200,12 @@ public class BoardController {
     @PutMapping("/like")
     public ResponseEntity likeBoard(@RequestHeader("boardId") long boardId,
                                     @RequestHeader("Authorization") String Token) throws JsonProcessingException {
-        Member writer = getWriterInJWTToken(Token);
+        Member writer = tokenDecryption.getWriterInJWTToken(Token);
 
 
         boardService.likesBoard(boardId, writer);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // JWT 토큰을 해석하여 토큰 사용자를 알아내는 함수
-    private Member getWriterInJWTToken(String token) throws JsonProcessingException {
-        String[] chunks = token.split("\\.");
 
-        Base64.Decoder decoder = Base64.getUrlDecoder();
-
-        String payload = new String(decoder.decode(chunks[1]));
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> returnMap = objectMapper.readValue(payload, Map.class);
-
-        Object objectWriter = returnMap.get("sub");
-        String email = objectWriter.toString();
-
-        Optional<Member> member = memberRepository.findByEmail(email);
-        Member writer = member.orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        return writer;
-    }
 }
