@@ -66,6 +66,7 @@ public class SecurityConfiguration {
                         .antMatchers(HttpMethod.POST,"/signup").permitAll()
                         .antMatchers(HttpMethod.GET, "/board/**").permitAll()
                         .antMatchers(HttpMethod.POST, "/notice/write/**").hasRole("ADMIN")
+                        .antMatchers(HttpMethod.PATCH, "/notice/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 ).oauth2Login(oauth2 -> oauth2 // oauth2 인증 활성화
                         .successHandler(new OAuth2MemberSuccessHandler(tokenService, oAuth2MemberService, authorityUtils)));
