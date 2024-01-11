@@ -107,6 +107,22 @@ public class NoticeService {
         return noticeRepository.findByType(type, sortedBy(page, size));
     }
 
+    /**
+     * <공지사항 삭제>
+     * 1. 사용자 로그인 상태 검증
+     * 2. 삭제
+     */
+    public void removeNotice(Long noticeId) {
+        Notice notice = noticeRepository.findById(noticeId).orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.NOTICE_NOT_FOUND));
+
+        // 1. 사용자 로그인 상태 검증
+        memberService.verifiedAuthenticatedMember(notice.getMember().getMemberId());
+
+        // 2. 삭제
+        noticeRepository.delete(notice);
+    }
+
     // 공지사항을 최신순으로 정렬
     private Pageable sortedBy(int page, int size) {
         return PageRequest.of(page - 1, size, Sort.by("noticeId").descending());
@@ -123,6 +139,4 @@ public class NoticeService {
     public static Slice<Notice> convertToSlice(Page<Notice> page){
         return new SliceImpl<>(page.getContent(), page.getPageable(), page.hasNext());
     }
-
-
 }

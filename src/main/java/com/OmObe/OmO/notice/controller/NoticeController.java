@@ -56,7 +56,7 @@ public class NoticeController {
             sortedNotices = noticeService.getSortedNotice(page, size);
         } else if (type.equals("CHK") || type.equals("NOR")) { // CHK나 NOR인 경우 해당 타입에 맞게 분류하여 공지사항 목록 제공
             sortedNotices = noticeService.getNoticesByType(page, size, type);
-        } else{ // default, CHK, NOR 이외의 타입이 입력된 경우 예외 처리
+        } else { // default, CHK, NOR 이외의 타입이 입력된 경우 예외 처리
             throw new BusinessLogicException(ExceptionCode.NOTICE_TYPE_ERROR);
         }
 
@@ -64,5 +64,13 @@ public class NoticeController {
 
         return new ResponseEntity<>(
                 new MultiResponseDto<>(mapper.noticeToNoticeResponseList(notices), sortedNotices), HttpStatus.OK);
+    }
+
+    // 공지사항 삭제
+    @DeleteMapping("/{noticeId}")
+    public ResponseEntity deleteNotice(@PathVariable("noticeId") Long noticeId) {
+        noticeService.removeNotice(noticeId);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
