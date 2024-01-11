@@ -55,4 +55,42 @@ public class NoticeService {
         // 3. 공자사항 저장
         return noticeRepository.save(notice);
     }
+
+    /**
+     * <공지사항 수정>
+     * 1. 게시글 존재 여부 검증
+     * 2. 게시글 작성자와 수정자 비교
+     * 3. 수정
+     */
+    public Notice patchNotice(NoticeDto.Patch patch, Long noticeId) {
+        patch.setNoticeId(noticeId);
+        Notice notice = mapper.noticePatchDtoToNotice(patch);
+
+        // 1. 게시글 존재 여부 검증
+        Notice checkedNotice = verifyNotice(notice.getNoticeId());
+        checkedNotice.setModifiedAt(LocalDateTime.now());
+
+        // 2. 게시글 작성자와 수정자 비교
+        memberService.verifiedAuthenticatedMember(checkedNotice.getMember().getMemberId());
+
+        // 3. 수정
+        Optional.ofNullable(notice.getTitle()) // 제목
+                .ifPresent(checkedNotice::setTitle);
+
+        Optional.ofNullable(notice.getContent()) // 내용
+                .ifPresent(checkedNotice::setContent);
+
+        Optional.ofNullable(notice.getType()) // 공지 구분
+                .ifPresent(checkedNotice::setType);
+
+        return noticeRepository.save(checkedNotice);
+    }
+
+    // 게시글 존재 검증 메서드
+    private Notice verifyNotice(Long noticeId) {
+        Optional<Notice> optionalNotice = noticeRepository.findById(noticeId);
+
+        return optionalNotice.orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.NOTICE_NOT_FOUND));
+    }
 }

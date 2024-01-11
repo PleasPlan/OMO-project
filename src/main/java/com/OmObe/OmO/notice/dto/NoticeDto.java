@@ -57,5 +57,6 @@ public class NoticeDto {
         private String content;
         private String type;
         private LocalDateTime createdAt;
+        private LocalDateTime modifiedAt;
     }
 }

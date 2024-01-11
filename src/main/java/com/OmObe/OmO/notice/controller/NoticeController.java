@@ -31,4 +31,12 @@ public class NoticeController {
         return new ResponseEntity<>(mapper.noticeToNoticeResponseDto(notice), HttpStatus.CREATED);
     }
 
+    // 공지사항 수정
+    @PatchMapping("/{noticeId}")
+    public ResponseEntity patchNotice(@RequestBody @Valid NoticeDto.Patch patch,
+                                      @PathVariable("noticeId") Long noticeId) {
+        Notice notice = noticeService.patchNotice(patch, noticeId);
+
+        return new ResponseEntity<>(mapper.noticeToNoticeResponseDto(notice), HttpStatus.OK);
+    }
 }
