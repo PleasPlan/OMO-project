@@ -13,6 +13,7 @@ import com.OmObe.OmO.notice.repository.NoticeRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,6 +87,31 @@ public class NoticeService {
         return noticeRepository.save(checkedNotice);
     }
 
+    /**
+     * <공지사항 목록 조회 - 기본 조회>
+     * 1. 최신순으로 조회 및 리턴
+     * 메서드 타입이 Page인 경우 전체 데이터 및 페이지 수 계산을 위한 count 쿼리를 추가로 호출하는데 필요 없기 때문에
+     * 다음 Slice가 있는지만 판단하는 Slice타입으로 변경하여 필요하지 않은 쿼리의 호출을 줄임
+     */
+    public Slice<Notice> getSortedNotice(int page, int size) {
+        // 1. 최신순으로 조회
+        return noticeRepository.findAll(sortedBy(page, size));
+    }
+
+    /**
+     * <공지사항 목록 조회 - 일반 공지 / 점검 공지>
+     * 1. NOR, CHK 중 입력받은 타입에 따라 해당 타입의 공지사항 목록을 최신순으로 제공
+     */
+    public Slice<Notice> getNoticesByType(int page, int size, String type) {
+        // 1. NOR, CHK 중 입력받은 타입에 따라 해당 타입의 공지사항 목록을 최신순으로 제공
+        return noticeRepository.findByType(type, sortedBy(page, size));
+    }
+
+    // 공지사항을 최신순으로 정렬
+    private Pageable sortedBy(int page, int size) {
+        return PageRequest.of(page - 1, size, Sort.by("noticeId").descending());
+    }
+
     // 게시글 존재 검증 메서드
     private Notice verifyNotice(Long noticeId) {
         Optional<Notice> optionalNotice = noticeRepository.findById(noticeId);
@@ -93,4 +119,10 @@ public class NoticeService {
         return optionalNotice.orElseThrow(() ->
                 new BusinessLogicException(ExceptionCode.NOTICE_NOT_FOUND));
     }
+
+    public static Slice<Notice> convertToSlice(Page<Notice> page){
+        return new SliceImpl<>(page.getContent(), page.getPageable(), page.hasNext());
+    }
+
+
 }
