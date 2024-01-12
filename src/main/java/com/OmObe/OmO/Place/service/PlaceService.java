@@ -113,45 +113,61 @@ public class PlaceService {
         Place place = findPlace(placeId);
         Member member = memberService.findVerifiedMember(memberId);
 
-        PlaceLike like = new PlaceLike();
-        like.setPlace(place);
-        like.setMember(member);
 
-        PlaceRecommend recommend = new PlaceRecommend();
-        recommend.setPlace(place);
-        recommend.setMember(member);
+        Place newPlace = new Place();
+        newPlace.setPlaceId(placeId);
 
         // Like = true, Recommend = false
 
         if(place != null){
             if(LR){
-                Optional<PlaceLike> optionalPlaceLike = placeLikeRepository.findByMemberAndPlace(memberId,placeId);
+                Optional<PlaceLike> optionalPlaceLike = placeLikeRepository.findByMemberAndPlace(member,place);
                 if(optionalPlaceLike.isPresent()){
                     PlaceLike existPlaceLike = optionalPlaceLike.orElseThrow();
                     place.deleteLikes(existPlaceLike);
+                    placeLikeRepository.delete(existPlaceLike);
                 } else {
+                    PlaceLike like = new PlaceLike();
+                    like.setPlace(place);
+                    like.setMember(member);
                     place.addLikes(like);
+                    placeLikeRepository.save(like);
                 }
-                placeLikeRepository.save(like);
+
             }
+            // TODO : findbyMemberAndPlace가 안됨.
             else{
-                Optional<PlaceRecommend> optionalPlaceRecommend = placeRecommendRepository.findByMemberAndPlace(memberId,placeId);
+                Optional<PlaceRecommend> optionalPlaceRecommend = placeRecommendRepository.findByMemberAndPlace(member,place);
                 if(optionalPlaceRecommend.isPresent()){
                     PlaceRecommend existPlaceRecommend = optionalPlaceRecommend.orElseThrow();
                     place.deleteRecommends(existPlaceRecommend);
+                    placeRecommendRepository.delete(existPlaceRecommend);
                 } else {
+                    PlaceRecommend recommend = new PlaceRecommend();
+                    recommend.setPlace(place);
+                    recommend.setMember(member);
                     place.addRecommends(recommend);
+                    placeRecommendRepository.save(recommend);
                 }
-                placeRecommendRepository.save(recommend);
             }
             placeRepository.save(place);
 
             return "placeId : "+placeId+"\nmine : "+place.getPlaceLikeList().size()+"\nrecommend : "+place.getPlaceRecommendList().size();
         } else {
-            Place newPlace = new Place();
-            newPlace.setPlaceId(placeId);
-            newPlace.addLikes(like);
-            newPlace.addRecommends(recommend);
+            if(LR){
+                PlaceLike like = new PlaceLike();
+                like.setPlace(place);
+                like.setMember(member);
+                newPlace.addLikes(like);
+                placeLikeRepository.save(like);
+            }
+            else{
+                PlaceRecommend recommend = new PlaceRecommend();
+                recommend.setPlace(place);
+                recommend.setMember(member);
+                newPlace.addRecommends(recommend);
+                placeRecommendRepository.save(recommend);
+            }
             placeRepository.save(newPlace);
             return "placeId : "+newPlace.getPlaceId()+"\nmine : "+newPlace.getPlaceLikeList().size()+"\nrecommend : "+newPlace.getPlaceRecommendList().size();
         }
@@ -263,24 +279,23 @@ public class PlaceService {
                     if(place.getSecond()){
                         objectNode.put("mine", place.getFirst().getPlaceLikeList().size());
                         objectNode.put("recommend", place.getFirst().getPlaceRecommendList().size());
+                        ArrayNode reviews = JsonNodeFactory.instance.arrayNode();
+                        Optional<List<Review>> optionalReviewList = reviewRepository.findByPlaceName(place.getFirst().getPlaceName());
+                        if(optionalReviewList.isPresent()){
+                            List<Review> reviewList = optionalReviewList.get();
+                            for(Review review: reviewList){
+                                ObjectNode reviewNode = objectMapper.createObjectNode();
+                                reviewNode.put("writer", review.getMember().getNickname());
+                                reviewNode.put("content", review.getContent());
+                                // TODO: 이미지 넣어야 됨.
+                                reviews.add(reviewNode);
+                            }
+                        }
+                        objectNode.set("reviews", reviews);
                     } else {
                         objectNode.put("mine",0);
                         objectNode.put("recommend", 0);
                     }
-
-                    ArrayNode reviews = JsonNodeFactory.instance.arrayNode();
-                    Optional<List<Review>> optionalReviewList = reviewRepository.findByPlaceName(place.getFirst().getPlaceName());
-                    if(optionalReviewList.isPresent()){
-                        List<Review> reviewList = optionalReviewList.get();
-                        for(Review review: reviewList){
-                            ObjectNode reviewNode = objectMapper.createObjectNode();
-                            reviewNode.put("writer", review.getMember().getNickname());
-                            reviewNode.put("content", review.getContent());
-                            // TODO: 이미지 넣어야 됨.
-                            reviews.add(reviewNode);
-                        }
-                    }
-                    objectNode.set("reviews", reviews);
                     JsonNode changedNode = objectNode;
                     placeNode = changedNode;
                 }
