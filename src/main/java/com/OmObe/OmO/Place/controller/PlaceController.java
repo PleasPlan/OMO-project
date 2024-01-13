@@ -38,8 +38,6 @@ public class PlaceController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // TODO: memberToken이 제대로 안읽힘
-
     @PutMapping("/{placeId}")
     public ResponseEntity MineOrRecommend(@PathVariable("placeId") long placeId,
                                           @RequestHeader("Authorization") String Token,
@@ -47,7 +45,6 @@ public class PlaceController {
                                           @RequestHeader boolean LR){
                                           // Like = true, Recommend = false
 
-        //memberService.verifiedAuthenticatedMember(memberId);
         String response = placeService.putMineOrRecommend(placeId, memberId, LR);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
