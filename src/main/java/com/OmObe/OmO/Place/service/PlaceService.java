@@ -135,7 +135,6 @@ public class PlaceService {
                 }
 
             }
-            // TODO : findbyMemberAndPlace가 안됨.
             else{
                 Optional<PlaceRecommend> optionalPlaceRecommend = placeRecommendRepository.findByMemberAndPlace(member,place);
                 if(optionalPlaceRecommend.isPresent()){
