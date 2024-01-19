@@ -21,9 +21,6 @@ public class Place {
     private String placeName;
 
     @OneToMany(mappedBy = "place",cascade = CascadeType.PERSIST)
-    private List<Review> reviews = new ArrayList<>();
-
-    @OneToMany(mappedBy = "place",cascade = CascadeType.PERSIST)
     private List<PlaceLike> placeLikeList = new ArrayList<>();
 
     @OneToMany(mappedBy = "place",cascade = CascadeType.PERSIST)
@@ -45,17 +42,5 @@ public class Place {
 
     public void deleteRecommends(PlaceRecommend placeRecommend){
         this.placeRecommendList.remove(placeRecommend);
-    }
-
-    // 추천을 누른 사람만 댓글을 달 수 있다.
-
-    public boolean addReview(Review review){
-        if(placeRecommendList.size() > 0) {
-            this.reviews.add(review);
-            review.setPlace(this);
-            return true;
-        } else {
-            return false;
-        }
     }
 }
