@@ -22,7 +22,7 @@ public class Review {
     private String content;
 
     @Column(nullable = false)
-    private String placeName;
+    private Long placeId;
 
     @Column
     private String imageAddress;
@@ -36,8 +36,4 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "WRITER")
     private Member member;
-
-    @ManyToOne
-    @JoinColumn(name = "PLACE")
-    private Place place;
 }

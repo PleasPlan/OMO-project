@@ -38,21 +38,23 @@ public class PlaceController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/{placeId}")
-    public ResponseEntity MineOrRecommend(@PathVariable("placeId") long placeId,
+    @PutMapping("/{placeName}")
+    public ResponseEntity MineOrRecommend(@PathVariable("placeName") String placeName,
+                                          @RequestHeader("placeId") long placeId,
                                           @RequestHeader("Authorization") String Token,
                                           @RequestHeader("memberId") long memberId,
                                           @RequestHeader boolean LR){
                                           // Like = true, Recommend = false
 
-        String response = placeService.putMineOrRecommend(placeId, memberId, LR);
+        String response = placeService.putMineOrRecommend(placeId,placeName, memberId, LR);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{placeName}")
-    public ResponseEntity getPlace(@PathVariable("placeName") String placeName){
-        String response = placeService.getPlace(placeName);
+    public ResponseEntity getPlace(@PathVariable("placeName") String placeName,
+                                   @RequestHeader("placeId") long placeId){
+        String response = placeService.getPlace(placeName,placeId);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

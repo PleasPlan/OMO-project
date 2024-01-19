@@ -12,11 +12,14 @@ import com.OmObe.OmO.Review.repository.ReviewRepository;
 import com.OmObe.OmO.member.entity.Member;
 import com.OmObe.OmO.member.service.MemberService;
 import com.OmObe.OmO.util.PairJ;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,10 +29,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @Slf4j
@@ -87,7 +89,7 @@ public class PlaceService {
         return responseBody;
     }
 
-    public String getPlace(String placeName) {
+    public String getPlace(String placeName,long placeId) {
 
         String keyword;
         try{
@@ -104,18 +106,31 @@ public class PlaceService {
         requestHeader.put("Authorization", "KakaoAK "+key);
         String responseBody = get(webAddress, requestHeader);
 
-        responseBody = getPlaceComments(responseBody);
+        responseBody = getPlaceComments(responseBody,placeId,placeName);
         // TODO: MBTI 통계 내야됨. 장소 찜 및 따봉은 구현 전
         return responseBody;
     }
 
-    public String putMineOrRecommend(long placeId,long memberId,boolean LR){
+
+    public String putMineOrRecommend(long placeId, String placeName, long memberId, boolean LR){
         Place place = findPlace(placeId);
         Member member = memberService.findVerifiedMember(memberId);
 
+        String jsonData = getPlace(placeName,placeId);
+        log.info(jsonData);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode placeNode = objectMapper.readTree(jsonData);
+            if(placeNode.get("id").asLong() != placeId){
+                return null;
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         Place newPlace = new Place();
         newPlace.setPlaceId(placeId);
+        newPlace.setPlaceName(placeName);
 
         // Like = true, Recommend = false
 
@@ -259,51 +274,100 @@ public class PlaceService {
         return null;
     }
 
-    private String getPlaceComments(String jsonData) {
+    private String getPlaceComments(String jsonData, long placeId, String placeName) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
+
             JsonNode jsonNode = objectMapper.readTree(jsonData);
 
-            JsonNode placesNode = jsonNode.get("documents");
+            ArrayNode placesNode = jsonNode.get("documents").deepCopy();
 
-            if(placesNode.isArray()){
-                for(JsonNode placeNode : placesNode){
-                    long id = placeNode.get("id").asLong();
+//            if(placesNode.isArray()){
 
-                    log.info("id : "+id);
-
+            for(int index = 0; index<placesNode.size(); index++){
+                ObjectNode objectNode = (ObjectNode) placesNode.get(index);
+                long id = placesNode.get(index).get("id").asLong();
+                if(placeId == id) {
+                    log.info("id : " + id);
                     PairJ<Place, Boolean> place = findPlaceWithBoolean(id);
-
-                    ObjectNode objectNode = (ObjectNode) placeNode;
-                    if(place.getSecond()){
+                    if (place.getSecond()) {
                         objectNode.put("mine", place.getFirst().getPlaceLikeList().size());
                         objectNode.put("recommend", place.getFirst().getPlaceRecommendList().size());
-                        ArrayNode reviews = JsonNodeFactory.instance.arrayNode();
-                        Optional<List<Review>> optionalReviewList = reviewRepository.findByPlaceName(place.getFirst().getPlaceName());
-                        if(optionalReviewList.isPresent()){
-                            List<Review> reviewList = optionalReviewList.get();
-                            for(Review review: reviewList){
-                                ObjectNode reviewNode = objectMapper.createObjectNode();
-                                reviewNode.put("writer", review.getMember().getNickname());
-                                reviewNode.put("content", review.getContent());
-                                // TODO: 이미지 넣어야 됨.
-                                reviews.add(reviewNode);
-                            }
-                        }
-                        objectNode.set("reviews", reviews);
                     } else {
-                        objectNode.put("mine",0);
+                        objectNode.put("mine", 0);
                         objectNode.put("recommend", 0);
                     }
+                    ArrayNode reviews = JsonNodeFactory.instance.arrayNode();
+                    Optional<List<Review>> optionalReviewList = reviewRepository.findByPlaceId(placeId);
+                    if (optionalReviewList.isPresent()) {
+                        List<Review> reviewList = optionalReviewList.get();
+                        for (Review review : reviewList) {
+                            ObjectNode reviewNode = objectMapper.createObjectNode();
+                            reviewNode.put("writer", review.getMember().getNickname());
+                            reviewNode.put("content", review.getContent());
+                            // TODO: 이미지 넣어야 됨.
+                            reviews.add(reviewNode);
+                        }
+                    }
+                    objectNode.set("reviews", reviews);
                     JsonNode changedNode = objectNode;
-                    placeNode = changedNode;
+                    placesNode.set(index,changedNode);
+                }
+                else{
+                    NullNode nullNode = NullNode.instance;
+                    placesNode.set(index,nullNode);
                 }
             }
-            else {
-                log.warn("No 'place' array found in the JSON data.");
+//                for(JsonNode placeNode : placesNode){
+//                    long id = placeNode.get("id").asLong();
+//                    if(placeId == id) {
+//                        log.info("id : " + id);
+//
+//                        PairJ<Place, Boolean> place = findPlaceWithBoolean(id);
+//
+//                        ObjectNode objectNode = (ObjectNode) placeNode;
+//                        if (place.getSecond()) {
+//                            objectNode.put("mine", place.getFirst().getPlaceLikeList().size());
+//                            objectNode.put("recommend", place.getFirst().getPlaceRecommendList().size());
+//
+//                        } else {
+//                            objectNode.put("mine", 0);
+//                            objectNode.put("recommend", 0);
+//                        }
+//                        ArrayNode reviews = JsonNodeFactory.instance.arrayNode();
+//                        Optional<List<Review>> optionalReviewList = reviewRepository.findByPlaceName(place.getFirst().getPlaceName());
+//                        if (optionalReviewList.isPresent()) {
+//                            List<Review> reviewList = optionalReviewList.get();
+//                            for (Review review : reviewList) {
+//                                ObjectNode reviewNode = objectMapper.createObjectNode();
+//                                reviewNode.put("writer", review.getMember().getNickname());
+//                                reviewNode.put("content", review.getContent());
+//                                // TODO: 이미지 넣어야 됨.
+//                                reviews.add(reviewNode);
+//                            }
+//                        }
+//                        objectNode.set("reviews", reviews);
+//                        JsonNode changedNode = objectNode;
+//                        placeNode = changedNode;
+//
+//                    }
+//                    else{
+//                        removeElementFromListInArray(jsonNode,"documents",placeId);
+//                    }
+//                }
+
+//            else {
+//                log.warn("No 'place' array found in the JSON data.");
+//            }
+            Iterator<JsonNode> iterator = placesNode.iterator();
+            while (iterator.hasNext()){
+                if(iterator.next().isNull()){
+                    iterator.remove();
+                }
             }
 
-            return objectMapper.writeValueAsString(jsonNode);
+            JsonNode resultNode = placesNode.get(0);
+            return objectMapper.writeValueAsString(resultNode);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -322,7 +386,7 @@ public class PlaceService {
         return result;
     }
 
-    private Place findPlace(long placeId){
+    public Place findPlace(long placeId){
         Optional<Place> optionalPlace = placeRepository.findById(placeId);
         if(optionalPlace.isEmpty()){
             return null;
@@ -332,5 +396,18 @@ public class PlaceService {
         }
     }
 
+    private static void removeElementFromListInArray(JsonNode jsonNode, String arrayFieldName, long placeId){
+        if(jsonNode.isObject() && jsonNode.has(arrayFieldName)){
+            ArrayNode arrayNode = (ArrayNode) jsonNode.get(arrayFieldName);
+            Iterator<JsonNode> elements = arrayNode.elements();
 
+            while (elements.hasNext()){
+                JsonNode element = elements.next();
+                if(element.get("id").asLong() != placeId){
+                    elements.remove();
+                    break;
+                }
+            }
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.OmObe.OmO.Review.repository;
 
 import com.OmObe.OmO.Comment.entity.Comment;
+import com.OmObe.OmO.Place.entity.Place;
 import com.OmObe.OmO.Review.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -11,5 +12,5 @@ import java.util.Optional;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long>, JpaSpecificationExecutor<Review>{
-    Optional<List<Review>> findByPlaceName(String placeName);
+    Optional<List<Review>> findByPlaceId(long placeId);
 }
