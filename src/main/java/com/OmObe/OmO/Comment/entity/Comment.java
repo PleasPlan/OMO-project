@@ -1,6 +1,7 @@
 package com.OmObe.OmO.Comment.entity;
 
 import com.OmObe.OmO.Board.entity.Board;
+import com.OmObe.OmO.Place.entity.Place;
 import com.OmObe.OmO.member.entity.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,12 +29,11 @@ public class Comment {
     private LocalDateTime modifiedAt = LocalDateTime.now();   // 게시글 최종 수정 일자
 
     @ManyToOne
-    @JoinColumn(name = "BOARD_ID")
+    @JoinColumn(name = "BOARD")
     private Board board;
 
     @ManyToOne
-    @JoinColumn(name = "MEMBER_ID")
+    @JoinColumn(name = "MEMBER")
     private Member member; // 댓글 작성자
-
 
 }
