@@ -1,5 +1,6 @@
 package com.OmObe.OmO.Review.mapper;
 
+import com.OmObe.OmO.Place.service.PlaceService;
 import com.OmObe.OmO.Review.dto.ReviewDto;
 import com.OmObe.OmO.Review.entity.Review;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,12 @@ import java.util.List;
 
 @Component
 public class ReviewMapper {
+    private final PlaceService placeService;
+
+    public ReviewMapper(PlaceService placeService) {
+        this.placeService = placeService;
+    }
+
     public Review reviewPostDtoToReview(ReviewDto.Post postDto){
         if(postDto == null){
             return null;
@@ -42,9 +49,8 @@ public class ReviewMapper {
             String content = review.getContent();
             LocalDateTime createdTime = review.getCreatedAt();
             String writer = review.getMember().getNickname();
-            Long placeId = review.getPlaceId();
 
-            ReviewDto.Response response = new ReviewDto.Response(reviewId,content,writer,createdTime,placeId);
+            ReviewDto.Response response = new ReviewDto.Response(reviewId,content,writer,createdTime);
             return response;
         }
     }
