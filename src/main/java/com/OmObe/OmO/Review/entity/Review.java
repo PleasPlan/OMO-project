@@ -1,6 +1,5 @@
 package com.OmObe.OmO.Review.entity;
 
-import com.OmObe.OmO.Place.entity.Place;
 import com.OmObe.OmO.member.entity.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,9 +22,6 @@ public class Review {
 
     @Column(nullable = false)
     private Long placeId;
-
-    @Column
-    private String imageAddress;
 
     @Column
     private LocalDateTime createdAt = LocalDateTime.now();
