@@ -15,7 +15,7 @@ public class ReviewDto {
         @NotBlank(message = "내용을 입력해주십시오.")
         private String content;
 
-        private long placeId;
+        private Long placeId;
     }
 
     @Getter
@@ -32,5 +32,6 @@ public class ReviewDto {
         private String content;
         private String writer;
         private LocalDateTime createdDate;
+        private Long placeId;
     }
 }
