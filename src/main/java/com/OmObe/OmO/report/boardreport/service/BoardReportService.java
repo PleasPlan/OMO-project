@@ -14,6 +14,10 @@ import com.OmObe.OmO.report.boardreport.repository.BoardReportRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +56,7 @@ public class BoardReportService {
         BoardReport boardReport = mapper.boardReportPostDtoToBoardReport(post);
         try {
             Member member = tokenDecryption.getWriterInJWTToken(token);
+            memberService.verifiedAuthenticatedMember(member.getMemberId());
             boardReport.setMember(member);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -62,5 +67,19 @@ public class BoardReportService {
 
         // 4. 신고 내용 저장
         return boardReportRepository.save(boardReport);
+    }
+
+    /**
+     * <신고 내용 조회 - 관리자 전용>
+     * 1. 먼저 신고된 순으로 정렬(과거순)
+     */
+    public Page<BoardReport> getBoardReports(int page, int size) {
+        // 1. 먼저 신고된 순으로 정렬(과거순)
+        return boardReportRepository.findAll(reportSortedBy(page, size));
+    }
+
+    // 신고 내용 목록을 과거순으로 조회
+    private Pageable reportSortedBy(int page, int size) {
+        return PageRequest.of(page - 1, size, Sort.by("boardReportId").ascending());
     }
 }

@@ -24,4 +24,7 @@ public interface BoardReportMapper {
             return response;
         }
     }
+
+    // 신고 내용 목록 조회를 위한 ResponseDto List
+    List<BoardReportDto.Response> boardReportToBoardReportResponseList(List<BoardReport> boardReports);
 }
