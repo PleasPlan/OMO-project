@@ -36,12 +36,12 @@ public class BoardReport {
     // BoardReport - Member 다대일 매핑
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
-    private Member member;
+    private Member member; // 신고자
 
     // BoardReport - Board 다대일 매핑
     @ManyToOne
     @JoinColumn(name = "BOARD_ID")
-    private Board board;
+    private Board board; // 신고된 게시글
 
     public void setReportType(int reportType) {
         this.reportType = reportType;

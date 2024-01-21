@@ -12,7 +12,8 @@ public enum ExceptionCode {
     INVALID_TOKEN(403, "This Token is invalid token. Please check the token"),
     REVIEW_NOT_FOUND(404, "Missing Review"),
     NOTICE_NOT_FOUND(404, "Notice not found, Please check the Notice Id and try again"),
-    NOTICE_TYPE_ERROR(404, "Notice type is not invalid. Please check the Notice Type.(default/NOR/CHK");
+    NOTICE_TYPE_ERROR(404, "Notice type is not invalid. Please check the Notice Type.(default/NOR/CHK"),
+    REPORT_REASON_NOT_EXIST(404, "Report reason is not exist. Please check the report reason");
 
     @Getter
     private int status;
