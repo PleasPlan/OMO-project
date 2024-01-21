@@ -50,10 +50,11 @@ public class GlobalExceptionAdvice {
         return response;
     }
 
-    @ExceptionHandler
-    public ErrorResponse handleException(Exception e) { // 구현 상의 오류로 인해 발생하는 예외 처리
-        final ErrorResponse response = ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR);
-
-        return response;
-    }
+    // 구현 상 오류에 대한 오류는 로그 없이 Internal server error만 리턴하는 문제 때문에 주석 처리
+//    @ExceptionHandler
+//    public ErrorResponse handleException(Exception e) { // 구현 상의 오류로 인해 발생하는 예외 처리
+//        final ErrorResponse response = ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR);
+//
+//        return response;
+//    }
 }
