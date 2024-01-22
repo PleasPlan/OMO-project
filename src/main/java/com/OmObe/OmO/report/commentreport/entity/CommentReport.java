@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -32,6 +33,9 @@ public class CommentReport {
     @Column(nullable = true)
     private String reason; // 신고 사유(신고 유형 6(기타)인 경우 필수 작성)
 
+    @Column(updatable = false, name = "CREATED_AT")
+    private LocalDateTime createdAt = LocalDateTime.now(); // 신고 작성 시간
+
     // CommentReport - Member 다대일 매핑
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
@@ -56,5 +60,9 @@ public class CommentReport {
 
     public void setComment(Comment comment) {
         this.comment = comment;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

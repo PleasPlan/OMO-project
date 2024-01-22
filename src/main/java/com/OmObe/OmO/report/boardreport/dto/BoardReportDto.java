@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 
 public class BoardReportDto {
     @AllArgsConstructor
@@ -26,7 +27,8 @@ public class BoardReportDto {
     @Setter
     public static class Response{
         private Long boardReportId;
-        private int reportTYpe;
+        private int reportType;
         private String reason;
+        private LocalDateTime createdAt;
     }
 }

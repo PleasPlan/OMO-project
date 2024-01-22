@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.time.LocalDateTime;
 
 public class CommentReportDto {
     @AllArgsConstructor
@@ -29,5 +30,6 @@ public class CommentReportDto {
         private Long commentReportId;
         private int reportType;
         private String reason;
+        private LocalDateTime createdAt;
     }
 }

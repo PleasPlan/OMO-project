@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -33,6 +34,9 @@ public class BoardReport {
     @Column(nullable = true)
     private String reason; // 신고 사유(신고 유형 6(기타)인 경우 필수 작성)
 
+    @Column(updatable = false, name = "CREATED_AT")
+    private LocalDateTime createdAt = LocalDateTime.now(); // 신고 작성 시간
+
     // BoardReport - Member 다대일 매핑
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
@@ -57,5 +61,9 @@ public class BoardReport {
 
     public void setBoard(Board board) {
         this.board = board;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

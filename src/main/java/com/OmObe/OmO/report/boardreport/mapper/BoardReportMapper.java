@@ -13,17 +13,7 @@ public interface BoardReportMapper {
     BoardReport boardReportPostDtoToBoardReport(BoardReportDto.Post post);
 
     // Board -> BoardReportDto.Response
-    default BoardReportDto.Response boardReportToBoardResponseDto(BoardReport boardReport){
-        if (boardReport == null) {
-            return null;
-        } else {
-            BoardReportDto.Response response = new BoardReportDto.Response();
-            response.setBoardReportId(boardReport.getBoardReportId());
-            response.setReportTYpe(boardReport.getReportType());
-            response.setReason(boardReport.getReason());
-            return response;
-        }
-    }
+    BoardReportDto.Response boardReportToBoardResponseDto(BoardReport boardReport);
 
     // 신고 내용 목록 조회를 위한 ResponseDto List
     List<BoardReportDto.Response> boardReportToBoardReportResponseList(List<BoardReport> boardReports);
