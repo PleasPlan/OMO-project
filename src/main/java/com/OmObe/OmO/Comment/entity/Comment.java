@@ -2,12 +2,15 @@ package com.OmObe.OmO.Comment.entity;
 
 import com.OmObe.OmO.Board.entity.Board;
 import com.OmObe.OmO.member.entity.Member;
+import com.OmObe.OmO.report.commentreport.entity.CommentReport;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -35,5 +38,6 @@ public class Comment {
     @JoinColumn(name = "MEMBER_ID")
     private Member member; // 댓글 작성자
 
-
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<CommentReport> commentReports = new ArrayList<>();
 }
