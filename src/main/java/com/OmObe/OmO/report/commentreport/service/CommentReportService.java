@@ -14,6 +14,10 @@ import com.OmObe.OmO.report.commentreport.repository.CommentReportRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,5 +65,19 @@ public class CommentReportService {
 
         // 4. 신고 내용 저장
         return commentReportRepository.save(commentReport);
+    }
+
+    /**
+     * <신고 내용 조회>
+     * 1. 먼저 신고된 순으로 조회(과거순)
+     */
+    public Page<CommentReport> getCommentReports(int page, int size) {
+        // 1. 먼저 신고된 순으로 조회(과거순)
+        return commentReportRepository.findAll(reportSortedBy(page, size));
+    }
+
+    // 신고 내용 목록을 과거순으로 조회
+    private Pageable reportSortedBy(int page, int size) {
+        return PageRequest.of(page - 1, size, Sort.by("commentReportId").ascending());
     }
 }

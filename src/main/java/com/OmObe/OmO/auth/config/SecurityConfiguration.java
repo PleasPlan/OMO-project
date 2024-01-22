@@ -62,6 +62,7 @@ public class SecurityConfiguration {
                 .and()
                 .authorizeHttpRequests(authorize -> authorize
                         .antMatchers(HttpMethod.GET, "/boardReport").hasRole("ADMIN")
+                        .antMatchers(HttpMethod.GET, "/commentReport").hasRole("ADMIN")
                         .antMatchers(HttpMethod.POST, "/h2/**").permitAll() // todo: 테스트용 db 조회 -> 관리자 권한만 접근하도록 수정할 것
                         .antMatchers(HttpMethod.GET, "/**").permitAll()
                         .antMatchers(HttpMethod.POST, "/signup").permitAll()
