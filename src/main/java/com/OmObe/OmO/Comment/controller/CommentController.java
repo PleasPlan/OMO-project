@@ -92,6 +92,7 @@ public class CommentController {
                                       @Positive @RequestParam(defaultValue = "10") int size,
                                       @PathVariable("boardId") long boardId){
         Slice<Comment> pageComments = commentService.findComments(page-1, size, boardId);
+
         List<Comment> comments = pageComments.getContent();
         return new ResponseEntity<>(
                 new MultiResponseDto<>(mapper.commentsToCommentResponseDtos(comments),pageComments),HttpStatus.OK);

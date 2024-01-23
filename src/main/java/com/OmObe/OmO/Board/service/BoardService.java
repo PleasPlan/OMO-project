@@ -62,6 +62,7 @@ public class BoardService {
         Optional<Board> optionalBoard = boardRepository.findById(boardId);
         Board board = optionalBoard.orElseThrow(() ->
                 new BusinessLogicException(ExceptionCode.BOARD_NOT_FOUND));
+        
         return board;
     }
 

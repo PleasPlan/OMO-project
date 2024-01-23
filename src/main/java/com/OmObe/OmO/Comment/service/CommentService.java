@@ -38,11 +38,6 @@ public class CommentService {
         return comment;
     }
 
-//    public Slice<Comment> findComments(int page, int size){
-//        return convertToSlice(commentRepository.findAll(PageRequest.of(page, size,
-//                Sort.by("createdAt").descending())));
-//    }
-
     public Slice<Comment> findComments(int page, int size, long boardId){
         return convertToSlice(commentRepository.findByBoard(boardId,PageRequest.of(page, size,
                 Sort.by("createdAt").descending())));

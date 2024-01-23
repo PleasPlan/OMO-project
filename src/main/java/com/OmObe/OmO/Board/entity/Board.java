@@ -3,6 +3,7 @@ package com.OmObe.OmO.Board.entity;
 import com.OmObe.OmO.Comment.entity.Comment;
 import com.OmObe.OmO.Liked.entity.Liked;
 import com.OmObe.OmO.member.entity.Member;
+import com.OmObe.OmO.report.boardreport.entity.BoardReport;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,6 +45,9 @@ public class Board {
 
     @OneToMany(mappedBy = "board",cascade = CascadeType.PERSIST)
     private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<BoardReport> boardReports = new ArrayList<>();
 
     private Integer commentsCount = comments.size();
     private Integer likesCount = likes.size();
