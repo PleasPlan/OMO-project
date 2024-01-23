@@ -1,0 +1,267 @@
+/* 전체 영역 */
+.community-post-container {
+  width: 1000px;
+  height: 100%;
+  border: 1px solid var(--gray-400);
+  border-radius: 10px 10px 10px 10px;
+  margin: 0 auto;
+  margin-top: 75px;
+  padding-bottom: 55px;
+}
+
+/* 버튼 전까지 윗부분 영역 */
+.community-post-content-container {
+  padding-bottom: 30px;
+  padding: 55px 55px 30px 55px;
+  border-radius: 10px 10px 0 0;
+}
+
+/* 제목+날짜 */
+.community-post-content-title-date {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* 제목 */
+.community-post-title {
+  font-size: 30px;
+  font-weight: 500;
+}
+
+/* 날짜 */
+.community-post-date {
+  display: block;
+  font-size: 24px;
+  color: var(--gray-500);
+}
+
+/* 프로필 이미지+닉네임 */
+.community-post-profile {
+  margin-top: 45px;
+  display: flex;
+}
+
+/* 프로필 이미지 */
+.community-post-profile-img {
+  border: 1px solid transparent;
+  border-radius: 50%;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* 닉네임 */
+.community-post-profile-nick {
+  font-size: 24px;
+  margin-left: 10px;
+  margin-top: 3px;
+}
+
+/* 글 내용 */
+.community-post-content {
+  display: inline-block;
+  font-size: 24px;
+  margin-top: 45px;
+}
+
+/* 공감수 + 신고 아이콘묶음*/
+.community-post-number-report-wapper {
+  font-size: 25px;
+  margin-top: 75px;
+  color: var(--gray-900);
+  display: flex;
+}
+
+/* 좋아요 */
+.community-post-like-number {
+  margin-right: 6px;
+}
+
+/* 조회수 */
+.community-post-view-number {
+  margin-right: 6px;
+}
+
+/* 신고 버튼 */
+.community-post-report-button {
+  all: unset;
+  padding: 0;
+  display: flex;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+/* 버튼 묶음 */
+.community-post-button-wrapper {
+  background-color: var(--gray-400);
+  font-size: 25px;
+  position: relative;
+}
+
+/* 좋아요 버튼 */
+.community-post-like-button {
+  background-color: var(--white);
+  width: 498px;
+  height: 75px;
+  cursor: pointer;
+  border: 0;
+  border-top: 1px solid var(--gray-400);
+  border-bottom: 1px solid var(--gray-400);
+  position: relative;
+}
+
+/* 따봉 아이콘 */
+.community-post-like-button-img {
+  position: absolute;
+  left: 180px;
+  top: 19px;
+}
+
+/* 댓글 달기 버튼 */
+.community-post-comment-button {
+  background-color: var(--white);
+  width: 498px;
+  height: 75px;
+  border: 0;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-top: 1px solid var(--gray-400);
+  border-bottom: 1px solid var(--gray-400);
+}
+
+/* 댓글 아이콘 */
+.community-post-comment-button-img {
+  position: absolute;
+  left: 165px;
+  top: 22px;
+}
+
+/* 댓글창 전체 박스 */
+.community-post-comment-container {
+  padding: 25px 55px 0 55px;
+}
+
+/* 입력창 묶음 */
+.community-post-comment-input-container {
+  display: flex;
+  gap: 16px;
+  position: relative;
+}
+
+/* 입력창 프로필 이미지 */
+.community-post-comment-input-profile-img {
+  border: 1px solid transparent;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-top: 7px;
+}
+
+/* 입력창 input */
+.community-post-comment-input {
+  font-size: 24px;
+  width: 100%;
+  height: 65px;
+  background-color: var(--white);
+  border: 1px solid var(--gray-400);
+  border-radius: 10px;
+  padding-left: 20px;
+  padding-right: 80px;
+}
+
+/* 제출 버튼 */
+.community-post-comment-input-button {
+  width: 50px;
+  height: 65px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  position: absolute;
+  right: 18px;
+}
+
+/* 제출 버튼 hover 효과 */
+
+.community-post-comment-input-button img.community-post-comment-input-button-img-hover{
+  display: none;
+}
+
+.community-post-comment-input-button:hover img.community-post-comment-input-button-img{
+  display: none;
+}
+
+.community-post-comment-input-button:hover img.community-post-comment-input-button-img-hover{
+  display: block;
+  position: absolute;
+  top:13px;
+  right: 8px;
+}
+
+
+
+/* 입력창 input focus 효과 */
+.community-post-comment-input:focus {
+  outline: none;
+  border-color: var(--secondary);
+}
+
+/* 댓글 내용 ul */
+.community-post-comment {
+  padding: 0;
+  margin-top: 25px;
+}
+
+/*  댓글 내용 li */
+.community-post-comment > li {
+  list-style: none;
+  margin: 0;
+  display: flex;
+}
+
+
+/* 댓글 닉네임+날짜 */
+.community-post-comment-nick-date {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+/* 댓글 내용 프로필 이미지 */
+.community-post-comment-profile-img {
+  border: 1px solid transparent;
+  border-radius: 50%;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* 댓글 박스 */
+.community-post-comment-box {
+  background-color: var(--white);
+  border: 1px solid var(--gray-400);
+  border-radius: 10px;
+  padding: 25px;
+  margin-left: 16px;
+  width: 100%;
+  height: 100%;
+}
+
+
+
+/* 댓글 박스 안 닉네임 */
+.community-post-comment-box-nick {
+  font-size: 23px;
+  font-weight: 500;
+}
+
+/* 댓글 박스 안 날짜 */
+.community-post-comment-box-date {
+  font-size: 20px;
+  color: var(--gray-500);
+}
+
+/* 댓글 박스 안 내용 */
+.community-post-comment-box-content {
+  font-size: 20px;
+}

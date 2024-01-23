@@ -1,0 +1,35 @@
+.list-search-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 400px;
+  height: 100%;
+}
+
+.list-search-img-container {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 50%;
+  transform: translate(880%, -50%);
+}
+
+.list-search-img-container > a {
+  pointer-events: auto;
+}
+
+.list-search-img-container > a > img {
+  width: 20px;
+}
+
+.list-search-input-container {
+  display: block;
+  width: 400px;
+  height: 40px;
+  border: 2px solid var(--primary);
+  border-radius: 30px;
+  padding-left: 20px;
+  outline: none;
+}

@@ -1,0 +1,28 @@
+.filter-container {
+  margin-left: 20px;
+  margin-top: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 500px;
+  height: 100%;
+}
+
+.filter-container button:hover {
+  color: var(--secondary);
+  text-decoration: underline;
+}
+
+.filter-p {
+  margin: 0 14px;
+  color: var(--gray-900);
+}
+
+.filter-total,
+.filter-free,
+.filter-worry,
+.filter-question {
+  border: none;
+  background-color: transparent;
+  color: var(--gray-900);
+}

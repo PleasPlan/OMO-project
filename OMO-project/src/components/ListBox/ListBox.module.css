@@ -1,0 +1,122 @@
+/* 개별 박스 */
+.list-box-inner-container{
+  width: 950px;
+  height: 200px;
+  border: 1px solid var(--gray-400);
+  border-radius: 20px;
+  position: relative;
+  padding: 25px;
+}
+
+
+/* 박스 hover 효과 */
+.list-box-inner-container:hover{
+  border: 2px solid var(--secondary);
+  /* border: 2px solid var(--primary); */
+  /* box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2); */
+}
+
+
+/*  가게 이름 */
+.list-box-title{
+  font-size: 30px;
+  position: absolute;
+  font-weight: 500;
+}
+
+
+
+/* 찜, 좋아요 전체 div  */
+.list-box-like-jjim-container{
+  display: flex;
+  flex-direction: row;
+  margin-top: 55px;
+  font-size: 20px;
+  position: relative;
+}
+
+
+/* 하트 아이콘 + 숫자 */
+.list-box-jjim{
+  display:flex;
+  flex-direction: row;
+  margin-right: 20px;
+}
+
+/* 하트 아이콘 버튼 */
+.list-box-jjim > button{
+  all: unset;
+  cursor: pointer;
+}
+
+
+/* 하트 옆 숫자 */
+.list-box-jjim-number{
+  margin-left: 35px;
+}
+
+
+/* 따봉 아이콘 + 숫자 */
+.list-box-like{
+  display:flex;
+  flex-direction: row;
+  margin-left: 5px;
+}
+
+/* 따봉 아이콘 버튼 */
+.list-box-like > button{
+  all: unset;
+  cursor: pointer;
+}
+
+/* 따봉 옆 숫자 */
+
+.list-box-like-number{
+  margin-left: 35px;
+
+}
+
+
+/* 영업중 */
+.list-box-runtime{
+  font-size: 20px;
+  position: absolute;
+  top: 80px;
+  left: 245px;
+  color: var(--blue-200);
+
+}
+
+/* 가게 소개 */
+.list-box-intro{
+  font-size: 20px;
+  position: absolute;
+  top: 118px;
+}
+
+
+/* 간략 주소 */
+.list-box-address-brief{
+  font-size: 20px;
+  position: absolute;
+  top: 150px;
+}
+
+.list-box-img1{
+  position: absolute;
+  right: 200px;
+  top: 25px;
+  width: 150px;
+  height: 150px;
+  border-radius: 5px;
+}
+
+.list-box-img2{
+  position: absolute;
+  right: 25px;
+  top: 25px;
+  width: 150px;
+  height: 150px;
+  border-radius: 5px;
+}
+

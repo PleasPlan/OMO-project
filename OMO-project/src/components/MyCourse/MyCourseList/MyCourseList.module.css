@@ -1,0 +1,26 @@
+.mycourse-list-container {
+  display: flex;
+  width: 1000px;
+  margin: 40px auto;
+  border: 2px solid var(--gray-400);
+  border-radius: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mycourse-list-container:hover {
+  border: 2px solid var(--secondary);
+}
+
+.mycourse-list-title {
+  display: inline-block;
+  font-size: 28px;
+  padding-left: 30px;
+}
+.mycourse-list-date {
+  display: inline-block;
+  color: var(--gray-400);
+  font-size: 24px;
+  font-weight: 200;
+  padding-right: 30px;
+}

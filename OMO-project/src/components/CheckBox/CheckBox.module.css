@@ -1,0 +1,61 @@
+.signup-terms-of-service-container{
+  display: flex;
+  border-top: 1px solid var(--gray-300);
+  border-bottom: 1px solid var(--gray-300);
+  padding-top: 80px;
+  padding-bottom: 80px;
+  margin-bottom: 70px;
+ }
+
+ .signup-terms-of-service{
+  margin-right: 50px;
+}
+
+.agree-check-all-info{
+font-size: 15px;
+color: var(--gray-700);
+margin: 7px 0 0 45px;
+}
+
+ .agree-check-hr{
+  border: 0;
+  width: 700px;
+  height: 1px;
+  background-color: var(--gray-50);
+  margin-bottom: 42px;
+}
+
+.signup-terms-of-service-checkbox-container{
+  list-style-type: none; 
+  margin: 0;
+  padding: 0;
+}
+
+.signup-terms-of-service-checkbox-container > li{
+  margin-bottom: 38px;
+}
+
+
+.agree-check-input{
+  vertical-align: middle;
+  appearance: none;
+  border: max(2px, 0.1em) solid gray;
+  border-radius: 50%;
+  width: 1.25em;
+  height: 1.25em;
+  margin-right: 13px;
+}
+
+.agree-check-input:checked {
+  border: 0.4em solid var(--secondary);
+}
+
+.agree-check-input:focus-visible {
+  outline: max(2px, 0.1em) dotted var(--secondary);
+  outline-offset: max(2px, 0.1em);
+}
+
+.agree-check-input:hover {
+  box-shadow: 0 0 0 max(4px, 0.2em) lightgray;
+  cursor: pointer;
+}

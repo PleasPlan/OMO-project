@@ -1,0 +1,22 @@
+.community-component-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  width: 1000px;
+}
+
+.community-filter-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.community-free-container{
+  border-top: 1px solid var(--gray-50);
+  display: flex;
+  flex-direction: column;
+}
+

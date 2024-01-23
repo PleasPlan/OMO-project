@@ -1,0 +1,38 @@
+.mypage-list-component-container {
+  width: 1000px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.mypage-list-title-container {
+  font-size: 32px;
+  font-weight: 400;
+  width: 730px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--gray-50);
+  margin: 100px 0 0 270px;
+  display: flex;
+  justify-content: center;
+}
+
+.mypage-list-container {
+  display: flex;
+  gap: 50px;
+}
+
+.mypage-list-box-container {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.mypage-list-container {
+  width: 730px;
+  border-bottom: 0px;
+}
+
+.mypage-list-box-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+}

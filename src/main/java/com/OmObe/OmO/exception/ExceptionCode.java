@@ -15,6 +15,7 @@ public enum ExceptionCode {
     NOTICE_TYPE_ERROR(404, "Notice type is not invalid. Please check the Notice Type.(default/NOR/CHK"),
     REPORT_REASON_NOT_EXIST(404, "Report reason is not exist. Please check the report reason");
 
+
     @Getter
     private int status;
 

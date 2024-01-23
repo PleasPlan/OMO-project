@@ -1,0 +1,24 @@
+.myCoursePlusBox-total-container {
+  width: 670px;
+  height: 133px;
+  margin: 0 auto;
+  border: 2px solid var(--primary);
+  border-radius: 10px;
+}
+
+.myCoursePlusBox-plus-box {
+  display: block;
+  width: 670px;
+  height: 133px;
+  background-color: transparent;
+  position: relative;
+  border: none;
+  cursor: pointer;
+}
+
+.myCoursePlusBox-plusButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

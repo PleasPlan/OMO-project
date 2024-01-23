@@ -1,0 +1,30 @@
+.profileSetting-total-container {
+  width: 1000px;
+  margin: 0 auto;
+}
+.profileSetting-title-container {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 400;
+  width: 730px;
+  padding-bottom: 20px;
+  margin: 100px 0 0 270px;
+  border-bottom: 2px solid var(--gray-50);
+}
+
+.profileSetting-main-container {
+  position: absolute;
+}
+
+.profileSetting-main-finish {
+  position: relative;
+  width: 500px;
+  height: 60px;
+  left: 400px;
+  bottom: 630px;
+  border: 1px solid var(--primary);
+  border-radius: 10px;
+  font-size: 20px;
+  background-color: transparent;
+  color: var(--secondary);
+}

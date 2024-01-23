@@ -1,0 +1,12 @@
+.inquiry-board-filter-search-container {
+  display: flex;
+  width: 1000px;
+  justify-content: space-between;
+  margin: 60px auto 0 auto;
+}
+
+.inquiry-board-hr {
+  margin-top: 20px;
+  margin-bottom: 60px;
+  border: 1px solid var(--gray-50);
+}

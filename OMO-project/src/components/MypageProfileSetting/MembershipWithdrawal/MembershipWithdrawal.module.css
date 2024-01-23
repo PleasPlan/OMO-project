@@ -1,0 +1,31 @@
+.profile-setting-main-membership-withdrawal-container {
+  position: relative;
+  display: flex;
+  width: 300px;
+  height: 60px;
+  left: 300px;
+  bottom: 680px;
+  margin-top: 50px;
+  justify-content: space-between;
+}
+
+.profile-setting-main-membership-withdrawal-title {
+  width: 140px;
+  font-size: 20px;
+  line-height: 16 0px;
+  margin: auto 25px auto 0;
+}
+
+.profile-setting-main-membership-withdrawal-button {
+  width: 126px;
+  height: 60px;
+  border: 1px solid var(--gray-900);
+  border-radius: 10px;
+  font-size: 20px;
+  background-color: transparent;
+  color: var(--gray-900);
+}
+
+.profile-setting-main-membership-withdrawal-container button:hover {
+  cursor: pointer;
+}

@@ -1,0 +1,84 @@
+.writeboard-total-container {
+  width: 1000px;
+  margin: 100px auto;
+  /* margin-top: 100px; */
+}
+
+.writeboard-title {
+  display: block;
+  text-align: center;
+  margin-bottom: 47px;
+  font-size: 32px;
+  border-bottom: 2px solid var(--gray-50);
+  padding-bottom: 30px;
+  font-weight: 400;
+}
+
+.board-select-box {
+  color: var(--gray-600);
+  font-size: 16px;
+  width: 150px;
+  height: 40px;
+  padding-left: 6px;
+  border: 1px solid var(--secondary);
+  border-radius: 10px;
+  outline: none;
+}
+
+.board-title {
+  width: 820px;
+  height: 40px;
+  margin-left: 30px;
+  padding-left: 10px;
+  color: var(--black);
+  border: 1px solid var(--secondary);
+  border-radius: 10px;
+  outline: none;
+}
+
+.board-title::placeholder{
+  color: var(--gray-600)
+}
+
+.board-content {
+  width: 1000px;
+  height: 400px;
+  margin-top: 30px;
+  color: var(--black);
+  border: 1px solid var(--secondary);
+  border-radius: 10px;
+  outline: none;
+  padding-left: 10px;
+  padding-top: 10px;
+  resize: none;
+}
+
+.board-content::placeholder{
+  color: var(--gray-600)
+}
+
+.board-button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 40px;
+}
+
+.board-button-cancel {
+  width: 120px;
+  height: 40px;
+  border: 1px solid var(--secondary);
+  border-radius: 10px;
+  background-color: transparent;
+  color: var(--secondary);
+  cursor: pointer;
+}
+.board-button-submit {
+  width: 120px;
+  height: 40px;
+  border: 1px solid var(--secondary);
+  border-radius: 10px;
+  margin-left: 20px;
+  background-color: var(--secondary);
+  color: white;
+  cursor: pointer;
+}

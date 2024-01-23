@@ -1,0 +1,13 @@
+.mycourse-container {
+  width: 1000px;
+  margin: 0 auto;
+}
+.mycourse-title {
+  margin: 100px auto;
+  text-align: center;
+  width: 730px;
+  height: 50px;
+  border-bottom: 2px solid var(--gray-50);
+  font-size: 32px;
+  font-weight: 400;
+}

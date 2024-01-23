@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Gugi&family=Noto+Sans+KR&display=swap');
+
+
+
+.sub-category-box{
+  width: 260px;
+  height: 260px;
+  background: var(--blue-100);
+  border-radius: 20px;
+  padding: 30px 0px 0px 30px;
+  position: relative;
+  transition: transform 0.5s ease; 
+}
+
+.sub-category-box:hover{
+  transform: translateY(-18px);
+}
+
+
+.sub-category-box-title{
+  color:#FFFFFF;
+  font-size: 45px;
+  font-family: 'Gugi', cursive !important;
+  text-shadow: 5px 5px 7px rgba(0, 0, 0, 0.2);
+}
+
+.sub-category-box-img{
+  position: absolute;
+  top: 130px;
+  left: 130px;
+}

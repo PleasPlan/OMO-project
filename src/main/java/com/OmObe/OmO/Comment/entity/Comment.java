@@ -6,7 +6,6 @@ import com.OmObe.OmO.report.commentreport.entity.CommentReport;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,14 +29,15 @@ public class Comment {
     @Column(nullable = false)
     private LocalDateTime modifiedAt = LocalDateTime.now();   // 게시글 최종 수정 일자
 
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<CommentReport> commentReports = new ArrayList<>();
+
     @ManyToOne
-    @JoinColumn(name = "BOARD_ID")
+    @JoinColumn(name = "BOARD")
     private Board board;
 
     @ManyToOne
-    @JoinColumn(name = "MEMBER_ID")
+    @JoinColumn(name = "MEMBER")
     private Member member; // 댓글 작성자
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
-    private List<CommentReport> commentReports = new ArrayList<>();
 }

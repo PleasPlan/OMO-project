@@ -1,0 +1,174 @@
+/* 페이지 회원가입 영역 전체 */
+.signup-container {
+  width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 100px;
+}
+
+/* 회원가입 헤더박스 */
+.signup-title-container {
+  position: relative;
+}
+
+/* 회원가입 글자 */
+.signup-title {
+  display: block;
+  text-align: center;
+  margin-bottom: 53px;
+  font-size: 32px;
+  border-bottom: 2px solid var(--primary);
+  padding-bottom: 53px;
+  font-weight: 400;
+}
+
+/* 필수입력사항 */
+.essential {
+  display: block;
+  font-size: 18px;
+  position: absolute;
+  right: 50%;
+  top: 45%;
+  transform: translate(485%, 0);
+}
+
+/* 회원가입 하단 영역 전체 */
+.signup-inner-container {
+  font-size: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 45px;
+}
+
+/* 생년월일 */
+.signup-birth-date {
+  margin-right: 84px;
+}
+
+.signup-birth-date-input {
+  all: unset;
+  width: 500px;
+  height: 60px;
+  border-radius: 10px;
+  border: 1px solid var(--gray-400);
+  padding-left: 26px;
+}
+
+.signup-birth-date-input::placeholder {
+  color: #757575;
+}
+
+/* 닉네임 */
+
+.signup-nickname {
+  margin-right: 106px;
+}
+
+.signup-nickname-input {
+  all: unset;
+  width: 500px;
+  height: 60px;
+  border-radius: 10px;
+  border: 1px solid var(--gray-400);
+  padding-left: 26px;
+  color: #757575;
+}
+
+.signup-nickname-input::placeholder {
+  color: #757575;
+}
+
+.signup-nickname-certification {
+  all: unset;
+  width: 180px;
+  height: 60px;
+  border-radius: 10px;
+  border: 1px solid var(--secondary);
+  color: var(--secondary);
+  text-align: center;
+  cursor: pointer;
+  margin-left: 100px;
+}
+
+/* MBTI */
+.signup-mbti {
+  margin-right: 114px;
+}
+
+.mbti-select-IE {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  border: 1px solid var(--gray-400);
+  text-align: center;
+  margin-right: 20px;
+  color: #757575;
+}
+
+.mbti-select-SN {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  border: 1px solid var(--gray-400);
+  text-align: center;
+  margin-right: 20px;
+  color: #757575;
+}
+
+.mbti-select-TF {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  border: 1px solid var(--gray-400);
+  text-align: center;
+  margin-right: 20px;
+  color: #757575;
+}
+
+.mbti-select-JP {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  border: 1px solid var(--gray-400);
+  text-align: center;
+  color: #757575;
+}
+
+.mbti-color {
+  color: black;
+}
+
+/* 성별 */
+.signup-gender-container {
+  display: flex;
+}
+
+.signup-gender-radio-container > fieldset {
+  display: flex;
+  justify-content: space-between;
+  gap: 80px;
+  border: 0px;
+}
+
+.signup-gender {
+  margin-right: 112px;
+  display: flex;
+  align-items: center;
+}
+
+/* 가입하기 버튼 */
+.signup-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 150px;
+}
+
+.signup-btn-signup {
+  color: white;
+  background-color: var(--secondary);
+  cursor: pointer;
+  width: 500px;
+  height: 80px;
+  border: none;
+  border-radius: 10px;
+}

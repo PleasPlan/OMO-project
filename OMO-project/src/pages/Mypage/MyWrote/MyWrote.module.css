@@ -1,0 +1,38 @@
+.my-wrote-total-container {
+  width: 1000px;
+  margin: 0 auto;
+  /* background-color: antiquewhite; */
+}
+
+.my-wrote-title-container {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 400;
+  width: 730px;
+  padding-bottom: 20px;
+  margin: 100px 0 0 270px;
+  /* background-color: yellow; */
+}
+
+
+.my-wrote-filter-main-container {
+  position: relative;
+  width: 730px;
+  bottom: 720px;
+  left: 270px;
+  /* background-color: antiquewhite; */
+}
+
+
+
+.my-wrote-main-title-container {
+  display: flex;
+  width: 730px;
+  /* height: 60px; */
+  font-size: 20px;
+  margin-top: 20px;
+  border-top: 2px solid var(--gray-700);
+  /* justify-content: space-between; */;
+  flex-direction: column;
+  /* background-color:antiquewhite */
+}

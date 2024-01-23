@@ -1,0 +1,51 @@
+
+.detail-review-box{
+  width: 859px;
+  padding: 20px 20px 30px 20px;
+  border: 1px solid  var(--gray-400);
+  border-radius: 10px;
+}
+
+
+.detail-review-profile{
+  display: flex;
+}
+
+
+
+.detail-review-profile-img > img{
+  border: 1px solid transparent;
+  border-radius: 50%;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+
+
+
+.detail-review-profile-nick{
+  font-size: 23px;
+  margin-left: 15px;
+  margin-top: 13px;
+  font-weight: 500;
+}
+
+.detail-review-inner-top-container{
+  display: flex;
+  justify-content: space-between;
+}
+
+
+
+.detail-review-content{
+  display: block;
+margin-left: 65px;
+font-size: 20px;
+}
+
+.detail-review-date{
+  font-size: 18px;
+  color: var(--gray-500);
+  margin-top: 13px;
+}

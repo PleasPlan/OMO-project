@@ -1,0 +1,51 @@
+.community-mycourse-list-container {
+  display: flex;
+  width: 1000px;
+  height: 100px;
+  margin: 40px auto;
+  border: 2px solid var(--gray-400);
+  border-radius: 10px;
+  align-items: center;
+  position: relative;
+}
+
+.community-mycourse-list-container:hover {
+  border: 2px solid var(--secondary);
+}
+
+.community-mycourse-list-title {
+  font-size: 28px;
+  margin-left: 30px;
+}
+
+.community-mycourse-list-like {
+  display: flex;
+  font-size: 24px;
+  gap: 5px;
+  position: absolute;
+  left: 360px;
+}
+
+.community-mycourse-list-like-number {
+  left: 35px;
+  top: 2px;
+  position: absolute;
+}
+
+.community-mycourse-list-nick {
+  color: var(--gray-400);
+  font-size: 24px;
+  font-weight: 200;
+  position: absolute;
+  left: 610px;
+  width: 200px;
+  text-align: right;
+}
+
+.community-mycourse-list-date {
+  color: var(--gray-400);
+  font-size: 24px;
+  font-weight: 200;
+  position: absolute;
+  right: 30px;
+}

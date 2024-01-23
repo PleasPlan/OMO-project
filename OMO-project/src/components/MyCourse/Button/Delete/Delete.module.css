@@ -1,0 +1,12 @@
+.delete-button {
+  position: absolute;
+  width: 60px;
+  height: 30px;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  background-color: var(--secondary);
+  top: -40px;
+  right: 165px;
+  cursor: pointer;
+}

@@ -1,0 +1,32 @@
+.list-component-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  margin-top: 100px;
+  margin-bottom: 10px;
+  width: 1000px;
+}
+
+.list-filter-container {
+  display: flex;
+  width: 400px;
+  justify-content: space-between;
+}
+
+.list-list-container {
+  width: 1000px;
+  height: 100%;
+  border: 2px solid var(--primary);
+  border-bottom: 0px;
+  border-radius: 20px 20px 0px 0px;
+  margin: 0 auto;
+  padding: 36px 26px 0px 26px;
+}
+
+.list-list-box-container {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+  align-items: center;
+}

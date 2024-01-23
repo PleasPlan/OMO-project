@@ -1,0 +1,34 @@
+.inquiry-board-filter-container {
+  width: 600px;
+  display: flex;
+  align-items: center;
+}
+
+.inquiry-board-filter-frequency {
+  display: flex;
+  width: 140px;
+  font-size: 20px;
+  justify-content: center;
+  color: var(--gray-900);
+}
+
+.inquiry-board-filter-bar {
+  width: 10px;
+  display: flex;
+  justify-content: center;
+  color: var(--gray-900);
+}
+
+.inquiry-board-filter-qna {
+  display: flex;
+  width: 67px;
+  font-size: 20px;
+  justify-content: center;
+  color: var(--gray-900);
+}
+
+.inquiry-board-filter-container a:hover {
+  color: var(--secondary);
+  text-decoration: underline;
+}
+

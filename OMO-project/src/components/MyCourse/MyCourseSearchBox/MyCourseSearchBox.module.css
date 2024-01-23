@@ -1,0 +1,35 @@
+.myCourseSearchBox-total-container {
+  position: relative;
+}
+.myCourseSearchBox-button-container {
+  width: 670px;
+  height: 133px;
+  margin: 30px auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid var(--primary);
+  border-radius: 10px;
+  gap: 14px;
+}
+
+.myCourseSearchBox-button-container button {
+  width: 160px;
+  background-color: transparent;
+  border: 1px solid var(--primary);
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.myCourseSearchBox-button-container button:hover {
+  background-color: var(--secondary);
+  color: white;
+  cursor: pointer;
+}
+
+.myCourseSearchBox-downArrow-img {
+  margin: 40px auto;
+  display: block;
+}
+

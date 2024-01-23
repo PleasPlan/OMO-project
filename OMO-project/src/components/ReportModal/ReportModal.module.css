@@ -1,0 +1,83 @@
+.report-modal-container{
+  width: 500px;
+  height: 730px;
+  background-color: var(--white);
+  font-size: 28px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 8px 36px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  position: fixed;
+  z-index: 100;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.report-modal-radio-container > fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  border: 0px;
+  margin-left: 15px;
+}
+
+
+.report-modal-select{
+  display: block;
+  display: flex;
+  justify-content: center;
+  padding: 35px 0 35px 0; 
+  position: relative;
+  margin-bottom: 35px;
+  border-bottom: 1px solid var(--gray-900);
+}
+
+.report-modal-close-btn{
+  width: 38px;
+  height: 30px;
+  position: absolute;
+  border: 0;
+  cursor: pointer;
+  right: 45px;
+  background-color: transparent;
+}
+
+.report-modal-close-btn-img{
+  width: 30px;
+  height: 30px;
+}
+
+.report-modal-radio-container{
+  display: flex;
+}
+
+.report-modal-etc-input{
+  width: 360px;
+  height: 45px;
+  border-radius: 10px;
+  border: 1px solid var(--gray-900);
+  display: flex;
+  margin-top: 10px;
+  margin-left: 50px;
+  padding-left: 10px;
+}
+
+
+
+.report-btn-container {
+  display: flex;
+  justify-content: center;
+}
+
+.report-btn {
+  color: white;
+  background-color: var(--secondary);
+  cursor: pointer;
+  width: 420px;
+  height: 80px;
+  border: none;
+  border-radius: 10px;
+  margin-top: 25px;
+}
+

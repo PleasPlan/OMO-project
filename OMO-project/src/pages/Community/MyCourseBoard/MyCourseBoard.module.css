@@ -1,0 +1,55 @@
+.community-component-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  width: 1000px;
+}
+
+.community-filter-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.community-mycourse-container {
+  border-top: 1px solid var(--gray-50);
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+}
+
+.community-mbti-pick-container {
+  margin-top: 100px;
+  position: fixed;
+  left: 75px;
+}
+
+.community-mbti-pick-title {
+  font-size: 28px;
+  display: flex;
+  justify-content: center;
+}
+
+.community-mbti-pick-box {
+  width: 300px;
+  height: 300px;
+  border: 2px solid var(--gray-400);
+  border-radius: 10px;
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-template-columns: auto auto;
+  list-style: none;
+  padding: 40px;
+  gap: 20px;
+}
+
+.community-mbti-pick-box > li > button {
+  all: unset;
+  cursor: pointer;
+}
+
+.community-mycourse-list-box {
+  margin-top: 60px;
+}

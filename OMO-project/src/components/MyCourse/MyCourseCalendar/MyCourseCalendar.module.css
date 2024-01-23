@@ -1,0 +1,24 @@
+.mycourse-time-container{
+width: 220px;
+height: 35px;
+border-radius: 5px;
+border: 2px solid var(--gray-50);
+padding:0 10px 0 10px;
+color: #6D6D6D;
+left: 165px;
+bottom: 233px;
+position: absolute;
+}
+
+.mycourse-time-container > input{
+border: none;
+
+}
+
+.mycourse-time-container > input:focus{
+outline: none;
+  }
+
+input[type="time"]::-webkit-calender-picker-indicator{
+    display: none;
+  }

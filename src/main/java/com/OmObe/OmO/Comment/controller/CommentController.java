@@ -1,7 +1,5 @@
 package com.OmObe.OmO.Comment.controller;
 
-import com.OmObe.OmO.Board.dto.BoardDto;
-import com.OmObe.OmO.Board.entity.Board;
 import com.OmObe.OmO.Board.repository.BoardRepository;
 import com.OmObe.OmO.Board.response.MultiResponseDto;
 import com.OmObe.OmO.Comment.dto.CommentDto;
@@ -16,7 +14,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.mapstruct.ap.spi.ImmutablesAccessorNamingStrategy;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,8 +50,8 @@ public class CommentController {
 
     @SneakyThrows
     @PostMapping("/write")
-    public ResponseEntity postBoard(@Valid @RequestBody CommentDto.Post postDto,
-                                    @RequestHeader("Authorization") String Token){
+    public ResponseEntity postComment(@Valid @RequestBody CommentDto.Post postDto,
+                                      @RequestHeader("Authorization") String Token){
         Comment comment = mapper.commentPostToComment(postDto);
         Member writer = getWriterInJWTToken(Token);
         comment.setMember(writer);
@@ -90,10 +87,12 @@ public class CommentController {
                 HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("/{boardId}")
     public ResponseEntity getComments(@RequestParam(defaultValue = "1") int page,
-                                      @Positive @RequestParam(defaultValue = "10") int size){
-        Slice<Comment> pageComments = commentService.findComments(page-1, size);
+                                      @Positive @RequestParam(defaultValue = "10") int size,
+                                      @PathVariable("boardId") long boardId){
+        Slice<Comment> pageComments = commentService.findComments(page-1, size, boardId);
+
         List<Comment> comments = pageComments.getContent();
         return new ResponseEntity<>(
                 new MultiResponseDto<>(mapper.commentsToCommentResponseDtos(comments),pageComments),HttpStatus.OK);

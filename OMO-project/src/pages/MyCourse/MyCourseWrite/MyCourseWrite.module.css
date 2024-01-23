@@ -1,0 +1,32 @@
+.myCourseWrite-total-container {
+  width: 1000px;
+  margin: 0 auto;
+  margin-top: 100px;
+}
+
+.myCourseWrite-title-container {
+  width: 400px;
+  margin: 50px auto 90px auto;
+  text-align: center;
+  position: relative;
+}
+
+.myCourseWrite-input-title {
+  width: 370px;
+  padding-bottom: 10px;
+  font-size: 32px;
+  border: none;
+  outline: none;
+  border-bottom: 2px solid var(--gray-200);
+  text-align: center;
+}
+
+.myCourseWrite-input-title::placeholder {
+  text-align: center;
+}
+
+.myCourseWrite-img-title {
+  position: absolute;
+  right: 30px;
+  top: 4px;
+}

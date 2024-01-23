@@ -1,0 +1,402 @@
+/* 이미지+타이틀+찜,좋아요 */
+.detail-title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 썸네일 이미지 */
+.detail-thumbnail-container > img {
+  width: 350px;
+  height: 350px;
+  border-radius: 20px;
+}
+
+/* 가게 이름 */
+.detail-title {
+  margin-top: 30px;
+  font-size: 30px;
+  font-weight: 500;
+}
+
+/* 찜, 좋아요 전체 div  */
+.detail-like-jjim-container {
+  display: flex;
+  flex-direction: row;
+  margin-top: 30px;
+  font-size: 24px;
+  position: relative;
+}
+
+/* 하트 아이콘 + 숫자 */
+.detail-jjim {
+  display: flex;
+  flex-direction: row;
+  margin-right: 20px;
+}
+
+/* 하트 아이콘 버튼 */
+.detail-jjim > button {
+  all: unset;
+  cursor: pointer;
+}
+
+/* 하트 옆 숫자 */
+.detail-jjim-number {
+  margin-left: 40px;
+}
+
+/*중간 선 */
+.detail-like-jjim-line {
+  color: var(--gray-200);
+}
+
+/*  따봉 아이콘 + 숫자 */
+.detail-like {
+  display: flex;
+  flex-direction: row;
+  margin-left: 20px;
+}
+
+/*  따봉 아이콘 버튼 */
+.detail-like > button {
+  all: unset;
+  cursor: pointer;
+}
+
+/*  따봉 옆 숫자 */
+.detail-like-number {
+  margin-left: 40px;
+}
+
+/* 주소부터 밑 영역 전체 */
+.detail-inner-container {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 1000px;
+}
+
+/* 주소 */
+.detail-address-container {
+  border: 2px solid var(--primary);
+  padding: 30px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-address-inner-container {
+  position: relative;
+}
+
+.detail-address-title {
+  margin-left: 38px;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.detail-address-info-street {
+  margin-top: 18px;
+  margin-left: 38px;
+  font-size: 20px;
+}
+
+.detail-address-info-number {
+  margin-top: 10px;
+  font-size: 20px;
+  margin-left: 38px;
+}
+
+/* 영업정보 */
+.detail-sales-info-container {
+  border: 2px solid var(--primary);
+  padding: 30px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-sales-info-inner-container {
+  position: relative;
+}
+
+.detail-sales-info-title {
+  margin-left: 38px;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.detail-sales-info-time-container {
+  display: flex;
+  flex-direction: row;
+  gap: 17px;
+  font-size: 20px;
+  margin-top: 18px;
+}
+
+.detail-sales-info-line {
+  color: var(--gray-200);
+}
+
+.detail-sales-info-holiday-container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  font-size: 20px;
+  margin-top: 10px;
+}
+
+.detail-sales-info-time,
+.detail-sales-info-holiday {
+  margin-left: 38px;
+  font-size: 20px;
+}
+
+.detail-sales-info-time {
+  margin-right: 3px;
+}
+
+.detail-sales-info-time-info {
+  margin-left: 3px;
+}
+
+/* 전화 */
+
+.detail-call-container {
+  border: 2px solid var(--primary);
+  padding: 30px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.detail-call-inner-container {
+  position: relative;
+}
+
+.detail-call-title {
+  margin-left: 38px;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.detail-call {
+  margin-left: 38px;
+  font-size: 20px;
+}
+
+/* 지도 */
+.detail-google-map-container {
+  display: flex;
+  justify-content: center;
+}
+
+/* MBTI */
+.detail-mbti-stats-container {
+  border: 2px solid var(--primary);
+  padding: 30px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.detail-mbti-stats-inner-container {
+  position: relative;
+}
+
+.detail-mbti-stats-title {
+  margin-left: 38px;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.detail-mbti-graph-container {
+  display: flex;
+  flex-direction: column;
+  padding: 60px 35px 60px 35px;
+  margin-left: 38px;
+  margin-right: 38px;
+  font-size: 20px;
+  gap: 26px;
+  border: 1px solid var(--gray-400);
+  border-radius: 10px;
+}
+
+.detail-mbti-graph-inner-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.detail-mbti-graph-alphabat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.detail-mbti-graph-alphabat {
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.detail-mbti-graph-text {
+  color: var(--gray-700);
+}
+
+/* EI 퍼센트 바 */
+.detail-mbti-graph-EI-bar {
+  background-color: var(--gray-100);
+  width: 85%;
+  height: 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.detail-mbti-graph-EI-bar-percent {
+  background-color: var(--secondary);
+  height: 100%;
+  width: 70%;
+}
+
+/* SN 퍼센트 바 */
+.detail-mbti-graph-SN-bar {
+  background-color: var(--gray-100);
+  width: 85%;
+  height: 30px;
+  display: flex;
+}
+
+.detail-mbti-graph-SN-bar-percent {
+  background-color: var(--secondary);
+  height: 100%;
+  width: 65%;
+}
+
+/* TF 퍼센트 바 */
+.detail-mbti-graph-TF-bar {
+  background-color: var(--gray-100);
+  width: 85%;
+  height: 30px;
+  display: flex;
+}
+
+.detail-mbti-graph-TF-bar-percent {
+  background-color: var(--secondary);
+  height: 100%;
+  width: 70%;
+}
+
+/* PJ 퍼센트 바 */
+.detail-mbti-graph-PJ-bar {
+  background-color: var(--gray-100);
+  width: 85%;
+  height: 30px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.detail-mbti-graph-PJ-bar-percent {
+  background-color: var(--secondary);
+  height: 100%;
+  width: 80%;
+}
+
+/* 리뷰 */
+
+.detail-review-container {
+  border: 2px solid var(--primary);
+  padding: 30px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 100px;
+}
+
+.detail-review-inner-container {
+  position: relative;
+}
+
+.detail-review-title {
+  margin-left: 38px;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+/* 리뷰 제목 밑 영역 */
+.detail-review-box-container {
+  margin-left: 38px;
+  font-size: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+/* 프로필+input */
+.detail-review-input-box {
+  display: flex;
+  gap: 16px;
+}
+
+/* 프로필 이미지 */
+.detail-review-input-box > img {
+  border: 1px solid transparent;
+  border-radius: 50%;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  margin-top: 7px;
+}
+
+/* input창 */
+.detail-review-input {
+  font-size: 24px;
+  width: 792px;
+  height: 65px;
+  background-color: var(--white);
+  border: 0;
+  border-radius: 10px;
+  padding-left: 20px;
+  padding-right: 70px;
+  border: 1px solid var(--gray-400);
+  border-radius: 10px;
+}
+
+/* 입력창 input focus 효과 */
+.detail-review-input:focus {
+  outline: none;
+  border-color: var(--secondary);
+}
+
+/* 제출 버튼 */
+.detail-review-input-button {
+  width: 50px;
+  height: 65px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  position: absolute;
+  right: 52px;
+}
+
+.detail-review-input-button img.detail-review-input-button-img-hover{
+  display: none;
+}
+
+.detail-review-input-button:hover img.detail-review-input-button-img{
+  display: none;
+}
+
+.detail-review-input-button:hover img.detail-review-input-button-img-hover{
+  display: block;
+  position: absolute;
+  top:13px;
+  right: 8px;
+
+}
+
