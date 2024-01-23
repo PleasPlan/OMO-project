@@ -15,6 +15,7 @@ public class ReviewMapper {
 
     public ReviewMapper(PlaceService placeService) {
         this.placeService = placeService;
+    }
 
     public Review reviewPostDtoToReview(ReviewDto.Post postDto){
         if(postDto == null){
