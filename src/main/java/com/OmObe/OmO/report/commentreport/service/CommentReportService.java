@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentReportService {
     private final CommentReportRepository commentReportRepository;
     private final CommentReportMapper mapper;
-    private final MemberService memberService;
     private final CommentService commentService;
     private final TokenDecryption tokenDecryption;
 
@@ -54,7 +53,6 @@ public class CommentReportService {
         CommentReport commentReport = mapper.commentReportPostDtoToCommentReport(post);
         try {
             Member member = tokenDecryption.getWriterInJWTToken(token);
-            memberService.verifiedAuthenticatedMember(member.getMemberId());
             commentReport.setMember(member);
         } catch (JsonProcessingException je) {
             throw new RuntimeException(je);

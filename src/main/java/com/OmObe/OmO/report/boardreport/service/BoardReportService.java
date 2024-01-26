@@ -28,9 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class BoardReportService {
     private final BoardReportRepository boardReportRepository;
     private final BoardReportMapper mapper;
-    private final MemberService memberService;
     private final BoardService boardService;
     private final TokenDecryption tokenDecryption;
+    private final MemberService memberService;
 
 
     /**
@@ -56,7 +56,6 @@ public class BoardReportService {
         BoardReport boardReport = mapper.boardReportPostDtoToBoardReport(post);
         try {
             Member member = tokenDecryption.getWriterInJWTToken(token);
-            memberService.verifiedAuthenticatedMember(member.getMemberId());
             boardReport.setMember(member);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
