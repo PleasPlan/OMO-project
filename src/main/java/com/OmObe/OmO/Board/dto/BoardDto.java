@@ -43,6 +43,7 @@ public class BoardDto {
     }
 
     @Getter
+    @Setter
     @AllArgsConstructor
     public static class Response{
 
@@ -56,9 +57,5 @@ public class BoardDto {
         private int likeCount;
         private int viewCount;
         private List<CommentDto.Response> comments;
-
-        public void setProfileURL(String profileURL) {
-            this.profileURL = profileURL;
-        }
     }
 }

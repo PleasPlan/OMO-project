@@ -55,14 +55,14 @@ public class BoardController {
     public ResponseEntity postBoard(@Valid @RequestBody BoardDto.Post postDto,
                                     @RequestHeader("Authorization") String token){
         Board board = mapper.boardPostDtoToBoard(postDto);
-        Member writer = tokenDecryption.getWriterInJWTToken(token);
-        board.setMember(writer);
+//        Member writer = tokenDecryption.getWriterInJWTToken(token);
+//        board.setMember(writer);
 
-        Board createdBoard = boardService.createBoard(board);
+        Board createdBoard = boardService.createBoard(board, token);
         BoardDto.Response response = mapper.boardToBoardResponseDto(createdBoard);
 
         // 게시판 글 작성 시 사용자의 프로필 이미지 설정
-        response.setProfileURL(writer.getProfileImageUrl());
+        response.setProfileURL(createdBoard.getMember().getProfileImageUrl());
         return new ResponseEntity<>(response,
                 HttpStatus.CREATED);
     }
@@ -75,7 +75,7 @@ public class BoardController {
         patchDto.setBoardId(boardId);
 
         Board board = mapper.boardPatchDtoToBoard(patchDto);
-        Board response = boardService.updateBoard(patchDto);
+        Board response = boardService.updateBoard(patchDto, token);
 
         return new ResponseEntity<>(mapper.boardToBoardResponseDto(response),
                 HttpStatus.OK);
@@ -191,8 +191,9 @@ public class BoardController {
     }
 
     @DeleteMapping("/{board-id}")
-    public ResponseEntity deleteBoard(@PathVariable("board-id") @Positive long boardId){
-        boardService.deleteBoard(boardId);
+    public ResponseEntity deleteBoard(@PathVariable("board-id") @Positive long boardId,
+                                      @RequestHeader("Authorization") String token){
+        boardService.deleteBoard(boardId, token);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -201,7 +202,6 @@ public class BoardController {
     public ResponseEntity likeBoard(@RequestHeader("boardId") long boardId,
                                     @RequestHeader("Authorization") String Token) throws JsonProcessingException {
         Member writer = tokenDecryption.getWriterInJWTToken(Token);
-
 
         boardService.likesBoard(boardId, writer);
         return new ResponseEntity<>(HttpStatus.OK);
