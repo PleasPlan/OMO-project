@@ -45,13 +45,14 @@ public class NoticeService {
         // 1. 회원 매핑
         try {
             Member member = tokenDecryption.getWriterInJWTToken(token);
+            memberService.verifiedAuthenticatedMember(member.getMemberId());
             notice.setMember(member);
         } catch (Exception e) {
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
         }
 
         // 2. 작성자 검증
-        memberService.verifiedAuthenticatedMember(notice.getMember().getMemberId());
+//        memberService.verifiedAuthenticatedMember(notice.getMember().getMemberId());
 
         // 3. 공자사항 저장
         return noticeRepository.save(notice);
@@ -63,7 +64,7 @@ public class NoticeService {
      * 2. 게시글 작성자와 수정자 비교
      * 3. 수정
      */
-    public Notice patchNotice(NoticeDto.Patch patch, Long noticeId) {
+    public Notice patchNotice(NoticeDto.Patch patch, Long noticeId, String token) {
         patch.setNoticeId(noticeId);
         Notice notice = mapper.noticePatchDtoToNotice(patch);
 
@@ -72,7 +73,19 @@ public class NoticeService {
         checkedNotice.setModifiedAt(LocalDateTime.now());
 
         // 2. 게시글 작성자와 수정자 비교
-        memberService.verifiedAuthenticatedMember(checkedNotice.getMember().getMemberId());
+        try {
+            Member member = tokenDecryption.getWriterInJWTToken(token);
+            /*
+            서버의 오류 등으로 인해 member 테이블에 데이터가 다시 들어가게 된 상황에서 기존 유효 기간이 남아있는
+            토큰으로 접근하면 다른 회원의 정보로 접근할 가능성이 있기 때문에 verifiedAuthenticatedMember를 통해
+            회원의 이메일을 검증하여 회원의 정보와 권한을 파악하여 서비스에 접근 허용 및 제한 한다.
+             */
+            memberService.verifiedAuthenticatedMember(member.getMemberId());
+        } catch (JsonProcessingException je) {
+            throw new RuntimeException(je);
+        } catch (Exception e) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
 
         // 3. 수정
         Optional.ofNullable(notice.getTitle()) // 제목
@@ -112,12 +125,25 @@ public class NoticeService {
      * 1. 사용자 로그인 상태 검증
      * 2. 삭제
      */
-    public void removeNotice(Long noticeId) {
+    public void removeNotice(Long noticeId, String token) {
         Notice notice = noticeRepository.findById(noticeId).orElseThrow(() ->
                 new BusinessLogicException(ExceptionCode.NOTICE_NOT_FOUND));
 
         // 1. 사용자 로그인 상태 검증
-        memberService.verifiedAuthenticatedMember(notice.getMember().getMemberId());
+        try {
+            Member member = tokenDecryption.getWriterInJWTToken(token);
+            /*
+            서버의 오류 등으로 인해 member 테이블에 데이터가 다시 들어가게 된 상황에서 기존 유효 기간이 남아있는
+            토큰으로 접근하면 다른 회원의 정보로 접근할 가능성이 있기 때문에 verifiedAuthenticatedMember를 통해
+            회원의 이메일을 검증하여 회원의 정보와 권한을 파악하여 서비스에 접근 허용 및 제한 한다.
+             */
+            memberService.verifiedAuthenticatedMember(member.getMemberId());
+        } catch (JsonProcessingException je) {
+            throw new RuntimeException(je);
+        } catch (Exception e) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+
 
         // 2. 삭제
         noticeRepository.delete(notice);
