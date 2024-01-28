@@ -51,12 +51,12 @@ public class CommentController {
     @SneakyThrows
     @PostMapping("/write")
     public ResponseEntity postComment(@Valid @RequestBody CommentDto.Post postDto,
-                                      @RequestHeader("Authorization") String Token){
+                                      @RequestHeader("Authorization") String token){
         Comment comment = mapper.commentPostToComment(postDto);
-        Member writer = getWriterInJWTToken(Token);
-        comment.setMember(writer);
+//        Member writer = getWriterInJWTToken(Token);
+//        comment.setMember(writer);
 
-        Comment response = commentService.createComment(comment);
+        Comment response = commentService.createComment(comment, token);
         return new ResponseEntity<>(mapper.commentToCommentResponseDto(response),
                 HttpStatus.CREATED);
     }
@@ -77,11 +77,12 @@ public class CommentController {
 
     @PatchMapping("/modification/{comment-id}")
     public ResponseEntity patchComment(@Valid @RequestBody CommentDto.Patch patchDto,
-                                       @PathVariable("comment-id") @Positive long commentId){
+                                       @PathVariable("comment-id") @Positive long commentId,
+                                       @RequestHeader("Authorization") String token){
         patchDto.setCommentId(commentId);
 
         Comment comment = mapper.commentPatchDtoToComment(patchDto);
-        Comment response = commentService.updateComment(comment);
+        Comment response = commentService.updateComment(comment, token);
 
         return new ResponseEntity<>(mapper.commentToCommentResponseDto(response),
                 HttpStatus.OK);
@@ -99,8 +100,9 @@ public class CommentController {
     }
 
     @DeleteMapping("/{comment-Id}")
-    public ResponseEntity deleteComment(@PathVariable("comment-Id") @Positive long commentId){
-        commentService.deleteComment(commentId);
+    public ResponseEntity deleteComment(@PathVariable("comment-Id") @Positive long commentId,
+                                        @RequestHeader("Authorization") String token){
+        commentService.deleteComment(commentId, token);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
