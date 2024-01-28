@@ -41,8 +41,9 @@ public class BoardReportController {
     // 신고 내용 조회(관리자 전용)
     @GetMapping
     public ResponseEntity getBoardReports(@RequestParam @Positive int page,
-                                          @RequestParam @Positive int size) {
-        Page<BoardReport> boardReports = boardReportService.getBoardReports(page, size);
+                                          @RequestParam @Positive int size,
+                                          @RequestHeader("Authorization") String token) {
+        Page<BoardReport> boardReports = boardReportService.getBoardReports(page, size, token);
         List<BoardReport> boardReportList = boardReports.getContent();
 
         return new ResponseEntity<>(
