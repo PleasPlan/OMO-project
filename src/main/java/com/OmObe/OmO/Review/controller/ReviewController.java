@@ -41,23 +41,24 @@ public class ReviewController {
     @SneakyThrows
     @PostMapping("/write")
     public ResponseEntity postReview(@Valid @RequestBody ReviewDto.Post postDto,
-                                     @RequestHeader("Authorization") String Token){
-        Member writer = tokenDecryption.getWriterInJWTToken(Token);
+                                     @RequestHeader("Authorization") String token){
+//        Member writer = tokenDecryption.getWriterInJWTToken(Token);
 
         Review review = mapper.reviewPostDtoToReview(postDto);
-        review.setMember(writer);
-        Review response = reviewService.createReview(review);
+//        review.setMember(writer);
+        Review response = reviewService.createReview(review, token);
         return new ResponseEntity<>(mapper.reviewToReviewResponseDto(response),
                 HttpStatus.CREATED);
     }
 
     @PatchMapping("/modification")
     public ResponseEntity patchReview(@Valid @RequestBody ReviewDto.Patch patchDto,
-                                      @RequestHeader("review-id") long reviewId){
+                                      @RequestHeader("review-id") long reviewId,
+                                      @RequestHeader("Authorization") String token){
         // patchDto.setReviewId(reviewId);
 
         Review review = mapper.reviewPatchDtoToReview(patchDto);
-        Review response = reviewService.updateReview(review,reviewId);
+        Review response = reviewService.updateReview(review,reviewId, token);
 
         return new ResponseEntity<>(mapper.reviewToReviewResponseDto(response),
                 HttpStatus.OK);
@@ -83,8 +84,9 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{review-Id}")
-    public ResponseEntity deleteReview(@PathVariable("review-Id") @Positive long reviewId){
-        reviewService.deleteReview(reviewId);
+    public ResponseEntity deleteReview(@PathVariable("review-Id") @Positive long reviewId,
+                                       @RequestHeader("Authorization") String token){
+        reviewService.deleteReview(reviewId, token);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
