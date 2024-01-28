@@ -66,7 +66,7 @@ public class BoardReportService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         } catch (Exception e) {
-            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+            throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
         boardReport.setBoard(board);
 

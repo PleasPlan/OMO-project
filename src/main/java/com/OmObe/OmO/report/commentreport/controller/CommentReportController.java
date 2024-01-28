@@ -37,8 +37,9 @@ public class CommentReportController {
     // 댓글 조회(관리자 전용)
     @GetMapping
     public ResponseEntity getCommentReports(@RequestParam @Positive int page,
-                                            @RequestParam @Positive int size) {
-        Page<CommentReport> commentReports = commentReportService.getCommentReports(page, size);
+                                            @RequestParam @Positive int size,
+                                            @RequestHeader("Authorization") String token) {
+        Page<CommentReport> commentReports = commentReportService.getCommentReports(page, size, token);
         List<CommentReport> commentReportList = commentReports.getContent();
 
         return new ResponseEntity<>(
