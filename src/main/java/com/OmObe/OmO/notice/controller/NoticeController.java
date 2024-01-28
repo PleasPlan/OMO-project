@@ -40,8 +40,9 @@ public class NoticeController {
     // 공지사항 수정
     @PatchMapping("/{noticeId}")
     public ResponseEntity patchNotice(@RequestBody @Valid NoticeDto.Patch patch,
-                                      @PathVariable("noticeId") Long noticeId) {
-        Notice notice = noticeService.patchNotice(patch, noticeId);
+                                      @PathVariable("noticeId") Long noticeId,
+                                      @RequestHeader("Authorization") String token) {
+        Notice notice = noticeService.patchNotice(patch, noticeId, token);
 
         return new ResponseEntity<>(mapper.noticeToNoticeResponseDto(notice), HttpStatus.OK);
     }
@@ -68,8 +69,9 @@ public class NoticeController {
 
     // 공지사항 삭제
     @DeleteMapping("/{noticeId}")
-    public ResponseEntity deleteNotice(@PathVariable("noticeId") Long noticeId) {
-        noticeService.removeNotice(noticeId);
+    public ResponseEntity deleteNotice(@PathVariable("noticeId") Long noticeId,
+                                       @RequestHeader("Authorization") String token) {
+        noticeService.removeNotice(noticeId, token);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

@@ -28,9 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentReportService {
     private final CommentReportRepository commentReportRepository;
     private final CommentReportMapper mapper;
-    private final MemberService memberService;
     private final CommentService commentService;
     private final TokenDecryption tokenDecryption;
+    private final MemberService memberService;
 
     /**
      * <댓글 신고>
@@ -53,13 +53,18 @@ public class CommentReportService {
         // 3. 인증된 사용자와 댓글 정보를 commentReport 객체에 저장
         CommentReport commentReport = mapper.commentReportPostDtoToCommentReport(post);
         try {
+            /*
+            서버의 오류 등으로 인해 member 테이블에 데이터가 다시 들어가게 된 상황에서 기존 유효 기간이 남아있는
+            토큰으로 접근하면 다른 회원의 정보로 접근할 가능성이 있기 때문에 verifiedAuthenticatedMember를 통해
+            회원의 이메일을 검증하여 회원의 정보와 권한을 파악하여 서비스에 접근 허용 및 제한 한다.
+             */
             Member member = tokenDecryption.getWriterInJWTToken(token);
             memberService.verifiedAuthenticatedMember(member.getMemberId());
             commentReport.setMember(member);
         } catch (JsonProcessingException je) {
             throw new RuntimeException(je);
         } catch (Exception e) {
-            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+            throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
         commentReport.setComment(comment);
 
@@ -69,10 +74,21 @@ public class CommentReportService {
 
     /**
      * <신고 내용 조회>
-     * 1. 먼저 신고된 순으로 조회(과거순)
+     * 1. 토큰 검증
+     * 2. 먼저 신고된 순으로 조회(과거순)
      */
-    public Page<CommentReport> getCommentReports(int page, int size) {
-        // 1. 먼저 신고된 순으로 조회(과거순)
+    public Page<CommentReport> getCommentReports(int page, int size, String token) {
+        // 1. 토큰 검증
+        try{
+            Member member = tokenDecryption.getWriterInJWTToken(token);
+            memberService.verifiedAuthenticatedMember(member.getMemberId());
+        }catch (JsonProcessingException je) {
+            throw new RuntimeException(je);
+        } catch (Exception e) {
+            throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
+        }
+
+        // 2. 먼저 신고된 순으로 조회(과거순)
         return commentReportRepository.findAll(reportSortedBy(page, size));
     }
 
