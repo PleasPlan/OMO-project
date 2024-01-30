@@ -1,4 +1,4 @@
-package com.OmObe.OmO.MyCourse;
+package com.OmObe.OmO.MyCourse.entity;
 
 import com.OmObe.OmO.member.entity.Member;
 import lombok.Getter;
@@ -7,8 +7,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -43,7 +41,7 @@ public class MyCourse {
     @ManyToOne
     @JoinColumn(name = "WRITER")
     private Member member;
-    
+
     @OneToOne
     private MyCourse nextCourse;
 }
