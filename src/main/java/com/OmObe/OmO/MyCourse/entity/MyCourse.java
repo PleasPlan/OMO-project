@@ -39,9 +39,10 @@ public class MyCourse {
     private Integer viewCount = 0;
 
     @ManyToOne
+    @JoinColumn(name = "NEXT_COURSE")
+    private MyCourse nextCourse;
+
+    @ManyToOne
     @JoinColumn(name = "WRITER")
     private Member member;
-
-    @OneToOne
-    private MyCourse nextCourse;
 }

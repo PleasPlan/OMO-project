@@ -6,6 +6,7 @@ import com.OmObe.OmO.MyCourse.mapper.MyCourseMapper;
 import com.OmObe.OmO.MyCourse.service.MyCourseService;
 import com.OmObe.OmO.auth.jwt.TokenDecryption;
 import com.OmObe.OmO.member.entity.Member;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -33,30 +34,38 @@ public class MyCourseController {
         this.tokenDecryption = tokenDecryption;
     }
 
-    @SneakyThrows
+
     @PostMapping("/new")
     public ResponseEntity postCourse(@RequestBody MyCourseDto.Post postDto,
-                                     @RequestHeader("Authorization") String token){
+                                     @RequestHeader("Authorization") String token) throws JsonProcessingException {
         List<MyCourse> courseList = mapper.coursePostDtoToCourse(postDto);
         Member writer = tokenDecryption.getWriterInJWTToken(token);
 
+        log.info("passed 1");
         MyCourse myCourse = myCourseService.createCourse(courseList,writer);
+        log.info("passed 2");
         MyCourseDto.Response response = mapper.courseToCourseResponseDto(myCourse);
+        log.info("passed 3");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PatchMapping("/rebuild")
-    public ResponseEntity patchCourse(){
+    public ResponseEntity patchCourse(@RequestBody MyCourseDto.Patch patchDto,
+                                      @RequestHeader("Authorization") String token){
+        List<MyCourse> courseList = mapper.coursePatchDtoToCourse(patchDto);
 
+        MyCourse myCourse = myCourseService.updateCourse(courseList);
+        MyCourseDto.Response response = mapper.courseToCourseResponseDto(myCourse);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/{course-id}")
-    public ResponseEntity getCourse(){
-
-    }
-
-    @DeleteMapping("/{course-id}")
-    public ResponseEntity deleteCourse(){
-
-    }
+//    @GetMapping("/{course-id}")
+//    public ResponseEntity getCourse(){
+//
+//    }
+//
+//    @DeleteMapping("/{course-id}")
+//    public ResponseEntity deleteCourse(){
+//
+//    }
 }

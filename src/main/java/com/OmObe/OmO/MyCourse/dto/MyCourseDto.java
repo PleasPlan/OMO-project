@@ -21,6 +21,7 @@ public class MyCourseDto {
     @Getter
     @Setter
     public static class Patch{
+        private long courseId;
         private String courseName;
         private List<String> placeName;
         private List<Long> placeId;
