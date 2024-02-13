@@ -48,24 +48,38 @@ public class MyCourseService {
         Collections.reverse(courseIdList);
         courseIdList.forEach(id -> log.info("id : "+id));
 
-        for(int i = 0; i<courseIdList.size(); i++){
-            MyCourse part = findCourse(courseIdList.get(i));
-            part.setPlaceName(course.get(i).getPlaceName());
-            part.setPlaceId(course.get(i).getPlaceId());
-            part.setTimes(course.get(i).getTimes());
-            myCourseRepository.save(part);
-        }
+        if(course.size() < courseIdList.size()) {
+            for (int i = 0; i < course.size(); i++) {
+                MyCourse part = findCourse(courseIdList.get(i));
+                part.setPlaceName(course.get(i).getPlaceName());
+                part.setPlaceId(course.get(i).getPlaceId());
+                part.setTimes(course.get(i).getTimes());
+                if (i == course.size() - 1) {
+                    part.setNextCourse(null);
+                    // TODO : 이후 있는 모든 연결 데이터 삭제
+                }
+                myCourseRepository.save(part);
+            }
+        } else {
+            for (int i = 0; i < courseIdList.size(); i++) {
+                MyCourse part = findCourse(courseIdList.get(i));
+                part.setPlaceName(course.get(i).getPlaceName());
+                part.setPlaceId(course.get(i).getPlaceId());
+                part.setTimes(course.get(i).getTimes());
+                myCourseRepository.save(part);
+            }
 
-        // 새로운 요소가 추가됐을 때
-        for(int i = courseIdList.size(); i<course.size(); i++){
-            MyCourse part = course.get(i);
-            part.setMember(writer);
-            if(i<course.size()-1) {
-                course.get(i + 1).setNextCourse(myCourseRepository.save(part));
-            } else {
-                MyCourse lastPart = findCourse(courseIdList.get(courseIdList.size()-1));
-                lastPart.setNextCourse(myCourseRepository.save(part));
-                myCourseRepository.save(lastPart);
+            // 새로운 요소가 추가됐을 때
+            for (int i = courseIdList.size(); i < course.size(); i++) {
+                MyCourse part = course.get(i);
+                part.setMember(writer);
+                if (i < course.size() - 1) {
+                    course.get(i + 1).setNextCourse(myCourseRepository.save(part));
+                } else {
+                    MyCourse lastPart = findCourse(courseIdList.get(courseIdList.size() - 1));
+                    lastPart.setNextCourse(myCourseRepository.save(part));
+                    myCourseRepository.save(lastPart);
+                }
             }
         }
         log.info("passed 3-1");
