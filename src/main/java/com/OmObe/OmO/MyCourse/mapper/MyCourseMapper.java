@@ -50,16 +50,15 @@ public class MyCourseMapper {
     public List<MyCourse> coursePatchDtoToCourse(MyCourseDto.Patch patchDto){
         if(patchDto == null){
             return null;
-        } else if (
-                (patchDto.getTime().size() == patchDto.getPlaceName().size())
-                        &&
-                        (patchDto.getPlaceName().size() == patchDto.getPlaceId().size())
+        } else if ((patchDto.getTime().size() != patchDto.getPlaceName().size())
+                        ||
+                (patchDto.getPlaceName().size() != patchDto.getPlaceId().size())
         ){     // 무결성 검사 -> 세 List의 크기가 같다면
             return null;
         }
         else {
             List<MyCourse> courseList = new ArrayList<>();
-            settingNextCoursePatch(courseList,patchDto,0);
+            settingNextCoursePatch(courseList,patchDto);
             return courseList;
         }
     }
@@ -86,13 +85,23 @@ public class MyCourseMapper {
             MyCourse course = new MyCourse();
             course.setCourseName(postDto.getCourseName());
             course.setPlaceName(postDto.getPlaceName().get(index));
-            log.info(course.getPlaceName());
             course.setPlaceId(postDto.getPlaceId().get(index));
             course.setTimes(postDto.getTime().get(index));
             courseList.add(course);
         }
     }
-    private static MyCourse settingNextCoursePatch(List<MyCourse> courseList, MyCourseDto.Patch patchDto, int index){
+
+    private static void settingNextCoursePatch(List<MyCourse> courseList, MyCourseDto.Patch patchDto){
+        for(int index = patchDto.getPlaceName().size()-1; index>=0; index--) {
+            MyCourse course = new MyCourse();
+            course.setCourseName(patchDto.getCourseName());
+            course.setPlaceName(patchDto.getPlaceName().get(index));
+            course.setPlaceId(patchDto.getPlaceId().get(index));
+            course.setTimes(patchDto.getTime().get(index));
+            courseList.add(course);
+        }
+    }
+    /*private static MyCourse settingNextCoursePatch(List<MyCourse> courseList, MyCourseDto.Patch patchDto, int index){
         MyCourse course = new MyCourse();
         course.setCourseName(patchDto.getCourseName());
         course.setPlaceName(patchDto.getPlaceName().get(index));
@@ -100,7 +109,7 @@ public class MyCourseMapper {
         course.setTimes(patchDto.getTime().get(index));
         courseList.add(course);
         return course;
-    }
+    }*/
     private static void getNextCourses(List<MyCourseDto.ResponseSmall> contents, MyCourse course){
         MyCourseDto.ResponseSmall responseSmall = new MyCourseDto.ResponseSmall(course.getPlaceName(),
                 course.getPlaceId(),

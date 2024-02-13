@@ -53,8 +53,8 @@ public class MyCourseController {
     public ResponseEntity patchCourse(@RequestBody MyCourseDto.Patch patchDto,
                                       @RequestHeader("Authorization") String token){
         List<MyCourse> courseList = mapper.coursePatchDtoToCourse(patchDto);
-
-        MyCourse myCourse = myCourseService.updateCourse(courseList);
+        Long startId = patchDto.getCourseId();
+        MyCourse myCourse = myCourseService.updateCourse(courseList,startId);
         MyCourseDto.Response response = mapper.courseToCourseResponseDto(myCourse);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
