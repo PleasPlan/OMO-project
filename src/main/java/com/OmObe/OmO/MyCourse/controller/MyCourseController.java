@@ -60,10 +60,13 @@ public class MyCourseController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-//    @GetMapping("/{course-id}")
-//    public ResponseEntity getCourse(){
-//
-//    }
+    @GetMapping("/{course-id}")
+    public ResponseEntity getCourse(@RequestHeader("Authorization") String token,
+                                    @PathVariable("course-id") long startId){
+        MyCourse myCourse = myCourseService.getCourse(startId);
+        MyCourseDto.Response response = mapper.courseToCourseResponseDto(myCourse);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 //
 //    @DeleteMapping("/{course-id}")
 //    public ResponseEntity deleteCourse(){

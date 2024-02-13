@@ -8,6 +8,7 @@ import com.OmObe.OmO.member.entity.Member;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +47,6 @@ public class MyCourseService {
 
         searchIdList(courseIdList,startId);
         Collections.reverse(courseIdList);
-        courseIdList.forEach(id -> log.info("id : "+id));
 
         if(course.size() < courseIdList.size()) {
             for (int i = 0; i < course.size(); i++) {
@@ -54,6 +54,7 @@ public class MyCourseService {
                 part.setPlaceName(course.get(i).getPlaceName());
                 part.setPlaceId(course.get(i).getPlaceId());
                 part.setTimes(course.get(i).getTimes());
+                part.setModifiedAt(LocalDateTime.now());
                 if (i == course.size() - 1) {
                     part.setNextCourse(null);
                     // TODO : 이후 있는 모든 연결 데이터 삭제
@@ -66,6 +67,7 @@ public class MyCourseService {
                 part.setPlaceName(course.get(i).getPlaceName());
                 part.setPlaceId(course.get(i).getPlaceId());
                 part.setTimes(course.get(i).getTimes());
+                part.setModifiedAt(LocalDateTime.now());
                 myCourseRepository.save(part);
             }
 
@@ -86,12 +88,20 @@ public class MyCourseService {
         return findCourse(startId);
     }
 
+    public MyCourse getCourse(long courseId){
+        MyCourse start = findCourse(courseId);
+        start.setViewCount(start.getViewCount()+1);
+        return myCourseRepository.save(start);
+    }
+
     public MyCourse findCourse(long courseId){
         Optional<MyCourse> optionalCourse = myCourseRepository.findById(courseId);
         MyCourse course = optionalCourse.orElseThrow(() ->
                 new BusinessLogicException(ExceptionCode.COURSE_NOT_FOUND));
         return course;
     }
+
+
 
     public void searchIdList(List<Long> courseIdList, long startId){
         MyCourse mc = findCourse(startId);
