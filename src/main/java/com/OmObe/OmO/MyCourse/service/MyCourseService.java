@@ -58,6 +58,7 @@ public class MyCourseService {
                 if (i == course.size() - 1) {
                     part.setNextCourse(null);
                     // TODO : 이후 있는 모든 연결 데이터 삭제
+                    deleteCourse(courseIdList.get(i+1));
                 }
                 myCourseRepository.save(part);
             }
