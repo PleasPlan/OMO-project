@@ -49,12 +49,13 @@ public class MyCourseController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PatchMapping("/rebuild")
+    @PutMapping("/rebuild")
     public ResponseEntity patchCourse(@RequestBody MyCourseDto.Patch patchDto,
-                                      @RequestHeader("Authorization") String token){
+                                      @RequestHeader("Authorization") String token) throws JsonProcessingException {
         List<MyCourse> courseList = mapper.coursePatchDtoToCourse(patchDto);
         Long startId = patchDto.getCourseId();
-        MyCourse myCourse = myCourseService.updateCourse(courseList,startId);
+        Member writer = tokenDecryption.getWriterInJWTToken(token);
+        MyCourse myCourse = myCourseService.updateCourse(courseList,startId,writer);
         MyCourseDto.Response response = mapper.courseToCourseResponseDto(myCourse);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

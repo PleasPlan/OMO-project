@@ -39,7 +39,7 @@ public class MyCourseService {
     }
 
 
-    public MyCourse updateCourse(List<MyCourse> course,long startId){
+    public MyCourse updateCourse(List<MyCourse> course,long startId, Member writer){
         log.info("enter 3-1");
         Collections.reverse(course);
         List<Long> courseIdList = new ArrayList<>();
@@ -48,12 +48,25 @@ public class MyCourseService {
         Collections.reverse(courseIdList);
         courseIdList.forEach(id -> log.info("id : "+id));
 
-        for(int i = 0; i<course.size(); i++){
+        for(int i = 0; i<courseIdList.size(); i++){
             MyCourse part = findCourse(courseIdList.get(i));
             part.setPlaceName(course.get(i).getPlaceName());
             part.setPlaceId(course.get(i).getPlaceId());
             part.setTimes(course.get(i).getTimes());
             myCourseRepository.save(part);
+        }
+
+        // 새로운 요소가 추가됐을 때
+        for(int i = courseIdList.size(); i<course.size(); i++){
+            MyCourse part = course.get(i);
+            part.setMember(writer);
+            if(i<course.size()-1) {
+                course.get(i + 1).setNextCourse(myCourseRepository.save(part));
+            } else {
+                MyCourse lastPart = findCourse(courseIdList.get(courseIdList.size()-1));
+                lastPart.setNextCourse(myCourseRepository.save(part));
+                myCourseRepository.save(lastPart);
+            }
         }
         log.info("passed 3-1");
         return findCourse(startId);
