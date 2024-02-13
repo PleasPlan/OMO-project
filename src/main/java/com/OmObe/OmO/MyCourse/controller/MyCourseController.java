@@ -67,9 +67,11 @@ public class MyCourseController {
         MyCourseDto.Response response = mapper.courseToCourseResponseDto(myCourse);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-//
-//    @DeleteMapping("/{course-id}")
-//    public ResponseEntity deleteCourse(){
-//
-//    }
+
+    @DeleteMapping("/{course-id}")
+    public ResponseEntity deleteCourse(@RequestHeader("Authorization") String token,
+                                       @PathVariable("course-id") long startId){
+        myCourseService.deleteCourse(startId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

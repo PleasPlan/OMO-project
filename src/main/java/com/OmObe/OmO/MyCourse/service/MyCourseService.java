@@ -94,6 +94,11 @@ public class MyCourseService {
         return myCourseRepository.save(start);
     }
 
+    public void deleteCourse(long courseId){
+        MyCourse start = findCourse(courseId);
+        myCourseRepository.delete(start);
+    }
+
     public MyCourse findCourse(long courseId){
         Optional<MyCourse> optionalCourse = myCourseRepository.findById(courseId);
         MyCourse course = optionalCourse.orElseThrow(() ->

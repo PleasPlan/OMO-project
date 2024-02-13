@@ -4,6 +4,8 @@ import com.OmObe.OmO.member.entity.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -38,7 +40,7 @@ public class MyCourse {
     @Column(nullable = false)
     private Integer viewCount = 0;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "NEXT_COURSE")
     private MyCourse nextCourse;
 
