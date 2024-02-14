@@ -1,5 +1,7 @@
 package com.OmObe.OmO.MyPage.service;
 
+import com.OmObe.OmO.Board.entity.Board;
+import com.OmObe.OmO.Board.repository.BoardRepository;
 import com.OmObe.OmO.MyPage.utility.pageUtility;
 import com.OmObe.OmO.Place.entity.Place;
 import com.OmObe.OmO.Place.entity.PlaceLike;
@@ -7,21 +9,16 @@ import com.OmObe.OmO.Place.entity.PlaceRecommend;
 import com.OmObe.OmO.Place.repository.PlaceLikeRepository;
 import com.OmObe.OmO.Place.repository.PlaceRecommendRepository;
 import com.OmObe.OmO.Place.service.PlaceService;
-import com.OmObe.OmO.Review.entity.Review;
 import com.OmObe.OmO.member.entity.Member;
-import com.OmObe.OmO.util.PairJ;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -41,11 +38,13 @@ public class MyPageService {
 
     private final PlaceLikeRepository placeLikeRepository;
     private final PlaceRecommendRepository placeRecommendRepository;
+    private final BoardRepository boardRepository;
     private final PlaceService placeService;
 
-    public MyPageService(PlaceLikeRepository placeLikeRepository, PlaceRecommendRepository placeRecommendRepository, PlaceService placeService) {
+    public MyPageService(PlaceLikeRepository placeLikeRepository, PlaceRecommendRepository placeRecommendRepository, BoardRepository boardRepository, PlaceService placeService) {
         this.placeLikeRepository = placeLikeRepository;
         this.placeRecommendRepository = placeRecommendRepository;
+        this.boardRepository = boardRepository;
         this.placeService = placeService;
     }
 
@@ -87,6 +86,12 @@ public class MyPageService {
         }
     }
 
+    public List<Board> getMyBoard(Member member, int page, int size) throws JsonProcessingException {
+        pageUtility<Board> utility = new pageUtility<>();
+        Slice<Board> boards = utility.convertToSlice(boardRepository.findAll(utility.withMember(member),PageRequest.of(page,size)));
+        List<Board> boardList = boards.getContent();
+        return boardList;
+    }
 
     public String getPlace(String placeName,long placeId,Member member) {
 

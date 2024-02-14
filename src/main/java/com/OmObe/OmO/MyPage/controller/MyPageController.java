@@ -1,5 +1,8 @@
 package com.OmObe.OmO.MyPage.controller;
 
+import com.OmObe.OmO.Board.dto.BoardDto;
+import com.OmObe.OmO.Board.entity.Board;
+import com.OmObe.OmO.Board.mapper.BoardMapper;
 import com.OmObe.OmO.Board.response.MultiResponseDto;
 import com.OmObe.OmO.Board.response.PageInfo;
 import com.OmObe.OmO.MyPage.service.MyPageService;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Positive;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -24,13 +28,13 @@ import java.util.List;
 @RequestMapping("/myPage")
 public class MyPageController {
     private final MyPageService myPageService;
-    private final PlaceService placeService;
     private final TokenDecryption tokenDecryption;
+    private final BoardMapper boardMapper;
 
-    public MyPageController(MyPageService myPageService, PlaceService placeService, TokenDecryption tokenDecryption) {
+    public MyPageController(MyPageService myPageService, TokenDecryption tokenDecryption, BoardMapper boardMapper) {
         this.myPageService = myPageService;
-        this.placeService = placeService;
         this.tokenDecryption = tokenDecryption;
+        this.boardMapper = boardMapper;
     }
 
     @GetMapping("/likes")
@@ -46,12 +50,27 @@ public class MyPageController {
 
     @GetMapping("/recommend")
     public ResponseEntity getRecommend(@RequestHeader("Authorization") String token,
-                                   @RequestParam(defaultValue = "1") int page,
-                                   @Positive @RequestParam(defaultValue = "10") int size) throws JsonProcessingException {
+                                       @RequestParam(defaultValue = "1") int page,
+                                       @Positive @RequestParam(defaultValue = "10") int size) throws JsonProcessingException {
         Member member = tokenDecryption.getWriterInJWTToken(token);
 
         String placeList = myPageService.findPlaceRecommendByMember(member, page - 1, size);
 
         return new ResponseEntity<>(placeList, HttpStatus.OK);
+    }
+
+    // No Content가 나오면 더이상 페이지가 없다는 뜻이다.
+    @GetMapping("/myBoard")
+    public ResponseEntity getMyBoard(@RequestHeader("Authorization") String token,
+                                     @RequestParam(defaultValue = "1") int page,
+                                     @Positive @RequestParam(defaultValue = "10") int size) throws JsonProcessingException {
+        Member member = tokenDecryption.getWriterInJWTToken(token);
+
+        List<Board> boardList = myPageService.getMyBoard(member,page-1,size);
+        if(boardList.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(boardMapper.boardsToBoardResponseDtos(boardList), HttpStatus.OK);
+        }
     }
 }
