@@ -140,12 +140,14 @@ public class PlaceService {
                 if(optionalPlaceLike.isPresent()){
                     PlaceLike existPlaceLike = optionalPlaceLike.orElseThrow();
                     place.deleteLikes(existPlaceLike);
+                    member.deletePlaceLikes(existPlaceLike);
                     placeLikeRepository.delete(existPlaceLike);
                 } else {
                     PlaceLike like = new PlaceLike();
                     like.setPlace(place);
                     like.setMember(member);
                     place.addLikes(like);
+                    member.addPlaceLikes(like);
                     placeLikeRepository.save(like);
                 }
 
@@ -155,12 +157,14 @@ public class PlaceService {
                 if(optionalPlaceRecommend.isPresent()){
                     PlaceRecommend existPlaceRecommend = optionalPlaceRecommend.orElseThrow();
                     place.deleteRecommends(existPlaceRecommend);
+                    member.deletePlaceRecommend(existPlaceRecommend);
                     placeRecommendRepository.delete(existPlaceRecommend);
                 } else {
                     PlaceRecommend recommend = new PlaceRecommend();
                     recommend.setPlace(place);
                     recommend.setMember(member);
                     place.addRecommends(recommend);
+                    member.addPlaceRecommend(recommend);
                     placeRecommendRepository.save(recommend);
                 }
             }
@@ -396,7 +400,7 @@ public class PlaceService {
         }
     }
 
-    private static void removeElementFromListInArray(JsonNode jsonNode, String arrayFieldName, long placeId){
+    /*private static void removeElementFromListInArray(JsonNode jsonNode, String arrayFieldName, long placeId){
         if(jsonNode.isObject() && jsonNode.has(arrayFieldName)){
             ArrayNode arrayNode = (ArrayNode) jsonNode.get(arrayFieldName);
             Iterator<JsonNode> elements = arrayNode.elements();
@@ -409,5 +413,5 @@ public class PlaceService {
                 }
             }
         }
-    }
+    }*/
 }
