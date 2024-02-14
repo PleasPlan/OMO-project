@@ -1,5 +1,6 @@
 package com.OmObe.OmO.MyPage.service;
 
+import com.OmObe.OmO.MyPage.utility.pageUtility;
 import com.OmObe.OmO.Place.entity.Place;
 import com.OmObe.OmO.Place.entity.PlaceLike;
 import com.OmObe.OmO.Place.entity.PlaceRecommend;
@@ -46,8 +47,8 @@ public class MyPageService {
     }
 
     public String findPlaceLikedByMember(Member member, int page, int size){
-        Slice<PlaceLike> placeLikeSlice = convertToSlice(placeLikeRepository.findAll(withMember(member), PageRequest.of(page, size)));
-
+        pageUtility<PlaceLike> utility = new pageUtility<>();
+        Slice<PlaceLike> placeLikeSlice = utility.convertToSlice(placeLikeRepository.findAll(utility.withMember(member),PageRequest.of(page,size)));
         List<PlaceLike> placeLikeList = placeLikeSlice.getContent();
 
         if(!placeLikeList.isEmpty()) {
