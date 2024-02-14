@@ -43,4 +43,15 @@ public class MyPageController {
 
         return new ResponseEntity<>(placeList, HttpStatus.OK);
     }
+
+    @GetMapping("/recommend")
+    public ResponseEntity getRecommend(@RequestHeader("Authorization") String token,
+                                   @RequestParam(defaultValue = "1") int page,
+                                   @Positive @RequestParam(defaultValue = "10") int size) throws JsonProcessingException {
+        Member member = tokenDecryption.getWriterInJWTToken(token);
+
+        String placeList = myPageService.findPlaceRecommendByMember(member, page - 1, size);
+
+        return new ResponseEntity<>(placeList, HttpStatus.OK);
+    }
 }

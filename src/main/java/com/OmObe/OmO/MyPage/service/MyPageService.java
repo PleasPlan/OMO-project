@@ -5,6 +5,7 @@ import com.OmObe.OmO.Place.entity.Place;
 import com.OmObe.OmO.Place.entity.PlaceLike;
 import com.OmObe.OmO.Place.entity.PlaceRecommend;
 import com.OmObe.OmO.Place.repository.PlaceLikeRepository;
+import com.OmObe.OmO.Place.repository.PlaceRecommendRepository;
 import com.OmObe.OmO.Place.service.PlaceService;
 import com.OmObe.OmO.Review.entity.Review;
 import com.OmObe.OmO.member.entity.Member;
@@ -39,10 +40,12 @@ public class MyPageService {
     private String key;
 
     private final PlaceLikeRepository placeLikeRepository;
+    private final PlaceRecommendRepository placeRecommendRepository;
     private final PlaceService placeService;
 
-    public MyPageService(PlaceLikeRepository placeLikeRepository, PlaceService placeService) {
+    public MyPageService(PlaceLikeRepository placeLikeRepository, PlaceRecommendRepository placeRecommendRepository, PlaceService placeService) {
         this.placeLikeRepository = placeLikeRepository;
+        this.placeRecommendRepository = placeRecommendRepository;
         this.placeService = placeService;
     }
 
@@ -61,18 +64,29 @@ public class MyPageService {
             placeList.replace(placeList.length() - 1, placeList.length(), "]");
             return placeList.toString();
         } else {
+            return "null";
+        }
+    }
+
+    public String findPlaceRecommendByMember(Member member, int page, int size){
+        pageUtility<PlaceRecommend> utility = new pageUtility<>();
+        Slice<PlaceRecommend> placeLikeSlice = utility.convertToSlice(placeRecommendRepository.findAll(utility.withMember(member),PageRequest.of(page,size)));
+        List<PlaceRecommend> placeLikeList = placeLikeSlice.getContent();
+
+        if(!placeLikeList.isEmpty()) {
+            StringBuilder placeList = new StringBuilder("[");
+            for (PlaceRecommend placeRecommend : placeLikeList) {
+                Place place = placeRecommend.getPlace();
+                String findPlace = getPlace(place.getPlaceName(), place.getPlaceId(), member);
+                placeList.append(findPlace).append(",");
+            }
+            placeList.replace(placeList.length() - 1, placeList.length(), "]");
+            return placeList.toString();
+        } else {
             return null;
         }
     }
 
-    public static Slice<PlaceLike> convertToSlice(Page<PlaceLike> page){
-        return new SliceImpl<>(page.getContent(), page.getPageable(), page.hasNext());
-    }
-
-    public static Specification<PlaceLike> withMember(Member member){
-        return (Specification<PlaceLike>) ((root, query, builder) ->
-                builder.equal(root.get("member"),member));
-    }
 
     public String getPlace(String placeName,long placeId,Member member) {
 
