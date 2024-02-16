@@ -5,6 +5,7 @@ import com.OmObe.OmO.Board.entity.Board;
 import com.OmObe.OmO.Board.mapper.BoardMapper;
 import com.OmObe.OmO.Board.response.MultiResponseDto;
 import com.OmObe.OmO.Board.response.PageInfo;
+import com.OmObe.OmO.MyPage.dto.MyPageDto;
 import com.OmObe.OmO.MyPage.service.MyPageService;
 import com.OmObe.OmO.Place.entity.Place;
 import com.OmObe.OmO.Place.entity.PlaceLike;
@@ -74,18 +75,19 @@ public class MyPageController {
         }
     }
 
-//    @GetMapping("/lastVisited")
-//    public ResponseEntity getLastPlace(@RequestHeader("Authorization") String token,
-//                                       @RequestParam(defaultValue = "!") int page,
-//                                       @Positive @RequestParam(defaultValue = "10") int size) throws JsonProcessingException {
-//        Member member = tokenDecryption.getWriterInJWTToken(token);
-//
-//        // TODO : dto를 이용해 이하 두 List를 가져올 것.
-//        List<String> placeNameList = new ArrayList<>();
-//        List<Long> placeIdList = new ArrayList<>();
-//
-//        String placeList = myPageService.findLastPlace(member,page,size,placeNameList,placeIdList);
-//
-//        return new ResponseEntity<>(placeList,HttpStatus.OK);
-//    }
+    @GetMapping("/lastVisited")
+    public ResponseEntity getLastPlace(@RequestHeader("Authorization") String token,
+                                       @RequestParam(defaultValue = "!") int page,
+                                       @Positive @RequestParam(defaultValue = "10") int size,
+                                       @RequestBody MyPageDto.PlaceList placeList) throws JsonProcessingException {
+        Member member = tokenDecryption.getWriterInJWTToken(token);
+
+        List<String> placeNameList = placeList.getPlaceNameList();
+        List<Long> placeIdList = placeList.getPlaceIdList();
+        placeIdList.forEach(it -> log.info("placeId : "+it));
+
+        String response = myPageService.findLastPlace(member,page-1,size,placeNameList,placeIdList);
+
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
 }

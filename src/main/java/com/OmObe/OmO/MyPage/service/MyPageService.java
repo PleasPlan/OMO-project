@@ -94,23 +94,31 @@ public class MyPageService {
 
     // TODO : 프론트엔드 작업 끝나면 그거에 맞춰서 설계 예정. 이하는 기본 틀.
 
-//    public String findLastPlace(Member member,int page,int size,List<String> placeNameList, List<Long> placeIdList){
-//        int index = size*page;
-//        if(placeNameList.get(index+size) != null){
-//            StringBuilder placeList = new StringBuilder("[");
-//            for(int i = 0; i<size; i++){
-//
-//                String placeName = placeNameList.get(index);
-//                Long placeId = placeIdList.get(index);
-//                String findPlace = getPlace(placeName,placeId,member);
-//                placeList.append(findPlace).append(",");
-//            }
-//            placeList.replace(placeList.length() - 1, placeList.length(), "]");
-//            return placeList.toString();
-//        } else {
-//            return "null";
-//        }
-//    }
+    public String findLastPlace(Member member,int page,int size,List<String> placeNameList, List<Long> placeIdList){
+        int start = size*page;
+        if(placeNameList.size()>start){
+            StringBuilder placeList = new StringBuilder("[");
+            if(placeNameList.size()-start < size){
+                for (int i = 0; i < placeNameList.size()%size; i++) {
+                    String placeName = placeNameList.get(start+i);
+                    Long placeId = placeIdList.get(start+i);
+                    String findPlace = getPlace(placeName, placeId, member);
+                    placeList.append(findPlace).append(",");
+                }
+            }else {
+                for (int i = 0; i < placeNameList.size(); i++) {
+                    String placeName = placeNameList.get(start+i);
+                    Long placeId = placeIdList.get(start+i);
+                    String findPlace = getPlace(placeName, placeId, member);
+                    placeList.append(findPlace).append(",");
+                }
+            }
+            placeList.replace(placeList.length() - 1, placeList.length(), "]");
+            return placeList.toString();
+        } else {
+            return "null";
+        }
+    }
 
     public String getPlace(String placeName,long placeId,Member member) {
 
@@ -148,21 +156,26 @@ public class MyPageService {
                 if(placeId == id) {
                     log.info("id : " + id);
                     Place place = placeService.findPlace(id);
-
                     boolean mine = false;
                     boolean recommend = false;
-                    List<PlaceLike> placeLikes = place.getPlaceLikeList();
-                    List<PlaceRecommend> placeRecommends = place.getPlaceRecommendList();
-                    for(PlaceLike placeLike: placeLikes){
-                        if(placeLike.getMember() == member){
-                            mine = true;
-                            break;
+                    if(place != null) {
+                        List<PlaceLike> placeLikes = place.getPlaceLikeList();
+                        List<PlaceRecommend> placeRecommends = place.getPlaceRecommendList();
+                        if (!placeLikes.isEmpty()) {
+                            for (PlaceLike placeLike : placeLikes) {
+                                if (placeLike.getMember() == member) {
+                                    mine = true;
+                                    break;
+                                }
+                            }
                         }
-                    }
-                    for(PlaceRecommend placeRecommend: placeRecommends){
-                        if(placeRecommend.getMember() == member){
-                            recommend = true;
-                            break;
+                        if (!placeRecommends.isEmpty()) {
+                            for (PlaceRecommend placeRecommend : placeRecommends) {
+                                if (placeRecommend.getMember() == member) {
+                                    recommend = true;
+                                    break;
+                                }
+                            }
                         }
                     }
 
