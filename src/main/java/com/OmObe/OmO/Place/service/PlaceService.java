@@ -89,7 +89,7 @@ public class PlaceService {
         return responseBody;
     }
 
-    public String getPlace(String placeName,long placeId) {
+    public String getPlace(String placeName,long placeId,Member member) {
 
         String keyword;
         try{
@@ -106,17 +106,103 @@ public class PlaceService {
         requestHeader.put("Authorization", "KakaoAK "+key);
         String responseBody = get(webAddress, requestHeader);
 
-        responseBody = getPlaceComments(responseBody,placeId,placeName);
+        if(member == null) {
+            responseBody = getPlaceComments(responseBody, placeId);
+        } else {
+            responseBody = getOnePlace(responseBody,placeId,member);
+        }
         // TODO: MBTI 통계 내야됨. 장소 찜 및 따봉은 구현 전
         return responseBody;
     }
 
+    private String getOnePlace(String jsonData, long placeId, Member member) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            JsonNode jsonNode = objectMapper.readTree(jsonData);
+
+            ArrayNode placesNode = jsonNode.get("documents").deepCopy();
+
+            for(int index = 0; index<placesNode.size(); index++){
+                ObjectNode objectNode = (ObjectNode) placesNode.get(index);
+                long id = placesNode.get(index).get("id").asLong();
+                if(placeId == id) {
+                    log.info("id : " + id);
+                    Place place = findPlace(id);
+                    boolean mine = false;
+                    boolean recommend = false;
+                    if(place != null) {
+                        List<PlaceLike> placeLikes = place.getPlaceLikeList();
+                        List<PlaceRecommend> placeRecommends = place.getPlaceRecommendList();
+                        if (!placeLikes.isEmpty()) {
+                            for (PlaceLike placeLike : placeLikes) {
+                                if (placeLike.getMember() == member) {
+                                    mine = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!placeRecommends.isEmpty()) {
+                            for (PlaceRecommend placeRecommend : placeRecommends) {
+                                if (placeRecommend.getMember() == member) {
+                                    recommend = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        objectNode.put("mine", place.getPlaceLikeList().size());
+                        objectNode.put("recommend", place.getPlaceRecommendList().size());
+                    }   else {
+                        objectNode.put("mine", 0);
+                        objectNode.put("recommend", 0);
+                    }
+                    objectNode.put("myMine", mine);
+                    objectNode.put("myRecommend", recommend);
+
+                    ArrayNode reviews = JsonNodeFactory.instance.arrayNode();
+                    Optional<List<Review>> optionalReviewList = reviewRepository.findByPlaceId(placeId);
+                    if (optionalReviewList.isPresent()) {
+                        List<Review> reviewList = optionalReviewList.get();
+                        for (Review review : reviewList) {
+                            ObjectNode reviewNode = objectMapper.createObjectNode();
+                            reviewNode.put("writer", review.getMember().getNickname());
+                            reviewNode.put("content", review.getContent());
+                            // TODO: 이미지 넣어야 됨.
+                            reviews.add(reviewNode);
+                        }
+                    }
+                    objectNode.set("reviews", reviews);
+
+                    JsonNode changedNode = objectNode;
+                    placesNode.set(index,changedNode);
+                }
+                else{
+                    NullNode nullNode = NullNode.instance;
+                    placesNode.set(index,nullNode);
+                }
+            }
+
+            Iterator<JsonNode> iterator = placesNode.iterator();
+            while (iterator.hasNext()){
+                if(iterator.next().isNull()){
+                    iterator.remove();
+                }
+            }
+
+            JsonNode resultNode = placesNode.get(0);
+            return objectMapper.writeValueAsString(resultNode);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public String putMineOrRecommend(long placeId, String placeName, long memberId, boolean LR){
         Place place = findPlace(placeId);
         Member member = memberService.findVerifiedMember(memberId);
 
-        String jsonData = getPlace(placeName,placeId);
+        String jsonData = getPlace(placeName,placeId,null);
         log.info(jsonData);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -187,7 +273,7 @@ public class PlaceService {
                 placeRecommendRepository.save(recommend);
             }
             placeRepository.save(newPlace);
-            return "placeId : "+newPlace.getPlaceId()+"\nmine : "+newPlace.getPlaceLikeList().size()+"\nrecommend : "+newPlace.getPlaceRecommendList().size();
+            return "{\"placeId\":"+newPlace.getPlaceId()+",\"mine\":"+newPlace.getPlaceLikeList().size()+",\"recommend\":"+newPlace.getPlaceRecommendList().size()+"}";
         }
     }
 
@@ -278,7 +364,7 @@ public class PlaceService {
         return null;
     }
 
-    private String getPlaceComments(String jsonData, long placeId, String placeName) {
+    private String getPlaceComments(String jsonData, long placeId) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
