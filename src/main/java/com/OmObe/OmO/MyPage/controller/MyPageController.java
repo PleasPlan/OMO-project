@@ -60,7 +60,7 @@ public class MyPageController {
     }
 
     // No Content가 나오면 더이상 페이지가 없다는 뜻이다.
-    @GetMapping("/myBoard")
+    @GetMapping("/boards")
     public ResponseEntity getMyBoard(@RequestHeader("Authorization") String token,
                                      @RequestParam(defaultValue = "1") int page,
                                      @Positive @RequestParam(defaultValue = "10") int size) throws JsonProcessingException {
@@ -73,4 +73,19 @@ public class MyPageController {
             return new ResponseEntity<>(boardMapper.boardsToBoardResponseDtos(boardList), HttpStatus.OK);
         }
     }
+
+//    @GetMapping("/lastVisited")
+//    public ResponseEntity getLastPlace(@RequestHeader("Authorization") String token,
+//                                       @RequestParam(defaultValue = "!") int page,
+//                                       @Positive @RequestParam(defaultValue = "10") int size) throws JsonProcessingException {
+//        Member member = tokenDecryption.getWriterInJWTToken(token);
+//
+//        // TODO : dto를 이용해 이하 두 List를 가져올 것.
+//        List<String> placeNameList = new ArrayList<>();
+//        List<Long> placeIdList = new ArrayList<>();
+//
+//        String placeList = myPageService.findLastPlace(member,page,size,placeNameList,placeIdList);
+//
+//        return new ResponseEntity<>(placeList,HttpStatus.OK);
+//    }
 }

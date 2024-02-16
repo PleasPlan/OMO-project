@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -93,6 +92,26 @@ public class MyPageService {
         return boardList;
     }
 
+    // TODO : 프론트엔드 작업 끝나면 그거에 맞춰서 설계 예정. 이하는 기본 틀.
+
+//    public String findLastPlace(Member member,int page,int size,List<String> placeNameList, List<Long> placeIdList){
+//        int index = size*page;
+//        if(placeNameList.get(index+size) != null){
+//            StringBuilder placeList = new StringBuilder("[");
+//            for(int i = 0; i<size; i++){
+//
+//                String placeName = placeNameList.get(index);
+//                Long placeId = placeIdList.get(index);
+//                String findPlace = getPlace(placeName,placeId,member);
+//                placeList.append(findPlace).append(",");
+//            }
+//            placeList.replace(placeList.length() - 1, placeList.length(), "]");
+//            return placeList.toString();
+//        } else {
+//            return "null";
+//        }
+//    }
+
     public String getPlace(String placeName,long placeId,Member member) {
 
         String keyword;
@@ -110,12 +129,12 @@ public class MyPageService {
         requestHeader.put("Authorization", "KakaoAK "+key);
         String responseBody = get(webAddress, requestHeader);
 
-        responseBody = getPlaceComments(responseBody,placeId, member);
+        responseBody = getOnePlace(responseBody,placeId, member);
         // TODO: MBTI 통계 내야됨. 장소 찜 및 따봉은 구현 전
         return responseBody;
     }
 
-    private String getPlaceComments(String jsonData, long placeId, Member member) {
+    private String getOnePlace(String jsonData, long placeId, Member member) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
