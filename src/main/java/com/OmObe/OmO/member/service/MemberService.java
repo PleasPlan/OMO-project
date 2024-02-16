@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,7 @@ public class MemberService {
     private final MemberAuthorityUtils authorityUtils;
     private final MemberMapper mapper;
     private final JwtTokenizer jwtTokenizer;
+    private final RedisTemplate<String, String> redisTemplate;
 
     /**
      * <회원 가입>
@@ -133,7 +135,8 @@ public class MemberService {
      * <회원 탈퇴>
      * 1. 탈퇴하려는 회원이 존재하는 회원인지 검증
      * 2. 사용자의 로그인 인증 상태 검증
-     * 3. 회원 정보 삭제
+     * 3. redis에 해당 회원의 리프레시 토큰이 존재하는 경우 리프레시 토큰 제거
+     * 4. 회원 정보 삭제
      */
     public void quitMember(Long memberId){
         // 1. 탈퇴하려는 회원이 존재하는 회원인지 검증
@@ -142,7 +145,12 @@ public class MemberService {
         // 2. 사용자의 로그인 인증 상태 검증
         verifiedAuthenticatedMember(findMember.getMemberId());
 
-        // 3. 회원 정보 삭제
+        // 3. redis에 해당 회원의 리프레시 토큰이 존재하는 경우 리프레시 토큰 제거
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(findMember.getEmail()))) {
+            redisTemplate.delete(findMember.getEmail());
+        }
+
+        // 4. 회원 정보 삭제
         memberRepository.delete(findMember);
     }
 
