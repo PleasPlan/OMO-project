@@ -1,9 +1,11 @@
 package com.OmObe.OmO.Place.controller;
 
 import com.OmObe.OmO.Place.service.PlaceService;
+import com.OmObe.OmO.auth.jwt.TokenDecryption;
 import com.OmObe.OmO.member.entity.Member;
 import com.OmObe.OmO.member.service.MemberService;
 import com.OmObe.OmO.util.PairJ;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.jose.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Range;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import reactor.util.annotation.Nullable;
 
 @RestController
 @Slf4j
@@ -18,11 +21,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/place")
 public class PlaceController {
     private final PlaceService placeService;
-    private final MemberService memberService;
+    private final TokenDecryption tokenDecryption;
 
-    public PlaceController(PlaceService placeService, MemberService memberService) {
+    public PlaceController(PlaceService placeService, TokenDecryption tokenDecryption) {
         this.placeService = placeService;
-        this.memberService = memberService;
+        this.tokenDecryption = tokenDecryption;
     }
 
     @GetMapping("/list/{category}")
@@ -53,8 +56,14 @@ public class PlaceController {
 
     @GetMapping("/{placeName}")
     public ResponseEntity getPlace(@PathVariable("placeName") String placeName,
-                                   @RequestHeader("placeId") long placeId){
-        String response = placeService.getPlace(placeName,placeId);
+                                   @RequestHeader("placeId") long placeId,
+                                   @Nullable @RequestHeader("Authorization") String token) throws JsonProcessingException {
+        Member member = null;
+        if(token != null){
+            member = tokenDecryption.getWriterInJWTToken(token);
+        }
+
+        String response = placeService.getPlace(placeName,placeId,member);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
