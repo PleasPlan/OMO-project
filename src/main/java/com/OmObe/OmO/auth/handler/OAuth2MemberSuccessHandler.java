@@ -1,9 +1,11 @@
 package com.OmObe.OmO.auth.handler;
 
+import com.OmObe.OmO.auth.jwt.JwtTokenizer;
 import com.OmObe.OmO.auth.jwt.TokenService;
 import com.OmObe.OmO.auth.oauth.service.OAuth2MemberService;
 import com.OmObe.OmO.auth.utils.MemberAuthorityUtils;
 import com.OmObe.OmO.member.entity.Member;
+import com.OmObe.OmO.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -27,6 +29,8 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
     private final TokenService tokenService;
     private final OAuth2MemberService oAuth2MemberService;
     private final MemberAuthorityUtils authorityUtils;
+    private final RedisService redisService;
+    private final JwtTokenizer jwtTokenizer;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -47,6 +51,8 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
     private void redirect(HttpServletRequest request, HttpServletResponse response, Member member) throws IOException {
         String accessToken = tokenService.delegateAccessToken(member);
         String refreshToken = tokenService.delegateRefreshToken(member);
+        // redis에 refreshToken 저장
+        saveRefreshTokenInRedis(refreshToken, member);
         // Response Header에 Access Token, Refresh Token을 설정
         response.addHeader("Authorization", "Bearer " + accessToken);
         response.addHeader("Refresh", refreshToken);
@@ -57,6 +63,14 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         String uri = createURI(path).toString(); // 리다이렉트할 url
         getRedirectStrategy().sendRedirect(request, response, uri);
+    }
+
+    // redis에 로그인 한 사용자의 refresh token이 없으면 해당 토큰을 redis에 저장하는 메서드
+    private void saveRefreshTokenInRedis(String refreshToken, Member member) {
+        if (redisService.getRefreshToken(refreshToken) == null) {
+            redisService.setRefreshToken(member.getEmail(), refreshToken, jwtTokenizer.getRefreshTokenExpirationMinutes());
+            log.info("Refresh Token Saved in Redis");
+        }
     }
 
     /*
@@ -79,11 +93,11 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         return UriComponentsBuilder
                 .newInstance()
-//                .scheme("http")
-                .scheme("https")
-//                .host("localhost") // 애플리케이션 배포 후 변경 예정
-                .host("api.oneulmohae.co.kr") // todo : 프론트엔드 배포 후 변경 예정
-//                .port(8080)
+                .scheme("http")
+//                .scheme("https")
+                .host("localhost") // 애플리케이션 배포 후 변경 예정
+//                .host("api.oneulmohae.co.kr") // todo : 프론트엔드 배포 후 변경 예정
+                .port(8080)
 //                .port(3000)
                 .path(path)
 //                .queryParams(queryParams)

@@ -1,12 +1,14 @@
 package com.OmObe.OmO.auth.oauth.controller;
 
 import com.OmObe.OmO.auth.handler.OAuth2MemberSuccessHandler;
+import com.OmObe.OmO.auth.jwt.JwtTokenizer;
 import com.OmObe.OmO.auth.jwt.TokenService;
 import com.OmObe.OmO.auth.oauth.dto.KakaoProfile;
 import com.OmObe.OmO.auth.oauth.dto.OAuthToken;
 import com.OmObe.OmO.auth.oauth.service.KakaoOAuthService;
 import com.OmObe.OmO.auth.oauth.service.OAuth2MemberService;
 import com.OmObe.OmO.auth.utils.MemberAuthorityUtils;
+import com.OmObe.OmO.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -37,6 +39,8 @@ public class KakaoController {
     private final MemberAuthorityUtils authorityUtils;
     private final OAuth2MemberService oAuth2MemberService;
     private final TokenService tokenService;
+    private final RedisService redisService;
+    private final JwtTokenizer jwtTokenizer;
 
     @GetMapping("/auth/kakao/callback")
     public ResponseEntity kakaoCallback(@RequestParam("code") String code, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
@@ -58,7 +62,7 @@ public class KakaoController {
 
         Authentication authentication = new OAuth2AuthenticationToken(oAuth2User, Collections.emptyList(), "kakao");
 
-        AuthenticationSuccessHandler successHandler = new OAuth2MemberSuccessHandler(tokenService, oAuth2MemberService, authorityUtils);
+        AuthenticationSuccessHandler successHandler = new OAuth2MemberSuccessHandler(tokenService, oAuth2MemberService, authorityUtils, redisService, jwtTokenizer);
         successHandler.onAuthenticationSuccess(request, response, authentication);
 
         return new ResponseEntity(HttpStatus.OK);
