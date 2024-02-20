@@ -26,4 +26,7 @@ public interface MemberMapper {
     // MemberDto.ProfileImagePatch -> Member
     Member profileImagePatchDtoToMember(MemberDto.ProfileImagePatch patch);
 
+    // MemberDto.NicknamePatch -> Member
+    Member nicknamePatchDtoToMember(MemberDto.NicknamePatch patch);
+
 }
