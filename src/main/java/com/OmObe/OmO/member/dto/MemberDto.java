@@ -50,6 +50,37 @@ public class MemberDto {
 
     }
 
+    // 프로필 이미지 수정을 위한 dto 클래스
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    public static class ProfileImagePatch{
+        @NotBlank
+        private String profileImageUrl;
+    }
+
+    // 닉네임 수정을 위한 dto 클래스
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    public static class NicknamePatch{
+        @NotBlank
+        private String nickname;
+    }
+
+    // mbti 수정을 위한 dto 클래스
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    public static class MbtiPatch{
+        @Max(16)
+        @Min(1)
+        private int mbti;
+    }
+
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter

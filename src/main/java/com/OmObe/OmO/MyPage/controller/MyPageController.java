@@ -11,6 +11,7 @@ import com.OmObe.OmO.Place.entity.Place;
 import com.OmObe.OmO.Place.entity.PlaceLike;
 import com.OmObe.OmO.Place.service.PlaceService;
 import com.OmObe.OmO.auth.jwt.TokenDecryption;
+import com.OmObe.OmO.member.dto.MemberDto;
 import com.OmObe.OmO.member.entity.Member;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,8 +69,8 @@ public class MyPageController {
                                      @Positive @RequestParam(defaultValue = "10") int size) throws JsonProcessingException {
         Member member = tokenDecryption.getWriterInJWTToken(token);
 
-        List<Board> boardList = myPageService.getMyBoard(member,page-1,size);
-        if(boardList.isEmpty()){
+        List<Board> boardList = myPageService.getMyBoard(member, page - 1, size);
+        if (boardList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(boardMapper.boardsToBoardResponseDtos(boardList), HttpStatus.OK);
@@ -84,10 +86,40 @@ public class MyPageController {
 
         List<String> placeNameList = placeList.getPlaceNameList();
         List<Long> placeIdList = placeList.getPlaceIdList();
-        placeIdList.forEach(it -> log.info("placeId : "+it));
+        placeIdList.forEach(it -> log.info("placeId : " + it));
 
-        String response = myPageService.findLastPlace(member,page-1,size,placeNameList,placeIdList);
+        String response = myPageService.findLastPlace(member, page - 1, size, placeNameList, placeIdList);
 
-        return new ResponseEntity<>(response,HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // 프로필 이미지 수정
+    @PatchMapping("/profileImage/{memberId}")
+    public ResponseEntity patchProfileImage(@Valid @PathVariable("memberId") Long memberId,
+                                            @RequestHeader("Authorization") String token,
+                                            @Valid @RequestBody MemberDto.ProfileImagePatch dto) {
+        myPageService.updateProfileImage(memberId, dto, token);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 닉네임 수정
+    @PatchMapping("/nickname/{memberId}")
+    public ResponseEntity patchNickname(@Valid @PathVariable("memberId") Long memberId,
+                                        @RequestHeader("Authorization") String token,
+                                        @Valid @RequestBody MemberDto.NicknamePatch dto) {
+        myPageService.updateNickname(memberId, dto, token);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // MBTI 수정
+    @PatchMapping("/mbti/{memberId}")
+    public ResponseEntity patchMbti(@Valid @PathVariable("memberId") Long memberId,
+                                    @RequestHeader("Authorization") String token,
+                                    @Valid @RequestBody MemberDto.MbtiPatch dto) {
+        myPageService.updateMbti(memberId, dto, token);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

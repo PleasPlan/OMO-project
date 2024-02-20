@@ -9,13 +9,21 @@ import com.OmObe.OmO.Place.entity.PlaceRecommend;
 import com.OmObe.OmO.Place.repository.PlaceLikeRepository;
 import com.OmObe.OmO.Place.repository.PlaceRecommendRepository;
 import com.OmObe.OmO.Place.service.PlaceService;
+import com.OmObe.OmO.auth.jwt.TokenDecryption;
+import com.OmObe.OmO.exception.BusinessLogicException;
+import com.OmObe.OmO.exception.ExceptionCode;
+import com.OmObe.OmO.member.dto.MemberDto;
 import com.OmObe.OmO.member.entity.Member;
+import com.OmObe.OmO.member.mapper.MemberMapper;
+import com.OmObe.OmO.member.repository.MemberRepository;
+import com.OmObe.OmO.member.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
@@ -30,6 +38,7 @@ import java.util.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class MyPageService {
 
     @Value("${kakao-map.key}")
@@ -39,13 +48,10 @@ public class MyPageService {
     private final PlaceRecommendRepository placeRecommendRepository;
     private final BoardRepository boardRepository;
     private final PlaceService placeService;
-
-    public MyPageService(PlaceLikeRepository placeLikeRepository, PlaceRecommendRepository placeRecommendRepository, BoardRepository boardRepository, PlaceService placeService) {
-        this.placeLikeRepository = placeLikeRepository;
-        this.placeRecommendRepository = placeRecommendRepository;
-        this.boardRepository = boardRepository;
-        this.placeService = placeService;
-    }
+    private final MemberService memberService;
+    private final TokenDecryption tokenDecryption;
+    private final MemberMapper mapper;
+    private final MemberRepository memberRepository;
 
     public String findPlaceLikedByMember(Member member, int page, int size){
         pageUtility<PlaceLike> utility = new pageUtility<>();
@@ -254,5 +260,107 @@ public class MyPageService {
         } catch (IOException e) {
             throw new RuntimeException("API response reading failed.", e);
         }
+    }
+
+    /**
+     * <마이페이지 - 프로필 이미지 수정>
+     * 1. 토큰의 소유자와 정보를 변경하려는 회원이 같은 사람인지 검증
+     * 2. 수정하려는 회원의 존재 여부 검증
+     * 3. 사용자의 인증 상태 검증
+     * 4. 프로필 이미지 수정
+     */
+    public Member updateProfileImage(Long memberId, MemberDto.ProfileImagePatch dto, String token) {
+        // 1. 토큰의 소유자와 정보를 변경하려는 회원이 같은 사람인지 검증
+        try {
+            Member tokenCheckedMember = tokenDecryption.getWriterInJWTToken(token);
+            memberService.verifiedAuthenticatedMember(tokenCheckedMember.getMemberId());
+        } catch (JsonProcessingException je) {
+            throw new RuntimeException(je);
+        } catch (Exception e) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+
+        Member member = mapper.profileImagePatchDtoToMember(dto);
+
+        // 2. 수정하려는 회원의 존재 여부 검증
+        Member findMember = memberService.findVerifiedMember(memberId);
+
+        // 3. 사용자의 인증 상태 검증
+        memberService.verifiedAuthenticatedMember(memberId);
+
+        // 4. 프로필 이미지 수정
+        findMember.setProfileImageUrl(member.getProfileImageUrl());
+
+        return memberRepository.save(findMember);
+    }
+
+    /**
+     * <마이페이지 - 닉네임 수정>
+     * 1. 토큰의 소유자와 정보를 변경하려는 회원이 같은 사람인지 검증
+     * 2. 수정하려는 회원의 존재 여부 검증
+     * 3. 사용자의 인증 상태 검증
+     * 4. 수정한 닉네임의 중복 여부 검사
+     * 5. 닉네임 수정
+     */
+    public Member updateNickname(Long memberId, MemberDto.NicknamePatch dto, String token) {
+        // 1. 토큰의 소유자와 정보를 변경하려는 회원이 같은 사람인지 검증
+        try {
+            Member tokenCheckedMember = tokenDecryption.getWriterInJWTToken(token);
+            memberService.verifiedAuthenticatedMember(tokenCheckedMember.getMemberId());
+        } catch (JsonProcessingException je) {
+            throw new RuntimeException(je);
+        } catch (Exception e) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+
+        Member member = mapper.nicknamePatchDtoToMember(dto);
+
+        // 2. 수정하려는 회원의 존재 여부 검증
+        Member findMember = memberService.findVerifiedMember(memberId);
+
+        // 3. 사용자의 인증 상태 검증
+        memberService.verifiedAuthenticatedMember(memberId);
+
+        // 4. 수정한 닉네임의 중복 여부 검사
+        memberService.verifyExistsNickname(member.getNickname());
+
+        // 5. 닉네임 수정
+        findMember.setNickname(member.getNickname());
+
+        return memberRepository.save(findMember);
+
+
+    }
+
+    /**
+     * <마이페이지 - mbti 수정>
+     * 1. 토큰의 소유자와 정보를 변경하려는 회원이 같은 사람인지 검증
+     * 2. 수정하려는 회원의 존재 여부 검증
+     * 3. 사용자의 인증 상태 검증
+     * 4. mbti 수정
+     */
+    public Member updateMbti(Long memberId, MemberDto.MbtiPatch dto, String token) {
+        // 1. 토큰의 소유자와 정보를 변경하려는 회원이 같은 사람인지 검증
+        try {
+            Member tokenCheckedMember = tokenDecryption.getWriterInJWTToken(token);
+            memberService.verifiedAuthenticatedMember(tokenCheckedMember.getMemberId());
+        } catch (JsonProcessingException je) {
+            throw new RuntimeException(je);
+        } catch (Exception e) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+
+        Member member = mapper.mbtiPatchDtoToMember(dto);
+
+        // 2. 수정하려는 회원의 존재 여부 검증
+        Member findMember = memberService.findVerifiedMember(memberId);
+
+        // 3. 사용자의 인증 상태 검증
+        memberService.verifiedAuthenticatedMember(memberId);
+
+        // 4. mbti 수정
+        findMember.setMbti(member.getMbti());
+
+        return memberRepository.save(findMember);
     }
 }

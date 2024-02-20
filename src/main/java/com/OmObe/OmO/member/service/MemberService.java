@@ -8,14 +8,8 @@ import com.OmObe.OmO.member.dto.MemberDto;
 import com.OmObe.OmO.member.entity.Member;
 import com.OmObe.OmO.member.mapper.MemberMapper;
 import com.OmObe.OmO.member.repository.MemberRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,10 +18,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.Base64;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -120,7 +111,7 @@ public class MemberService {
         findMember.setNickname(member.getNickname());
 
         // 4-3 mbti 저장
-        findMember.setMbit(member.getMbit());
+        findMember.setMbti(member.getMbti());
 
         // 4-4 성별 저장
         findMember.setGender(member.getGender());

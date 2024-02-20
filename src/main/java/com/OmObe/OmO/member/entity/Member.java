@@ -12,8 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +54,7 @@ public class Member {
     private String nickname; // 닉네임
 
     @Column
-    private int mbit; // mbti 유형
+    private int mbti; // mbti 유형
 
     @Column
     private int gender; // 성별
@@ -163,8 +161,8 @@ public class Member {
         this.nickname = nickname;
     }
 
-    public void setMbit(int mbit) {
-        this.mbit = mbit;
+    public void setMbti(int mbti) {
+        this.mbti = mbti;
     }
 
     public void setGender(int gender) {
