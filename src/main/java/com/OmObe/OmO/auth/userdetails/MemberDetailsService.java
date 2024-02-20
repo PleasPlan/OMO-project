@@ -6,7 +6,6 @@ import com.OmObe.OmO.exception.ExceptionCode;
 import com.OmObe.OmO.member.entity.Member;
 import com.OmObe.OmO.member.repository.MemberRepository;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -44,7 +43,7 @@ public class MemberDetailsService implements UserDetailsService {
             setClause(member.getClause());
             setEmail(member.getEmail());
             setGender(member.getGender());
-            setMbit(member.getMbit());
+            setMbti(member.getMbti());
             setMemberStatus(member.getMemberStatus());
             setNickname(member.getNickname());
             setPassword(member.getPassword());
