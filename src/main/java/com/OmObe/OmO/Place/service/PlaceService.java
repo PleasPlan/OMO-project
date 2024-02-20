@@ -111,8 +111,6 @@ public class PlaceService {
         } else {
             responseBody = getOnePlace(responseBody,placeId,member);
         }
-        // TODO: MBTI 통계 내야됨. 장소 찜 및 따봉은 구현 전
-
 
 
         return responseBody;
