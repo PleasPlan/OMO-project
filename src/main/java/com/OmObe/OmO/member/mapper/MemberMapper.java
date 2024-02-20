@@ -23,4 +23,7 @@ public interface MemberMapper {
         return member;
     }
 
+    // MemberDto.ProfileImagePatch -> Member
+    Member profileImagePatchDtoToMember(MemberDto.ProfileImagePatch patch);
+
 }
