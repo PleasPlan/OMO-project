@@ -269,7 +269,7 @@ public class MyPageService {
      * 3. 사용자의 인증 상태 검증
      * 4. 프로필 이미지 수정
      */
-    public Member updateProfileImage(Long memberId, MemberDto.ProfileImagePatch patch, String token) {
+    public Member updateProfileImage(Long memberId, MemberDto.ProfileImagePatch dto, String token) {
         // 1. 토큰의 소유자와 정보를 변경하려는 회원이 같은 사람인지 검증
         try {
             Member tokenCheckedMember = tokenDecryption.getWriterInJWTToken(token);
@@ -280,7 +280,7 @@ public class MyPageService {
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
         }
 
-        Member member = mapper.profileImagePatchDtoToMember(patch);
+        Member member = mapper.profileImagePatchDtoToMember(dto);
 
         // 2. 수정하려는 회원의 존재 여부 검증
         Member findMember = memberService.findVerifiedMember(memberId);
@@ -292,5 +292,43 @@ public class MyPageService {
         findMember.setProfileImageUrl(member.getProfileImageUrl());
 
         return memberRepository.save(findMember);
+    }
+
+    /**
+     * <마이페이지 - 닉네임 수정>
+     * 1. 토큰의 소유자와 정보를 변경하려는 회원이 같은 사람인지 검증
+     * 2. 수정하려는 회원의 존재 여부 검증
+     * 3. 사용자의 인증 상태 검증
+     * 4. 수정한 닉네임의 중복 여부 검사
+     * 5. 닉네임 수정
+     */
+    public Member updateNickname(Long memberId, MemberDto.NicknamePatch dto, String token) {
+        // 1. 토큰의 소유자와 정보를 변경하려는 회원이 같은 사람인지 검증
+        try {
+            Member tokenCheckedMember = tokenDecryption.getWriterInJWTToken(token);
+            memberService.verifiedAuthenticatedMember(tokenCheckedMember.getMemberId());
+        } catch (JsonProcessingException je) {
+            throw new RuntimeException(je);
+        } catch (Exception e) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+
+        Member member = mapper.nicknamePatchDtoToMember(dto);
+
+        // 2. 수정하려는 회원의 존재 여부 검증
+        Member findMember = memberService.findVerifiedMember(memberId);
+
+        // 3. 사용자의 인증 상태 검증
+        memberService.verifiedAuthenticatedMember(memberId);
+
+        // 4. 수정한 닉네임의 중복 여부 검사
+        memberService.verifyExistsNickname(member.getNickname());
+
+        // 5. 닉네임 수정
+        findMember.setNickname(member.getNickname());
+
+        return memberRepository.save(findMember);
+
+
     }
 }

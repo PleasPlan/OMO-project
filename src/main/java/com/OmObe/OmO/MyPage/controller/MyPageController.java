@@ -102,4 +102,14 @@ public class MyPageController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    // 닉네임 수정
+    @PatchMapping("/nickname/{memberId}")
+    public ResponseEntity patchNickname(@Valid @PathVariable("memberId") Long memberId,
+                                        @RequestHeader("Authorization") String token,
+                                        @Valid @RequestBody MemberDto.NicknamePatch dto) {
+        myPageService.updateNickname(memberId, dto, token);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
