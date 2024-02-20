@@ -331,4 +331,36 @@ public class MyPageService {
 
 
     }
+
+    /**
+     * <마이페이지 - mbti 수정>
+     * 1. 토큰의 소유자와 정보를 변경하려는 회원이 같은 사람인지 검증
+     * 2. 수정하려는 회원의 존재 여부 검증
+     * 3. 사용자의 인증 상태 검증
+     * 4. mbti 수정
+     */
+    public Member updateMbti(Long memberId, MemberDto.MbtiPatch dto, String token) {
+        // 1. 토큰의 소유자와 정보를 변경하려는 회원이 같은 사람인지 검증
+        try {
+            Member tokenCheckedMember = tokenDecryption.getWriterInJWTToken(token);
+            memberService.verifiedAuthenticatedMember(tokenCheckedMember.getMemberId());
+        } catch (JsonProcessingException je) {
+            throw new RuntimeException(je);
+        } catch (Exception e) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+
+        Member member = mapper.mbtiPatchDtoToMember(dto);
+
+        // 2. 수정하려는 회원의 존재 여부 검증
+        Member findMember = memberService.findVerifiedMember(memberId);
+
+        // 3. 사용자의 인증 상태 검증
+        memberService.verifiedAuthenticatedMember(memberId);
+
+        // 4. mbti 수정
+        findMember.setMbti(member.getMbti());
+
+        return memberRepository.save(findMember);
+    }
 }

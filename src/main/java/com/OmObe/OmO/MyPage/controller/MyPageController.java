@@ -112,4 +112,14 @@ public class MyPageController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    // MBTI 수정
+    @PatchMapping("/mbti/{memberId}")
+    public ResponseEntity patchMbti(@Valid @PathVariable("memberId") Long memberId,
+                                    @RequestHeader("Authorization") String token,
+                                    @Valid @RequestBody MemberDto.MbtiPatch dto) {
+        myPageService.updateMbti(memberId, dto, token);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
