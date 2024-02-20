@@ -1,6 +1,9 @@
 package com.OmObe.OmO.member.entity;
 
+import com.OmObe.OmO.Board.entity.Board;
 import com.OmObe.OmO.Liked.entity.Liked;
+import com.OmObe.OmO.Place.entity.PlaceLike;
+import com.OmObe.OmO.Place.entity.PlaceRecommend;
 import com.OmObe.OmO.notice.entity.Notice;
 import com.OmObe.OmO.report.boardreport.entity.BoardReport;
 import com.OmObe.OmO.report.commentreport.entity.CommentReport;
@@ -9,8 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,7 @@ public class Member {
     private String nickname; // 닉네임
 
     @Column
-    private int mbit; // mbti 유형
+    private int mbti; // mbti 유형
 
     @Column
     private int gender; // 성별
@@ -104,11 +105,37 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<CommentReport> commentReports = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member")
+    private List<PlaceLike> placeLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<PlaceRecommend> placeRecommends = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Board> boardList = new ArrayList<>();
+
     public void addLikes(Liked liked){
         this.likedList.add(liked);
         liked.setMember(this);
     }
 
+    public void addPlaceLikes(PlaceLike placeLike){
+        this.placeLikes.add(placeLike);
+        placeLike.setMember(this);
+    }
+
+    public void deletePlaceLikes(PlaceLike placeLike){
+        this.placeLikes.remove(placeLike);
+    }
+
+    public void addPlaceRecommend(PlaceRecommend placeRecommend){
+        this.placeRecommends.add(placeRecommend);
+        placeRecommend.setMember(this);
+    }
+
+    public void deletePlaceRecommend(PlaceRecommend placeRecommend){
+        this.placeRecommends.remove(placeRecommend);
+    }
 
     public void setEmail(String email) {
         this.email = email;
@@ -134,8 +161,8 @@ public class Member {
         this.nickname = nickname;
     }
 
-    public void setMbit(int mbit) {
-        this.mbit = mbit;
+    public void setMbti(int mbti) {
+        this.mbti = mbti;
     }
 
     public void setGender(int gender) {
