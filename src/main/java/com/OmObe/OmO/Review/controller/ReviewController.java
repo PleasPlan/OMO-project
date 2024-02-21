@@ -40,9 +40,13 @@ public class ReviewController {
 
     @SneakyThrows
     @PostMapping("/write")
-    public ResponseEntity postReview(@Valid @RequestBody ReviewDto.Post postDto,
-                                     @RequestHeader("Authorization") String token){
+    public ResponseEntity postReview(//@Valid @RequestBody ReviewDto.Post postDto,
+                                     @RequestHeader("Authorization") String token,
+                                     @RequestParam("content") String content,
+                                     @RequestParam("placeId") long placeId){
 //        Member writer = tokenDecryption.getWriterInJWTToken(Token);
+
+        ReviewDto.Post postDto = new ReviewDto.Post(content,placeId);
 
         Review review = mapper.reviewPostDtoToReview(postDto);
 //        review.setMember(writer);
