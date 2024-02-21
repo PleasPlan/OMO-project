@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,8 +29,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @Slf4j
@@ -111,7 +108,8 @@ public class PlaceService {
         } else {
             responseBody = getOnePlace(responseBody,placeId,member);
         }
-        // TODO: MBTI 통계 내야됨. 장소 찜 및 따봉은 구현 전
+
+
         return responseBody;
     }
 
@@ -127,7 +125,6 @@ public class PlaceService {
                 ObjectNode objectNode = (ObjectNode) placesNode.get(index);
                 long id = placesNode.get(index).get("id").asLong();
                 if(placeId == id) {
-                    log.info("id : " + id);
                     Place place = findPlace(id);
                     boolean mine = false;
                     boolean recommend = false;
@@ -149,6 +146,61 @@ public class PlaceService {
                                     break;
                                 }
                             }
+                        }
+
+                        /*
+                         * ISTP = 1   || 0000
+                         * ISTJ = 2   || 0001
+                         * ISFP = 3   || 0010
+                         * ISFJ = 4   || 0011
+                         * INTP = 5   || 0100
+                         * INTJ = 6   || 0101
+                         * INFP = 7   || 0110
+                         * INFJ = 8   || 0111
+                         * ESTP = 9   || 1000
+                         * ESTJ = 10  || 1001
+                         * ESFP = 11  || 1010
+                         * ESFJ = 12  || 1011
+                         * ENTP = 13  || 1100
+                         * ENTJ = 14  || 1101
+                         * ENFP = 15  || 1110
+                         * ENFJ = 16  || 1111
+                         * */
+                        if(!place.getPlaceRecommendList().isEmpty()) {
+                            int countI = 0;
+                            int countS = 0;
+                            int countT = 0;
+                            int countP = 0;
+                            for (int i = 0; i < place.getPlaceRecommendList().size(); i++) {
+                                PlaceRecommend placeRecommend = place.getPlaceRecommendList().get(i);
+                                int MBTI = placeRecommend.getMember().getMbti();
+                                String binaryMBTI = Integer.toBinaryString(MBTI);
+                                StringBuilder binary = new StringBuilder("0000");
+                                for(int indexMBTI = 0; indexMBTI<binaryMBTI.length(); indexMBTI++){
+                                    binary.replace(indexMBTI,indexMBTI+1,binaryMBTI.substring(indexMBTI,indexMBTI+1));
+                                }
+                                if (binary.charAt(0) == '0') {
+                                    countI++;
+                                }
+                                if (binary.charAt(1) == '0') {
+                                    countS++;
+                                }
+                                if (binary.charAt(2) == '0') {
+                                    countT++;
+                                }
+                                if (binary.charAt(3) == '0') {
+                                    countP++;
+                                }
+                            }
+                            float ratioI = (float) Math.round((float) place.getPlaceRecommendList().size() / countI * 100) / 100;
+                            float ratioS = (float) Math.round((float) place.getPlaceRecommendList().size() / countS * 100) / 100;
+                            float ratioT = (float) Math.round((float) place.getPlaceRecommendList().size() / countT * 100) / 100;
+                            float ratioP = (float) Math.round((float) place.getPlaceRecommendList().size() / countP * 100) / 100;
+
+                            objectNode.put("ratioI", ratioI);
+                            objectNode.put("ratioS", ratioS);
+                            objectNode.put("ratioT", ratioT);
+                            objectNode.put("ratioP", ratioP);
                         }
 
                         objectNode.put("mine", place.getPlaceLikeList().size());
@@ -379,10 +431,64 @@ public class PlaceService {
                 long id = placesNode.get(index).get("id").asLong();
                 if(placeId == id) {
                     log.info("id : " + id);
-                    PairJ<Place, Boolean> place = findPlaceWithBoolean(id);
-                    if (place.getSecond()) {
-                        objectNode.put("mine", place.getFirst().getPlaceLikeList().size());
-                        objectNode.put("recommend", place.getFirst().getPlaceRecommendList().size());
+                    Place place = findPlace(id);
+                    if (place!=null) {
+                        objectNode.put("mine", place.getPlaceLikeList().size());
+                        objectNode.put("recommend", place.getPlaceRecommendList().size());
+                        /*
+                         * ISTP = 1   || 0000
+                         * ISTJ = 2   || 0001
+                         * ISFP = 3   || 0010
+                         * ISFJ = 4   || 0011
+                         * INTP = 5   || 0100
+                         * INTJ = 6   || 0101
+                         * INFP = 7   || 0110
+                         * INFJ = 8   || 0111
+                         * ESTP = 9   || 1000
+                         * ESTJ = 10  || 1001
+                         * ESFP = 11  || 1010
+                         * ESFJ = 12  || 1011
+                         * ENTP = 13  || 1100
+                         * ENTJ = 14  || 1101
+                         * ENFP = 15  || 1110
+                         * ENFJ = 16  || 1111
+                         * */
+                        if(!place.getPlaceRecommendList().isEmpty()) {
+                            int countI = 0;
+                            int countS = 0;
+                            int countT = 0;
+                            int countP = 0;
+                            for (int i = 0; i < place.getPlaceRecommendList().size(); i++) {
+                                PlaceRecommend placeRecommend = place.getPlaceRecommendList().get(i);
+                                int MBTI = placeRecommend.getMember().getMbti();
+                                String binaryMBTI = Integer.toBinaryString(MBTI);
+                                StringBuilder binary = new StringBuilder("0000");
+                                for(int indexMBTI = 0; indexMBTI<binaryMBTI.length(); indexMBTI++){
+                                    binary.replace(indexMBTI,indexMBTI+1,binaryMBTI.substring(indexMBTI,indexMBTI+1));
+                                }
+                                if (binary.charAt(0) == '0') {
+                                    countI++;
+                                }
+                                if (binary.charAt(1) == '0') {
+                                    countS++;
+                                }
+                                if (binary.charAt(2) == '0') {
+                                    countT++;
+                                }
+                                if (binary.charAt(3) == '0') {
+                                    countP++;
+                                }
+                            }
+                            float ratioI = (float) Math.round((float) place.getPlaceRecommendList().size() / countI * 100) / 100;
+                            float ratioS = (float) Math.round((float) place.getPlaceRecommendList().size() / countS * 100) / 100;
+                            float ratioT = (float) Math.round((float) place.getPlaceRecommendList().size() / countT * 100) / 100;
+                            float ratioP = (float) Math.round((float) place.getPlaceRecommendList().size() / countP * 100) / 100;
+
+                            objectNode.put("ratioI", ratioI);
+                            objectNode.put("ratioS", ratioS);
+                            objectNode.put("ratioT", ratioT);
+                            objectNode.put("ratioP", ratioP);
+                        }
                     } else {
                         objectNode.put("mine", 0);
                         objectNode.put("recommend", 0);
@@ -400,6 +506,7 @@ public class PlaceService {
                         }
                     }
                     objectNode.set("reviews", reviews);
+
                     JsonNode changedNode = objectNode;
                     placesNode.set(index,changedNode);
                 }
@@ -408,47 +515,7 @@ public class PlaceService {
                     placesNode.set(index,nullNode);
                 }
             }
-//                for(JsonNode placeNode : placesNode){
-//                    long id = placeNode.get("id").asLong();
-//                    if(placeId == id) {
-//                        log.info("id : " + id);
-//
-//                        PairJ<Place, Boolean> place = findPlaceWithBoolean(id);
-//
-//                        ObjectNode objectNode = (ObjectNode) placeNode;
-//                        if (place.getSecond()) {
-//                            objectNode.put("mine", place.getFirst().getPlaceLikeList().size());
-//                            objectNode.put("recommend", place.getFirst().getPlaceRecommendList().size());
-//
-//                        } else {
-//                            objectNode.put("mine", 0);
-//                            objectNode.put("recommend", 0);
-//                        }
-//                        ArrayNode reviews = JsonNodeFactory.instance.arrayNode();
-//                        Optional<List<Review>> optionalReviewList = reviewRepository.findByPlaceName(place.getFirst().getPlaceName());
-//                        if (optionalReviewList.isPresent()) {
-//                            List<Review> reviewList = optionalReviewList.get();
-//                            for (Review review : reviewList) {
-//                                ObjectNode reviewNode = objectMapper.createObjectNode();
-//                                reviewNode.put("writer", review.getMember().getNickname());
-//                                reviewNode.put("content", review.getContent());
-//                                // TODO: 이미지 넣어야 됨.
-//                                reviews.add(reviewNode);
-//                            }
-//                        }
-//                        objectNode.set("reviews", reviews);
-//                        JsonNode changedNode = objectNode;
-//                        placeNode = changedNode;
-//
-//                    }
-//                    else{
-//                        removeElementFromListInArray(jsonNode,"documents",placeId);
-//                    }
-//                }
 
-//            else {
-//                log.warn("No 'place' array found in the JSON data.");
-//            }
             Iterator<JsonNode> iterator = placesNode.iterator();
             while (iterator.hasNext()){
                 if(iterator.next().isNull()){
