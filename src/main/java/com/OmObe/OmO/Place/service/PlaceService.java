@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,8 +29,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @Slf4j
@@ -176,7 +173,7 @@ public class PlaceService {
                             int countP = 0;
                             for (int i = 0; i < place.getPlaceRecommendList().size(); i++) {
                                 PlaceRecommend placeRecommend = place.getPlaceRecommendList().get(i);
-                                int MBTI = placeRecommend.getMember().getMbit();
+                                int MBTI = placeRecommend.getMember().getMbti();
                                 String binaryMBTI = Integer.toBinaryString(MBTI);
                                 StringBuilder binary = new StringBuilder("0000");
                                 for(int indexMBTI = 0; indexMBTI<binaryMBTI.length(); indexMBTI++){
@@ -463,7 +460,7 @@ public class PlaceService {
                             int countP = 0;
                             for (int i = 0; i < place.getPlaceRecommendList().size(); i++) {
                                 PlaceRecommend placeRecommend = place.getPlaceRecommendList().get(i);
-                                int MBTI = placeRecommend.getMember().getMbit();
+                                int MBTI = placeRecommend.getMember().getMbti();
                                 String binaryMBTI = Integer.toBinaryString(MBTI);
                                 StringBuilder binary = new StringBuilder("0000");
                                 for(int indexMBTI = 0; indexMBTI<binaryMBTI.length(); indexMBTI++){
