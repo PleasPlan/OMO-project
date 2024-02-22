@@ -108,7 +108,7 @@ public class SecurityConfiguration {
 
             JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenizer, authorityUtils, redisTemplate, memberRepository);
 
-            JwtLogoutFilter jwtLogoutFilter = new JwtLogoutFilter(jwtTokenizer, redisService);
+            JwtLogoutFilter jwtLogoutFilter = new JwtLogoutFilter(jwtTokenizer, redisService, tokenService);
 
             builder
                     .addFilter(jwtAuthenticationFilter) // spring security filter chain에 JwtAuthenticationFilter 추가
