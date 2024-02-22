@@ -1,6 +1,7 @@
 package com.OmObe.OmO.auth.filter;
 
 import com.OmObe.OmO.auth.jwt.JwtTokenizer;
+import com.OmObe.OmO.auth.jwt.TokenService;
 import com.OmObe.OmO.auth.utils.ErrorResponder;
 import com.OmObe.OmO.redis.RedisService;
 import io.jsonwebtoken.Claims;
@@ -24,6 +25,7 @@ import java.util.Date;
 public class JwtLogoutFilter extends OncePerRequestFilter {
     private final JwtTokenizer jwtTokenizer;
     private final RedisService redisService;
+    private final TokenService tokenService;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -52,10 +54,11 @@ public class JwtLogoutFilter extends OncePerRequestFilter {
 
             // 2. 남은 유효시간 계산
             Jws<Claims> claims = jwtTokenizer.getClaims(accessToken, jwtTokenizer.encodeBase64SecretKey(jwtTokenizer.getSecretKey()));
-            Long remainExpiration = calculateExpiration(claims);
+            Long remainExpiration = tokenService.calculateExpiration(claims);
 
-            // 3. redis에 저장된 refreshToken 삭제
-            redisService.deleteRefreshToken(refreshToken);
+            // 3. redis에 저장된 refreshToken(key : email, value : refreshToken) 삭제
+            String email = claims.getBody().getSubject();
+            redisService.deleteRefreshToken(email);
 
             // 4. redis에 accessToken 저장(로그아웃 된 토큰)
             redisService.setLogoutAccessToken(accessToken, remainExpiration);
@@ -86,10 +89,5 @@ public class JwtLogoutFilter extends OncePerRequestFilter {
             ErrorResponder.sendErrorResponse(response, HttpStatus.BAD_REQUEST);
         }
         return refreshToken;
-    }
-
-    // 남은 유효시간 계산 메서드
-    private Long calculateExpiration(Jws<Claims> claims){
-        return claims.getBody().getExpiration().getTime() - new Date().getTime();
     }
 }
