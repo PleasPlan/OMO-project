@@ -6,6 +6,8 @@ import com.OmObe.OmO.auth.oauth.service.OAuth2MemberService;
 import com.OmObe.OmO.auth.utils.MemberAuthorityUtils;
 import com.OmObe.OmO.member.entity.Member;
 import com.OmObe.OmO.redis.RedisService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -67,8 +69,13 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
     // redis에 로그인 한 사용자의 refresh token이 없으면 해당 토큰을 redis에 저장하는 메서드
     private void saveRefreshTokenInRedis(String refreshToken, Member member) {
-        if (redisService.getRefreshToken(refreshToken) == null) {
-            redisService.setRefreshToken(member.getEmail(), refreshToken, jwtTokenizer.getRefreshTokenExpirationMinutes());
+        if (redisService.getRefreshToken(member.getEmail()) == null) {
+            // 남은 유효시간 계산
+            Jws<Claims> claims = jwtTokenizer.getClaims(refreshToken, jwtTokenizer.encodeBase64SecretKey(jwtTokenizer.getSecretKey()));
+            Long remainExpiration = tokenService.calculateExpiration(claims);
+
+            // redis에 리프레시 토큰 저장
+            redisService.setRefreshToken(member.getEmail(), refreshToken, remainExpiration);
             log.info("Refresh Token Saved in Redis");
         }
     }

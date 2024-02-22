@@ -37,18 +37,24 @@ public class RedisService { // 토큰을 redis에서 관리하는 로직
     }
 
     // 리프레시 토큰을 redis에 저장하는 메서드 (key : email, value : refreshToken)
-    public void setRefreshToken(String email, String refreshToken, long expiration) {
+    public void setRefreshToken(String email, String refreshToken, Long expiration) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 
         // refreshToken의 만료 시간 저장
-        valueOperations.set(email, refreshToken, expiration);
-        log.info("Refresh Token expiration time : {}min", expiration);
+        valueOperations.set(email, refreshToken, expiration, TimeUnit.MILLISECONDS);
+
+        // 토큰 만료시간 계산
+        String expirationTime = String.format("%d min %d sec",
+                TimeUnit.MILLISECONDS.toMinutes(expiration),
+                TimeUnit.MILLISECONDS.toSeconds(expiration) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(expiration)));
+        log.info("Refresh Token expiration time : {}", expirationTime);
     }
 
     // redis에 저장된 refreshToken 조회
-    public String getRefreshToken(String refreshToken) {
+    public String getRefreshToken(String email) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        return valueOperations.get(refreshToken);
+        return valueOperations.get(email);
     }
 
     // redis에 저장된 refreshToken 삭제
