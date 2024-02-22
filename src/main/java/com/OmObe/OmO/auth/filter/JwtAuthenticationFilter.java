@@ -64,10 +64,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setHeader("memberId", memberId);
 
         // redis에 로그인 한 사용자의 refresh token이 없으면 해당 토큰을 redis에 저장
-        if (redisService.getRefreshToken(refreshToken) == null) {
-            redisService.setRefreshToken(refreshToken, member.getEmail(), jwtTokenizer.getRefreshTokenExpirationMinutes());
-            log.info("Refresh Token Saved in Redis");
-        }
+//        if (redisService.getRefreshToken(refreshToken) == null) {
+//            redisService.setRefreshToken(refreshToken, member.getEmail(), jwtTokenizer.getRefreshTokenExpirationMinutes());
+//            log.info("Refresh Token Saved in Redis");
+//        }
 
         // 로그인 인증 성공 후 MemberAuthenticationSuccessHandler의 onAuthenticationSuccess() 호출
         this.getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
