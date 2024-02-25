@@ -1,6 +1,8 @@
 package com.OmObe.OmO.Review.service;
 
+import com.OmObe.OmO.Review.entity.FileData;
 import com.OmObe.OmO.Review.entity.Review;
+import com.OmObe.OmO.Review.repository.FileDataRepository;
 import com.OmObe.OmO.Review.repository.ReviewRepository;
 import com.OmObe.OmO.auth.jwt.TokenDecryption;
 import com.OmObe.OmO.exception.BusinessLogicException;
@@ -8,25 +10,39 @@ import com.OmObe.OmO.exception.ExceptionCode;
 import com.OmObe.OmO.member.entity.Member;
 import com.OmObe.OmO.member.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
 public class ReviewService {
+
+    @Value("${image.file-path}")
+    private String FILE_PATH;
+
     private final ReviewRepository reviewRepository;
     private final MemberService memberService;
     private final TokenDecryption tokenDecryption;
+    private final FileDataRepository fileDataRepository;
 
-    public ReviewService(ReviewRepository reviewRepository, MemberService memberService, TokenDecryption tokenDecryption) {
+    public ReviewService(ReviewRepository reviewRepository,
+                         MemberService memberService,
+                         TokenDecryption tokenDecryption,
+                         FileDataRepository fileDataRepository) {
         this.reviewRepository = reviewRepository;
         this.memberService = memberService;
         this.tokenDecryption = tokenDecryption;
+        this.fileDataRepository = fileDataRepository;
     }
 
     /**
@@ -143,5 +159,29 @@ public class ReviewService {
     public static Specification<Review> withPlaceId(long placeId){
         return (Specification<Review>) ((root, query, builder) ->
                 builder.equal(root.get("placeId"),placeId));
+    }
+
+    public String uploadImageToFileSystem(MultipartFile file) throws IOException {
+        String filePath = FILE_PATH+file.getOriginalFilename();
+        FileData fileData = fileDataRepository.save(FileData.builder()
+                        .name(file.getOriginalFilename())
+                        .type(file.getContentType())
+                        .filePath(filePath)
+                .build());
+
+        file.transferTo(new File(filePath));
+
+        if(fileData != null){
+            return "file uploaded successfully : " + filePath;
+        }
+        return null;
+    }
+
+    public byte[] downloadImageFromFileSystem(String fileName) throws IOException {
+        Optional<FileData> optionalFileData = fileDataRepository.findByName(fileName);
+        String filePath = optionalFileData.get().getFilePath();
+        byte[] images = Files.readAllBytes(new File(filePath).toPath());
+        return images;
+
     }
 }
