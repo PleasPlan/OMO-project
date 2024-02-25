@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -43,14 +44,15 @@ public class ReviewController {
     public ResponseEntity postReview(//@Valid @RequestBody ReviewDto.Post postDto,
                                      @RequestHeader("Authorization") String token,
                                      @RequestParam("content") String content,
-                                     @RequestParam("placeId") long placeId){
+                                     @RequestParam("placeId") long placeId,
+                                     @RequestParam("image")MultipartFile file){
 //        Member writer = tokenDecryption.getWriterInJWTToken(Token);
 
         ReviewDto.Post postDto = new ReviewDto.Post(content,placeId);
 
         Review review = mapper.reviewPostDtoToReview(postDto);
 //        review.setMember(writer);
-        Review response = reviewService.createReview(review, token);
+        Review response = reviewService.createReview(review, token, file);
         return new ResponseEntity<>(mapper.reviewToReviewResponseDto(response),
                 HttpStatus.CREATED);
     }

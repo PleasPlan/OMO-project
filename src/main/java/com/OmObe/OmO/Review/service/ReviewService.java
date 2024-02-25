@@ -50,7 +50,7 @@ public class ReviewService {
      * 1. 토큰 검증
      * 2. 리뷰 저장
      */
-    public Review createReview(Review review, String token){
+    public Review createReview(Review review, String token, MultipartFile file){
         // 1. 토큰 검증
         try{
             /*
@@ -61,6 +61,7 @@ public class ReviewService {
             Member member = tokenDecryption.getWriterInJWTToken(token);
             memberService.verifiedAuthenticatedMember(member.getMemberId());
             review.setMember(member);
+            review.setImageName(uploadImageToFileSystem(file));
         }catch (JsonProcessingException je) {
             throw new RuntimeException(je);
         } catch (Exception e) {
@@ -172,7 +173,7 @@ public class ReviewService {
         file.transferTo(new File(filePath));
 
         if(fileData != null){
-            return "file uploaded successfully : " + filePath;
+            return file.getOriginalFilename();
         }
         return null;
     }
