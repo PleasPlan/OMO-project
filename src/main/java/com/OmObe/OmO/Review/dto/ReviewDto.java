@@ -20,6 +20,7 @@ public class ReviewDto {
 
     @Getter
     @Setter
+    @AllArgsConstructor
     public static class Patch{
         private long reviewId;
         private String content;

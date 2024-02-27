@@ -79,7 +79,7 @@ public class ReviewService {
      * 3. 리뷰 내용 수정
      * 4. 변경 사항 저장
      */
-    public Review updateReview(Review review,long reviewId, String token){
+    public Review updateReview(Review review,long reviewId, String token,MultipartFile file){
         // 1. 수정하려는 리뷰의 존재 여부 파악
         Review findReview = findReview(reviewId);
 
@@ -103,6 +103,14 @@ public class ReviewService {
         // 3. 리뷰 내용 수정
         Optional.ofNullable(review.getContent())
                 .ifPresent(content -> findReview.setContent(content));
+        Optional.ofNullable(file)
+                .ifPresent(image -> {
+                    try {
+                        findReview.setImageName(uploadImageToFileSystem(file));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
         findReview.setModifiedAt(LocalDateTime.now());
 
         // 4. 변경 사항 저장

@@ -58,13 +58,16 @@ public class ReviewController {
     }
 
     @PatchMapping("/modification")
-    public ResponseEntity patchReview(@Valid @RequestBody ReviewDto.Patch patchDto,
+    public ResponseEntity patchReview(@RequestParam("content") String content,
                                       @RequestHeader("review-id") long reviewId,
-                                      @RequestHeader("Authorization") String token){
+                                      @RequestHeader("Authorization") String token,
+                                      @RequestParam("image") MultipartFile file){
         // patchDto.setReviewId(reviewId);
 
+        ReviewDto.Patch patchDto = new ReviewDto.Patch(reviewId,content);
+
         Review review = mapper.reviewPatchDtoToReview(patchDto);
-        Review response = reviewService.updateReview(review,reviewId, token);
+        Review response = reviewService.updateReview(review,reviewId, token, file);
 
         return new ResponseEntity<>(mapper.reviewToReviewResponseDto(response),
                 HttpStatus.OK);
