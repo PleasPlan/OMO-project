@@ -154,7 +154,7 @@ public class ReviewService {
         } catch (Exception e) {
             throw new BusinessLogicException(ExceptionCode.INVALID_TOKEN);
         }
-
+        deleteImage(findReview.getImageName());
         // 3. 리뷰 삭제
         reviewRepository.delete(findReview);
     }
