@@ -199,5 +199,6 @@ public class ReviewService {
         String filePath = optionalFileData.get().getFilePath();
         File image = new File(filePath);
         image.delete();
+        fileDataRepository.delete(optionalFileData.get());
     }
 }
