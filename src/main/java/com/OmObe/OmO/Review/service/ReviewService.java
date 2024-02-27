@@ -106,6 +106,7 @@ public class ReviewService {
         Optional.ofNullable(file)
                 .ifPresent(image -> {
                     try {
+                        deleteImage(findReview.getImageName());
                         findReview.setImageName(uploadImageToFileSystem(file));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -191,6 +192,12 @@ public class ReviewService {
         String filePath = optionalFileData.get().getFilePath();
         byte[] images = Files.readAllBytes(new File(filePath).toPath());
         return images;
+    }
 
+    public void deleteImage(String fileName){
+        Optional<FileData> optionalFileData = fileDataRepository.findByName(fileName);
+        String filePath = optionalFileData.get().getFilePath();
+        File image = new File(filePath);
+        image.delete();
     }
 }
