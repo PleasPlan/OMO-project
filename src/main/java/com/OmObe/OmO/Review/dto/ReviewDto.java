@@ -20,6 +20,7 @@ public class ReviewDto {
 
     @Getter
     @Setter
+    @AllArgsConstructor
     public static class Patch{
         private long reviewId;
         private String content;
@@ -31,6 +32,7 @@ public class ReviewDto {
         private long ReviewId;
         private String content;
         private String writer;
+        private String imageName;
         private LocalDateTime createdDate;
     }
 }

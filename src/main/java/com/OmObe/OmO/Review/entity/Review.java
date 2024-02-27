@@ -24,7 +24,7 @@ public class Review {
     private Long placeId;
 
     @Column
-    private String imageAddress;
+    private String imageName;
 
     @Column
     private LocalDateTime createdAt = LocalDateTime.now();
