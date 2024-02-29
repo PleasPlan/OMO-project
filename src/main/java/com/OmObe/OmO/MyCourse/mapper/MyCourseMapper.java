@@ -83,7 +83,9 @@ public class MyCourseMapper {
     private static void settingNextCoursePost(List<MyCourse> courseList, MyCourseDto.Post postDto){
         for(int index = postDto.getPlaceName().size()-1; index>=0; index--) {
             MyCourse course = new MyCourse();
-            course.setCourseName(postDto.getCourseName());
+            if(index == 0) {
+                course.setCourseName(postDto.getCourseName());
+            }
             course.setPlaceName(postDto.getPlaceName().get(index));
             course.setPlaceId(postDto.getPlaceId().get(index));
             course.setTimes(postDto.getTime().get(index));
@@ -94,22 +96,15 @@ public class MyCourseMapper {
     private static void settingNextCoursePatch(List<MyCourse> courseList, MyCourseDto.Patch patchDto){
         for(int index = patchDto.getPlaceName().size()-1; index>=0; index--) {
             MyCourse course = new MyCourse();
-            course.setCourseName(patchDto.getCourseName());
+            if(index == 0) {
+                course.setCourseName(patchDto.getCourseName());
+            }
             course.setPlaceName(patchDto.getPlaceName().get(index));
             course.setPlaceId(patchDto.getPlaceId().get(index));
             course.setTimes(patchDto.getTime().get(index));
             courseList.add(course);
         }
     }
-    /*private static MyCourse settingNextCoursePatch(List<MyCourse> courseList, MyCourseDto.Patch patchDto, int index){
-        MyCourse course = new MyCourse();
-        course.setCourseName(patchDto.getCourseName());
-        course.setPlaceName(patchDto.getPlaceName().get(index));
-        course.setPlaceId(patchDto.getPlaceId().get(index));
-        course.setTimes(patchDto.getTime().get(index));
-        courseList.add(course);
-        return course;
-    }*/
     private static void getNextCourses(List<MyCourseDto.ResponseSmall> contents, MyCourse course){
         MyCourseDto.ResponseSmall responseSmall = new MyCourseDto.ResponseSmall(course.getPlaceName(),
                 course.getPlaceId(),

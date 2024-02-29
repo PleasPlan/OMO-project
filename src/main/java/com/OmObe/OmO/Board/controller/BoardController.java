@@ -115,7 +115,6 @@ public class BoardController {
         List<Board> boards = pageBoards.getContent();
         return new ResponseEntity<>(
                 new MultiResponseDto<>(mapper.boardsToBoardResponseDtos(boards),pageBoards),HttpStatus.OK);
-
     }
 
     @GetMapping("/Free")
