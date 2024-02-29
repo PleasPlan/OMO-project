@@ -391,16 +391,31 @@ public class PlaceService {
 
                     log.info("id : "+id);
 
-                    PairJ<Place, Boolean> place = findPlaceWithBoolean(id);
-
+                    //PairJ<Place, Boolean> place = findPlaceWithBoolean(id);
+                    Place place = findPlace(id);
                     ObjectNode objectNode = (ObjectNode) placeNode;
-                    if(place.getSecond()){
-                        objectNode.put("mine", place.getFirst().getPlaceLikeList().size());
-                        objectNode.put("recommend", place.getFirst().getPlaceRecommendList().size());
+                    Optional<List<Review>> reviews = reviewRepository.findByPlaceId(id);
+                    if(place != null){
+                        objectNode.put("mine", place.getPlaceLikeList().size());
+                        objectNode.put("recommend", place.getPlaceRecommendList().size());
                     } else {
                         objectNode.put("mine",0);
                         objectNode.put("recommend", 0);
                     }
+                    boolean imageChecker = true;
+                    Collections.reverse(reviews.get());
+                    for(Review review: reviews.get()){
+                        if(review.getImageName() != null){
+                            if(imageChecker) {
+                                objectNode.put("firstImageName", review.getImageName());
+                                imageChecker = false;
+                            } else {
+                                objectNode.put("secondImageName", review.getImageName());
+                                break;
+                            }
+                        }
+                    }
+
                     JsonNode changedNode = objectNode;
                     placeNode = changedNode;
                 }
@@ -529,18 +544,6 @@ public class PlaceService {
             e.printStackTrace();
         }
         return null;
-    }
-
-    private PairJ<Place, Boolean> findPlaceWithBoolean(long placeId){
-        Optional<Place> optionalPlace = placeRepository.findById(placeId);
-        PairJ<Place, Boolean> result = new PairJ<>();
-        result.setSecond(optionalPlace.isPresent());    // false면 없고 true면 있음
-        if(optionalPlace.isEmpty()){
-            result.setFirst(null);
-        } else {
-            result.setFirst(optionalPlace.orElseThrow());
-        }
-        return result;
     }
 
     public Place findPlace(long placeId){
