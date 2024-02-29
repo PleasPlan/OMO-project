@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,7 +46,7 @@ public class ReviewController {
                                      @RequestHeader("Authorization") String token,
                                      @RequestParam("content") String content,
                                      @RequestParam("placeId") long placeId,
-                                     @RequestParam("image")MultipartFile file){
+                                     @Nullable @RequestParam("image")MultipartFile file){
 //        Member writer = tokenDecryption.getWriterInJWTToken(Token);
 
         ReviewDto.Post postDto = new ReviewDto.Post(content,placeId);
@@ -61,7 +62,7 @@ public class ReviewController {
     public ResponseEntity patchReview(@RequestParam("content") String content,
                                       @RequestHeader("review-id") long reviewId,
                                       @RequestHeader("Authorization") String token,
-                                      @RequestParam("image") MultipartFile file){
+                                      @Nullable @RequestParam("image") MultipartFile file){
         // patchDto.setReviewId(reviewId);
 
         ReviewDto.Patch patchDto = new ReviewDto.Patch(reviewId,content);
