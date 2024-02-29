@@ -61,7 +61,9 @@ public class ReviewService {
             Member member = tokenDecryption.getWriterInJWTToken(token);
             memberService.verifiedAuthenticatedMember(member.getMemberId());
             review.setMember(member);
-            review.setImageName(uploadImageToFileSystem(file));
+            if(file != null) {
+                review.setImageName(uploadImageToFileSystem(file));
+            }
         }catch (JsonProcessingException je) {
             throw new RuntimeException(je);
         } catch (Exception e) {
@@ -107,7 +109,10 @@ public class ReviewService {
                 .ifPresent(image -> {
                     try {
                         deleteImage(findReview.getImageName());
-                        findReview.setImageName(uploadImageToFileSystem(file));
+                        findReview.setImageName(null);
+                        if(file != null) {
+                            findReview.setImageName(uploadImageToFileSystem(file));
+                        }
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
