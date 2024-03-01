@@ -73,6 +73,13 @@ public class MyCourseController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+
+    /*
+    * sorting 가능 인자들
+    * 1. createdAt : 최신순
+    * 2. viewCount : 조회수 순
+    * 
+    * */
     @GetMapping("/mbti/{mbti-num}")
     public ResponseEntity getCourses(@PathVariable("mbti-num") int mbti,
                                      @RequestParam(defaultValue = "1") int page,
