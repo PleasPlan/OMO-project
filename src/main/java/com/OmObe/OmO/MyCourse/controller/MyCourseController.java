@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Positive;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -80,7 +81,10 @@ public class MyCourseController {
         Slice<MyCourse> pageMyCourses;
         pageMyCourses = myCourseService.findCourses(sorting,mbti,page-1,size);
         List<MyCourse> courses = pageMyCourses.getContent();
-        return new ResponseEntity<>(courses,HttpStatus.OK);
+        List<MyCourseDto.Response> responses = new ArrayList<>();
+        courses.forEach(myCourse -> responses.add(mapper.courseToCourseResponseDto(myCourse)));
+        return new ResponseEntity<>(
+                new MultiResponseDto<>(responses,pageMyCourses),HttpStatus.OK);
     }
 
     @DeleteMapping("/{course-id}")

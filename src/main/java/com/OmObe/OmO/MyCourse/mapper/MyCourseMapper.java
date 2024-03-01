@@ -63,7 +63,7 @@ public class MyCourseMapper {
         }
     }
 
-    public static MyCourseDto.Response courseToCourseResponseDto(MyCourse course){
+    public MyCourseDto.Response courseToCourseResponseDto(MyCourse course){
         if(course == null){
             return null;
         } else {
