@@ -52,4 +52,6 @@ public class MyCourse {
 
     @OneToMany(mappedBy = "myCourse",cascade = CascadeType.PERSIST)
     private List<MyCourseLike> myCourseLikeList = new ArrayList<>();
+
+    private Integer likeCount = 0;
 }

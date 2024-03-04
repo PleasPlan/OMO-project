@@ -150,8 +150,12 @@ public class MyCourseService {
             myCourseLike.setMyCourse(myCourse);
             myCourseLike.setMember(member);
             myCourseLikeRepository.save(myCourseLike);
+            myCourse.setLikeCount(myCourse.getLikeCount()+1);
+            myCourseRepository.save(myCourse);
             return "saved!";
         }else{
+            myCourse.setLikeCount(myCourse.getLikeCount()-1);
+            myCourseRepository.save(myCourse);
             myCourseLikeRepository.delete(optionalMyCourseLike.get());
             return "deleted!";
         }

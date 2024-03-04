@@ -74,8 +74,9 @@ public class MyCourseMapper {
             LocalDateTime createdAt = course.getCreatedAt();
             LocalDateTime modifiedAt = course.getModifiedAt();
             String writerName = course.getMember().getNickname();
+            Integer likeCount = course.getLikeCount();
 
-            MyCourseDto.Response response = new MyCourseDto.Response(courseName,contents,createdAt,modifiedAt,writerName);
+            MyCourseDto.Response response = new MyCourseDto.Response(courseName,contents,createdAt,modifiedAt,likeCount,writerName);
             return response;
         }
     }
