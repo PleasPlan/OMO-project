@@ -1,8 +1,8 @@
 package com.OmObe.OmO.MyCourse.service;
 
-import com.OmObe.OmO.Board.entity.Board;
-import com.OmObe.OmO.Liked.entity.Liked;
 import com.OmObe.OmO.MyCourse.entity.MyCourse;
+import com.OmObe.OmO.MyCourse.entity.MyCourseLike;
+import com.OmObe.OmO.MyCourse.repository.MyCourseLikeRepository;
 import com.OmObe.OmO.MyCourse.repository.MyCourseRepository;
 import com.OmObe.OmO.exception.BusinessLogicException;
 import com.OmObe.OmO.exception.ExceptionCode;
@@ -23,9 +23,12 @@ import java.util.Optional;
 public class MyCourseService {
 
     private final MyCourseRepository myCourseRepository;
+    private final MyCourseLikeRepository myCourseLikeRepository;
 
-    public MyCourseService(MyCourseRepository myCourseRepository) {
+    public MyCourseService(MyCourseRepository myCourseRepository,
+                           MyCourseLikeRepository myCourseLikeRepository) {
         this.myCourseRepository = myCourseRepository;
+        this.myCourseLikeRepository = myCourseLikeRepository;
     }
 
     public MyCourse createCourse(List<MyCourse> course, Member writer){
@@ -137,5 +140,20 @@ public class MyCourseService {
 
     public static Slice<MyCourse> convertToSlice(Page<MyCourse> page){
         return new SliceImpl<>(page.getContent(), page.getPageable(), page.hasNext());
+    }
+
+    public String createCourseLike(Member member, long startId) {
+        MyCourse myCourse = findCourse(startId);
+        Optional<MyCourseLike> optionalMyCourseLike = myCourseLikeRepository.findByMemberAndMyCourse(member,myCourse);
+        if(optionalMyCourseLike.isEmpty()) {
+            MyCourseLike myCourseLike = new MyCourseLike();
+            myCourseLike.setMyCourse(myCourse);
+            myCourseLike.setMember(member);
+            myCourseLikeRepository.save(myCourseLike);
+            return "saved!";
+        }else{
+            myCourseLikeRepository.delete(optionalMyCourseLike.get());
+            return "deleted!";
+        }
     }
 }

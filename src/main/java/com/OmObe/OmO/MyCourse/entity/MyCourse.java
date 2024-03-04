@@ -9,6 +9,8 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -47,4 +49,7 @@ public class MyCourse {
     @ManyToOne
     @JoinColumn(name = "WRITER")
     private Member member;
+
+    @OneToMany(mappedBy = "myCourse",cascade = CascadeType.PERSIST)
+    private List<MyCourseLike> myCourseLikeList = new ArrayList<>();
 }

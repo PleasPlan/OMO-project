@@ -78,7 +78,7 @@ public class MyCourseController {
     * sorting 가능 인자들
     * 1. createdAt : 최신순
     * 2. viewCount : 조회수 순
-    * 
+    *
     * */
     @GetMapping("/mbti/{mbti-num}")
     public ResponseEntity getCourses(@PathVariable("mbti-num") int mbti,
@@ -99,5 +99,14 @@ public class MyCourseController {
                                        @PathVariable("course-id") long startId){
         myCourseService.deleteCourse(startId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/like/{course-id}")
+    public ResponseEntity postMyCourseLike(@RequestHeader("Authorization") String token,
+                                           @PathVariable("course-id") long startId) throws JsonProcessingException {
+        Member member = tokenDecryption.getWriterInJWTToken(token);
+
+        String response = myCourseService.createCourseLike(member,startId);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }
