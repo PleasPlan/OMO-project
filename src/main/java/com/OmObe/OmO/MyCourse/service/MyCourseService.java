@@ -104,7 +104,7 @@ public class MyCourseService {
 
     public Slice<MyCourse> findCourses(String sortBy,int mbti,int page, int size){
         return convertToSlice(myCourseRepository.findAll(withMemberMBTI(mbti), PageRequest.of(page,size,
-                Sort.by(sortBy).descending())));
+                Sort.by(sortBy).descending().and(Sort.by("createdAt").descending()))));
     }
 
     public void deleteCourse(long courseId){
