@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -78,20 +79,27 @@ public class MyCourseController {
     * sorting 가능 인자들
     * 1. createdAt : 최신순
     * 2. viewCount : 조회수 순
-    *
+    * 3. likeCount : 좋아요 순
     * */
     @GetMapping("/mbti/{mbti-num}")
     public ResponseEntity getCourses(@PathVariable("mbti-num") int mbti,
                                      @RequestParam(defaultValue = "1") int page,
                                      @Positive @RequestParam(defaultValue = "10") int size,
-                                     @RequestParam String sorting){
+                                     @RequestParam String sorting,
+                                     @Nullable @RequestHeader("Authorization") String token) throws JsonProcessingException {
+
+
         Slice<MyCourse> pageMyCourses;
-        pageMyCourses = myCourseService.findCourses(sorting,mbti,page-1,size);
+        if (token != null) {
+            Member member = tokenDecryption.getWriterInJWTToken(token);
+            pageMyCourses = myCourseService.findMyCourses(member, page - 1, size);
+        } else {
+            pageMyCourses = myCourseService.findCourses(sorting, mbti, page - 1, size);
+        }
         List<MyCourse> courses = pageMyCourses.getContent();
         List<MyCourseDto.Response> responses = new ArrayList<>();
         courses.forEach(myCourse -> responses.add(mapper.courseToCourseResponseDto(myCourse)));
-        return new ResponseEntity<>(
-                new MultiResponseDto<>(responses,pageMyCourses),HttpStatus.OK);
+        return new ResponseEntity<>(new MultiResponseDto<>(responses, pageMyCourses), HttpStatus.OK);
     }
 
     @DeleteMapping("/{course-id}")

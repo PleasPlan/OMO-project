@@ -107,6 +107,11 @@ public class MyCourseService {
                 Sort.by(sortBy).descending().and(Sort.by("createdAt").descending()))));
     }
 
+    public Slice<MyCourse> findMyCourses(Member member,int page, int size){
+        return convertToSlice(myCourseRepository.findAll(withMember(member), PageRequest.of(page,size,
+                Sort.by("modifiedAt").descending())));
+    }
+
     public void deleteCourse(long courseId){
         MyCourse start = findCourse(courseId);
         myCourseRepository.delete(start);
@@ -137,6 +142,16 @@ public class MyCourseService {
                 )
         );
     }
+
+    public static Specification<MyCourse> withMember(Member member){
+        return (Specification<MyCourse>) ((root, query, builder) ->
+                builder.and(
+                        builder.equal(root.get("member"),member),
+                        builder.isNotNull(root.get("courseName"))
+                )
+        );
+    }
+
 
     public static Slice<MyCourse> convertToSlice(Page<MyCourse> page){
         return new SliceImpl<>(page.getContent(), page.getPageable(), page.hasNext());
