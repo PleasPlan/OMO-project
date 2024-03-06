@@ -2,6 +2,8 @@ package com.OmObe.OmO.MyPage.service;
 
 import com.OmObe.OmO.Board.entity.Board;
 import com.OmObe.OmO.Board.repository.BoardRepository;
+import com.OmObe.OmO.MyCourse.entity.MyCourse;
+import com.OmObe.OmO.MyPage.dto.MyPageDto;
 import com.OmObe.OmO.MyPage.utility.pageUtility;
 import com.OmObe.OmO.Place.entity.Place;
 import com.OmObe.OmO.Place.entity.PlaceLike;
@@ -362,5 +364,62 @@ public class MyPageService {
         findMember.setMbti(member.getMbti());
 
         return memberRepository.save(findMember);
+    }
+
+    /**
+     * <내 정보 조회>
+     * 1. memberId를 통해 정보를 조회하려는 회원과 토큰의 소유자가 같은지 검증
+     * 2. 정보를 조회하려는 회원의 존재 여부 검증
+     * 3. 사용자의 인증 상태 검증
+     * 4. 관심 수, 추천 수, 내가 쓴 글, 나의 코스 개수 계산
+     */
+    public MyPageDto.MyInfoResponse findMyInfo(Long memberId, String token) {
+        // 1. memberId를 통해 정보를 조회하려는 회원과 토큰의 소유자가 같은지 검증
+        try {
+            Member tokenCheckedMember = tokenDecryption.getWriterInJWTToken(token);
+            memberService.verifiedAuthenticatedMember(tokenCheckedMember.getMemberId());
+        } catch (JsonProcessingException je) {
+            throw new RuntimeException(je);
+        } catch (Exception e) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+
+        // 2. 정보를 조회하려는 회원의 존재 여부 검증
+        Member findMember = memberService.findVerifiedMember(memberId);
+
+        // 3. 사용자의 인증 상태 검증
+        memberService.verifiedAuthenticatedMember(memberId);
+
+        // 4. 관심 수, 추천 수, 내가 쓴 글, 나의 코스 개수 계산
+        MyPageDto.MyInfoResponse info = new MyPageDto.MyInfoResponse();
+
+        // 관심 수 계산
+        List<PlaceLike> placeLikes = findMember.getPlaceLikes();
+        int placeLikeCount = placeLikes.size();
+
+        // 추천 수 계산
+        List<PlaceRecommend> placeRecommends = findMember.getPlaceRecommends();
+        int placeRecommendCount = placeRecommends.size();
+
+        // 내가 쓴 글 수 계산
+        List<Board> boardList = findMember.getBoardList();
+        int writtenBoardCount = boardList.size();
+
+        // 나의 코스 개수 계산
+        List<MyCourse> myCourses = findMember.getMyCourses();
+        int myCourseCount = myCourses.size();
+
+        // 5. MyInfoResponse에 회원 정보 저장
+        info.setProfileImageUrl(findMember.getProfileImageUrl());
+        info.setNickname(findMember.getNickname());
+        info.setEmail(findMember.getEmail());
+        info.setBirth(findMember.getBirth());
+        info.setMbti(findMember.getMbti());
+        info.setPlaceLikeCount(placeLikeCount);
+        info.setPlaceRecommendCount(placeRecommendCount);
+        info.setMyWrittenBoardCount(writtenBoardCount);
+        info.setMyCourseCount(myCourseCount);
+
+        return info;
     }
 }
