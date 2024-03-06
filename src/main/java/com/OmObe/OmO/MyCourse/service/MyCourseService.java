@@ -1,11 +1,15 @@
 package com.OmObe.OmO.MyCourse.service;
 
 import com.OmObe.OmO.MyCourse.entity.MyCourse;
+import com.OmObe.OmO.MyCourse.entity.MyCourseLike;
+import com.OmObe.OmO.MyCourse.repository.MyCourseLikeRepository;
 import com.OmObe.OmO.MyCourse.repository.MyCourseRepository;
 import com.OmObe.OmO.exception.BusinessLogicException;
 import com.OmObe.OmO.exception.ExceptionCode;
 import com.OmObe.OmO.member.entity.Member;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,9 +23,12 @@ import java.util.Optional;
 public class MyCourseService {
 
     private final MyCourseRepository myCourseRepository;
+    private final MyCourseLikeRepository myCourseLikeRepository;
 
-    public MyCourseService(MyCourseRepository myCourseRepository) {
+    public MyCourseService(MyCourseRepository myCourseRepository,
+                           MyCourseLikeRepository myCourseLikeRepository) {
         this.myCourseRepository = myCourseRepository;
+        this.myCourseLikeRepository = myCourseLikeRepository;
     }
 
     public MyCourse createCourse(List<MyCourse> course, Member writer){
@@ -95,6 +102,20 @@ public class MyCourseService {
         return myCourseRepository.save(start);
     }
 
+    public Slice<MyCourse> findCourses(String sortBy,int mbti,int page, int size){
+        return convertToSlice(myCourseRepository.findAll(withMemberMBTI(mbti), PageRequest.of(page,size,
+                Sort.by(sortBy).descending().and(Sort.by("createdAt").descending()))));
+    }
+
+    public Slice<MyCourse> findMyCourses(Member member,int page, int size){
+        return convertToSlice(myCourseRepository.findAll(withMember(member), PageRequest.of(page,size,
+                Sort.by("modifiedAt").descending())));
+    }
+
+    public Integer countMyCourses(Member member){
+        return myCourseRepository.findAll(withMember(member)).size();
+    }
+
     public void deleteCourse(long courseId){
         MyCourse start = findCourse(courseId);
         myCourseRepository.delete(start);
@@ -115,5 +136,47 @@ public class MyCourseService {
             searchIdList(courseIdList,mc.getNextCourse().getCourseId());
         }
         courseIdList.add(startId);
+    }
+
+    public static Specification<MyCourse> withMemberMBTI(int mbti){
+        return (Specification<MyCourse>) ((root, query, builder) ->
+                builder.and(
+                builder.equal(root.get("member").get("mbti"),mbti),
+                builder.isNotNull(root.get("courseName"))
+                )
+        );
+    }
+
+    public static Specification<MyCourse> withMember(Member member){
+        return (Specification<MyCourse>) ((root, query, builder) ->
+                builder.and(
+                        builder.equal(root.get("member"),member),
+                        builder.isNotNull(root.get("courseName"))
+                )
+        );
+    }
+
+
+    public static Slice<MyCourse> convertToSlice(Page<MyCourse> page){
+        return new SliceImpl<>(page.getContent(), page.getPageable(), page.hasNext());
+    }
+
+    public String createCourseLike(Member member, long startId) {
+        MyCourse myCourse = findCourse(startId);
+        Optional<MyCourseLike> optionalMyCourseLike = myCourseLikeRepository.findByMemberAndMyCourse(member,myCourse);
+        if(optionalMyCourseLike.isEmpty()) {
+            MyCourseLike myCourseLike = new MyCourseLike();
+            myCourseLike.setMyCourse(myCourse);
+            myCourseLike.setMember(member);
+            myCourseLikeRepository.save(myCourseLike);
+            myCourse.setLikeCount(myCourse.getLikeCount()+1);
+            myCourseRepository.save(myCourse);
+            return "saved!";
+        }else{
+            myCourse.setLikeCount(myCourse.getLikeCount()-1);
+            myCourseRepository.save(myCourse);
+            myCourseLikeRepository.delete(optionalMyCourseLike.get());
+            return "deleted!";
+        }
     }
 }

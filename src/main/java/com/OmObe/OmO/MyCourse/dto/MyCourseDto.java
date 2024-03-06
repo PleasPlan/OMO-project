@@ -35,6 +35,7 @@ public class MyCourseDto {
         private List<ResponseSmall> contents;
         private LocalDateTime createdAt;
         private LocalDateTime modifiedAt;
+        private Integer likeCount;
         private String writerName;
     }
 

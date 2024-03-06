@@ -2,6 +2,7 @@ package com.OmObe.OmO.member.entity;
 
 import com.OmObe.OmO.Board.entity.Board;
 import com.OmObe.OmO.Liked.entity.Liked;
+import com.OmObe.OmO.MyCourse.entity.MyCourseLike;
 import com.OmObe.OmO.MyCourse.entity.MyCourse;
 import com.OmObe.OmO.Place.entity.PlaceLike;
 import com.OmObe.OmO.Place.entity.PlaceRecommend;
@@ -114,6 +115,9 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<Board> boardList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member",cascade = CascadeType.PERSIST)
+    private List<MyCourseLike> myCourseLikeList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<MyCourse> myCourses = new ArrayList<>();
