@@ -112,6 +112,10 @@ public class MyCourseService {
                 Sort.by("modifiedAt").descending())));
     }
 
+    public Integer countMyCourses(Member member){
+        return myCourseRepository.findAll(withMember(member)).size();
+    }
+
     public void deleteCourse(long courseId){
         MyCourse start = findCourse(courseId);
         myCourseRepository.delete(start);
