@@ -122,4 +122,13 @@ public class MyPageController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    // 내 정보 조회
+    @GetMapping("/myInfo/{memberId}")
+    public ResponseEntity getMyInfo(@Valid @PathVariable("memberId") Long memberId,
+                                    @RequestHeader("Authorization") String token) {
+        MyPageDto.MyInfoResponse myInfo = myPageService.findMyInfo(memberId, token);
+
+        return new ResponseEntity<>(myInfo, HttpStatus.OK);
+    }
 }
