@@ -61,7 +61,7 @@ public class MyCourseController {
         List<MyCourse> courseList = mapper.coursePatchDtoToCourse(patchDto);
         Long startId = patchDto.getCourseId();
         Member writer = tokenDecryption.getWriterInJWTToken(token);
-        MyCourse myCourse = myCourseService.updateCourse(courseList,startId,writer);
+        MyCourse myCourse = myCourseService.updateCourse(patchDto.getCourseName(),courseList,startId,writer);
         MyCourseDto.Response response = mapper.courseToCourseResponseDto(myCourse);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -47,7 +47,7 @@ public class MyCourseService {
     }
 
 
-    public MyCourse updateCourse(List<MyCourse> course,long startId, Member writer){
+    public MyCourse updateCourse(String newCourseName,List<MyCourse> course,long startId, Member writer){
         log.info("enter 3-1");
         Collections.reverse(course);
         List<Long> courseIdList = new ArrayList<>();
@@ -58,6 +58,9 @@ public class MyCourseService {
         if(course.size() < courseIdList.size()) {
             for (int i = 0; i < course.size(); i++) {
                 MyCourse part = findCourse(courseIdList.get(i));
+                if(i == 0){
+                    part.setCourseName(newCourseName);
+                }
                 part.setPlaceName(course.get(i).getPlaceName());
                 part.setPlaceId(course.get(i).getPlaceId());
                 part.setTimes(course.get(i).getTimes());
@@ -72,6 +75,9 @@ public class MyCourseService {
         } else {
             for (int i = 0; i < courseIdList.size(); i++) {
                 MyCourse part = findCourse(courseIdList.get(i));
+                if(i == 0){
+                    part.setCourseName(newCourseName);
+                }
                 part.setPlaceName(course.get(i).getPlaceName());
                 part.setPlaceId(course.get(i).getPlaceId());
                 part.setTimes(course.get(i).getTimes());
