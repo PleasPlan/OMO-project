@@ -1,5 +1,7 @@
 package com.OmObe.OmO.Comment.service;
 
+import com.OmObe.OmO.Board.entity.Board;
+import com.OmObe.OmO.Board.service.BoardService;
 import com.OmObe.OmO.Comment.entity.Comment;
 import com.OmObe.OmO.Comment.repository.CommentRepository;
 import com.OmObe.OmO.auth.jwt.TokenDecryption;
@@ -9,6 +11,7 @@ import com.OmObe.OmO.member.entity.Member;
 import com.OmObe.OmO.member.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,11 +22,13 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final TokenDecryption tokenDecryption;
     private final MemberService memberService;
+    private final BoardService boardService;
 
-    public CommentService(CommentRepository commentRepository, TokenDecryption tokenDecryption, MemberService memberService) {
+    public CommentService(CommentRepository commentRepository, TokenDecryption tokenDecryption, MemberService memberService, BoardService boardService) {
         this.commentRepository = commentRepository;
         this.tokenDecryption = tokenDecryption;
         this.memberService = memberService;
+        this.boardService = boardService;
     }
 
     /**
@@ -90,7 +95,8 @@ public class CommentService {
     }
 
     public Slice<Comment> findComments(int page, int size, long boardId){
-        return convertToSlice(commentRepository.findByBoard(boardId,PageRequest.of(page, size,
+        Board board = boardService.findBoard(boardId);
+        return convertToSlice(commentRepository.findAll(withBoard(board), PageRequest.of(page,size,
                 Sort.by("createdAt").descending())));
     }
 
@@ -127,5 +133,10 @@ public class CommentService {
 
     public static Slice<Comment> convertToSlice(Page<Comment> page){
         return new SliceImpl<>(page.getContent(), page.getPageable(), page.hasNext());
+    }
+
+    public static Specification<Comment> withBoard(Board board){
+        return (Specification<Comment>) ((root, query,builder) ->
+                builder.equal(root.get("board"),board));
     }
 }
