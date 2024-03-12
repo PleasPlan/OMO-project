@@ -31,12 +31,13 @@ public class PlaceController {
     @GetMapping("/list/{category}")
     public ResponseEntity getPlaces(@PathVariable("category") String category,
                                     @RequestHeader @Range(min = 0,max = 90) double y,
-                                    @RequestHeader @Range(min = -180,max = 180) double x){
+                                    @RequestHeader @Range(min = -180,max = 180) double x,
+                                    @RequestParam("page") int page){
         PairJ<Double, Double> middle = new PairJ<>();
         middle.setFirst(y);    // y (위도)
         middle.setSecond(x);   // x (경도)
 
-        String response = placeService.getPlaces(category, middle);
+        String response = placeService.getPlaces(category, middle, page);
         // json 응답 중 "is_end":false 가 되어있다면 다음 페이지가 존재하는 것이다.
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
