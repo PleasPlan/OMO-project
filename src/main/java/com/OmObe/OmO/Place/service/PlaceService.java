@@ -62,7 +62,7 @@ public class PlaceService {
         this.memberService = memberService;
     }
 
-    public String getPlaces(String category, PairJ<Double, Double> middle) {
+    public String getPlaces(String category, PairJ<Double, Double> middle,int page) {
         String keyword;
         try{
             keyword = URLEncoder.encode(category, "UTF-8");
@@ -73,7 +73,7 @@ public class PlaceService {
         String y = middle.getFirst().toString();
         String x = middle.getSecond().toString();
 
-        String webAddress = "https://dapi.kakao.com/v2/local/search/keyword.json?y="+y+"&x="+x+"&radius=20000&sort=distance&query="+keyword;
+        String webAddress = "https://dapi.kakao.com/v2/local/search/keyword.json?y="+y+"&x="+x+"&radius=10000&sort=distance&query="+keyword+"&page="+page+"&size=10";
 
         Map<String, String> requestHeader = new HashMap<>();
 //        requestHeader.put("X-Naver-Client-Id", id);
