@@ -48,7 +48,8 @@ public class SecurityConfiguration {
                 .headers().frameOptions().sameOrigin() // 동일 출처로부터 들어오는 request만 페이지 렌더링 허용
                 .and()
                 .csrf().disable() // csrf 공격에 대한 보호 비활성화
-                .cors(Customizer.withDefaults()) // cors 설정
+                .cors().configurationSource(corsConfigurationSource()) // cors 설정
+                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 생성X
                 .and()
                 .formLogin().disable() // 폼 로그인 방식 비활성화
@@ -88,7 +89,7 @@ public class SecurityConfiguration {
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // http://localhost:5173에 대해 http 통신 허용
-        configuration.setAllowedMethods(Arrays.asList("GET","POST","PATCH", "DELETE")); // 허용하는 http 메서드
+        configuration.setAllowedMethods(Arrays.asList("GET","POST","PATCH", "DELETE", "OPTIONS")); // 허용하는 http 메서드
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
