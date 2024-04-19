@@ -89,7 +89,8 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173")); // http://localhost:5173에 대해 http 통신 허용
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "https://accounts.google.com/*",
+                "https://kauth.kakao.com/*", "https://nid.naver.com/*")); // http://localhost:5173, oauth 요청에 대해 http 통신 허용
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PATCH", "DELETE", "OPTIONS", "HEAD")); // 허용하는 http 메서드
         configuration.setAllowCredentials(true); // 허용된 origin의 자격증명 허용
         configuration.setAllowedHeaders(Collections.singletonList("*")); // 요청 시 허용 헤더 추가 todo 필요한 헤더만 추가하도록 수정 필요
