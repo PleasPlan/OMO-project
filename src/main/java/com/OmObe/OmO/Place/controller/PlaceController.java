@@ -63,7 +63,7 @@ public class PlaceController {
         if(token != null){
             try{
             member = tokenDecryption.getWriterInJWTToken(token);
-            } catch(JsonProcessingException e){
+            } catch (JsonProcessingException e) {
                 log.warn("JsonProcessingException 발생!");
             }
         }
