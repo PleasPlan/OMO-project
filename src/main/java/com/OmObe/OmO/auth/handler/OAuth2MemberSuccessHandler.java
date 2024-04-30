@@ -89,7 +89,7 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
         log.info("member Role : {}", member.getMemberRole().getRole());
         // 회원의 권한이 "GUEST"면 최초 로그인한 사용자로 판단하여 회원 추가 정보 입력 기능으로 redirect
         if (member.getMemberRole().getRole().equals("ROLE_GUEST")) {
-            return "/memberInfo/" + member.getMemberId(); // todo: 프론트엔드 배포 후 추가 정보 입력 화면으로 redirect하도록 변경
+            return "/SignUp"; // todo: 프론트엔드 배포 후 추가 정보 입력 화면으로 redirect하도록 변경
         }else { // 회원의 권한이 "GUEST"가 아니면 메인화면으로 redirect
             return "";
         }
@@ -102,10 +102,10 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .newInstance()
                 .scheme("http")
 //                .scheme("https")
-                .host("localhost") // 애플리케이션 배포 후 변경 예정
+                .host("localhost") // todo: 애플리케이션 배포 후 변경 예정
 //                .host("api.oneulmohae.co.kr") // todo : 프론트엔드 배포 후 변경 예정
-                .port(8080)
-//                .port(3000)
+                .port(5173)
+//                .port(8080)
                 .path(path)
 //                .queryParams(queryParams)
                 .build()
