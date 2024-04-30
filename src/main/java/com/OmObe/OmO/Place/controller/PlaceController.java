@@ -61,7 +61,11 @@ public class PlaceController {
                                    @Nullable @RequestHeader("Authorization") String token) throws JsonProcessingException {
         Member member = null;
         if(token != null){
+            try{
             member = tokenDecryption.getWriterInJWTToken(token);
+            } catch(JsonProcessingException e){
+                log.warn("JsonProcessingException 발생!");
+            }
         }
 
         String response = placeService.getPlace(placeName,placeId,member);
