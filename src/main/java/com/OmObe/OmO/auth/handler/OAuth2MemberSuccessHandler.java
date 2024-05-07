@@ -63,7 +63,7 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String path = distinctionPath(member);
         log.info("path : {}", path);
 
-        String uri = createURI(path).toString(); // 리다이렉트할 url
+        String uri = createURI(path, accessToken, refreshToken).toString(); // 리다이렉트할 url
         getRedirectStrategy().sendRedirect(request, response, uri);
     }
 
@@ -95,8 +95,10 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
         }
     }
 
-    private URI createURI(String path) {
+    private URI createURI(String path, String accessToken, String refreshToken) {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.add("access_token", "Bearer " + accessToken);
+        queryParams.add("refresh_token", refreshToken);
 
         return UriComponentsBuilder
                 .newInstance()
@@ -107,7 +109,7 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .port(5173)
 //                .port(8080)
                 .path(path)
-//                .queryParams(queryParams)
+                .queryParams(queryParams)
                 .build()
                 .toUri();
     }
