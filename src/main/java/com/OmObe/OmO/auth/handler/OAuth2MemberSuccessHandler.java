@@ -59,11 +59,11 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
         response.addHeader("Authorization", "Bearer " + accessToken);
         response.addHeader("Refresh", refreshToken);
 
-        // 최초 로그인한 멤버인지 판별하여 리다이렉트 될 경로 설정
-        String path = distinctionPath(member);
-        log.info("path : {}", path);
+        // 최초 로그인한 멤버인지 판별하여 true/false 리턴
+        String checkMemberRole = isExistingMember(member);
+        log.info("checkMemberRole : {}", checkMemberRole);
 
-        String uri = createURI(path, accessToken, refreshToken).toString(); // 리다이렉트할 url
+        String uri = createURI(checkMemberRole, accessToken, refreshToken).toString(); // 리다이렉트할 url
         getRedirectStrategy().sendRedirect(request, response, uri);
     }
 
@@ -82,23 +82,26 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
     /*
     <최초 로그인 한 멤버인지 판별하는 메서드>
-    - 회원의 권한이 "GUEST"면 최초 로그인한 사용자로 판단하여 회원 추가 정보 입력 기능으로 redirect
-    - 회원의 권한이 "GUEST"가 아니면 메인화면으로 redirect
+    - 회원의 권한이 "GUEST"면 최초 로그인한 사용자로 판단하고 "false" 리턴
+    - 회원의 권한이 "GUEST"가 아니면 "true" 리턴
+    - 리턴 타입은 String
      */
-    private String distinctionPath(Member member) {
+    private String isExistingMember(Member member) {
         log.info("member Role : {}", member.getMemberRole().getRole());
         // 회원의 권한이 "GUEST"면 최초 로그인한 사용자로 판단하여 회원 추가 정보 입력 기능으로 redirect
         if (member.getMemberRole().getRole().equals("ROLE_GUEST")) {
-            return "/LoginLoading"; // todo: 프론트엔드 배포 후 추가 정보 입력 화면으로 redirect하도록 변경
+            return "false"; // todo: 프론트엔드 배포 후 추가 정보 입력 화면으로 redirect하도록 변경
         }else { // 회원의 권한이 "GUEST"가 아니면 메인화면으로 redirect
-            return "";
+            return "true";
         }
     }
 
-    private URI createURI(String path, String accessToken, String refreshToken) {
+    private URI createURI(String checkMemberRole, String accessToken, String refreshToken) {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-        queryParams.add("access_token", "Bearer " + accessToken);
-        queryParams.add("refresh_token", refreshToken);
+        // query parameter로 액세스 토큰, 리프레시 토큰, 최초 로그인 여부를 전달
+        queryParams.add("accessToken", "Bearer " + accessToken);
+        queryParams.add("refreshToken", refreshToken);
+        queryParams.add("isExistingMember", checkMemberRole);
 
         return UriComponentsBuilder
                 .newInstance()
@@ -108,8 +111,7 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
 //                .host("api.oneulmohae.co.kr") // todo : 프론트엔드 배포 후 변경 예정
                 .port(5173)
 //                .port(8080)
-                .path(path)
-                .queryParams(queryParams)
+//                .queryParams(queryParams)
                 .build()
                 .toUri();
     }
