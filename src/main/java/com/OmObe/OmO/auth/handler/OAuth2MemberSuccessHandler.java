@@ -111,6 +111,7 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
 //                .host("api.oneulmohae.co.kr") // todo : 프론트엔드 배포 후 변경 예정
                 .port(5173)
 //                .port(8080)
+                .path("/LoginLoading")
                 .queryParams(queryParams)
                 .build()
                 .toUri();
