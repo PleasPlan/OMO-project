@@ -10,7 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry corsRegistry) {
         corsRegistry.addMapping("/**")
                 .exposedHeaders("Authorization", "Refresh", "x", "y", "Content-Type", "placeId", "memberId", "LR")
-                .allowedOrigins("http://localhost:5173", "https://accounts.google.com", "https://kauth.kakao.com", "https://nid.naver.com")
+                .allowedOrigins("http://localhost:5173", "https://www.oneulmohae.co.kr", "https://accounts.google.com", "https://kauth.kakao.com", "https://nid.naver.com")
                 .allowedMethods("GET","POST","PATCH", "DELETE", "OPTIONS", "HEAD");
     }
 }
