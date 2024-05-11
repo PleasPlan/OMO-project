@@ -105,11 +105,11 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         return UriComponentsBuilder
                 .newInstance()
-                .scheme("http")
-//                .scheme("https")
-                .host("localhost") // todo: 애플리케이션 배포 후 변경 예정
-//                .host("api.oneulmohae.co.kr") // todo : 프론트엔드 배포 후 변경 예정
-                .port(5173)
+//                .scheme("http")
+                .scheme("https")
+                .host("www.oneulmohae.co.kr")
+//                .host("api.oneulmohae.co.kr")
+//                .port(5173)
 //                .port(8080)
                 .path("/LoginLoading")
                 .queryParams(queryParams)
