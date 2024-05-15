@@ -63,7 +63,10 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String checkMemberRole = isExistingMember(member);
         log.info("checkMemberRole : {}", checkMemberRole);
 
-        String uri = createURI(checkMemberRole, accessToken, refreshToken).toString(); // 리다이렉트할 url
+        // 로그인 한 회원의 memberId 추출
+        Long memberId = member.getMemberId();
+
+        String uri = createURI(checkMemberRole, accessToken, refreshToken, memberId).toString(); // 리다이렉트할 url
         getRedirectStrategy().sendRedirect(request, response, uri);
     }
 
@@ -96,12 +99,13 @@ public class OAuth2MemberSuccessHandler extends SimpleUrlAuthenticationSuccessHa
         }
     }
 
-    private URI createURI(String checkMemberRole, String accessToken, String refreshToken) {
+    private URI createURI(String checkMemberRole, String accessToken, String refreshToken, Long memberId) {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-        // query parameter로 액세스 토큰, 리프레시 토큰, 최초 로그인 여부를 전달
+        // query parameter로 액세스 토큰, 리프레시 토큰, 최초 로그인 여부, memberId를 전달
         queryParams.add("accessToken", "Bearer " + accessToken);
         queryParams.add("refreshToken", refreshToken);
         queryParams.add("isExistingMember", checkMemberRole);
+        queryParams.add("memberId", memberId.toString());
 
         return UriComponentsBuilder
                 .newInstance()
