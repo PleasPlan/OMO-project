@@ -21,19 +21,19 @@ export const CommunityPostItem = (props) => {
   const [image, setImage] = useState(DefaultProfileImage);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
-    if (!loggedIn) {
-      alert("로그인 후 이용 가능한 서비스입니다.");
-      navigate("/Login", {replace: true});
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+  //   if (!loggedIn) {
+  //     alert("로그인 후 이용 가능한 서비스입니다.");
+  //     navigate("/Login", {replace: true});
+  //   }
+  // }, [navigate]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
-
+  
         const response = await axios.get(`https://api.oneulmohae.co.kr/myPage/myInfo`, {
           headers: {
             Authorization: accessToken,
@@ -41,10 +41,10 @@ export const CommunityPostItem = (props) => {
         });
         setMyInfoData(response.data);
         setIsLoading(false);
-
+  
         if (response.data.profileImageUrl) {
           const imageUrl = `https://api.oneulmohae.co.kr/image/${encodeURIComponent(response.data.profileImageUrl)}`;
-
+  
           try {
             const imageResponse = await axios.get(imageUrl, {
               headers: {
@@ -52,7 +52,7 @@ export const CommunityPostItem = (props) => {
               },
               responseType: "blob",
             });
-
+  
             const imageBlob = imageResponse.data;
             const imageObjectURL = URL.createObjectURL(imageBlob);
             setImage(imageObjectURL);
@@ -61,16 +61,13 @@ export const CommunityPostItem = (props) => {
           }
         }
       } catch (error) {
-        navigate("/Login", {replace: true});
-        console.error("내정보를 불러오는데 실패하였습니다.", error);
+        console.error("프로필 이미지를 불러오는데 실패하였습니다.", error);
       }
     };
-
+  
     fetchData();
   }, []);
-
-
-
+  
 
 
   // 신고 모달창 열기
